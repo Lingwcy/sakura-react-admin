@@ -5,6 +5,14 @@ export type UserToken = {
 }
 
 export type UserSignIn = {
-    mobile:string,
-    code:string
+    username:string,
+    password:string
+
+}
+
+export type UserProfile = {
+    id: string,
+    avatar: string,
+    name: string,
+    email: string,
 }

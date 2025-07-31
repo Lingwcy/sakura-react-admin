@@ -1,73 +1,28 @@
-import './index.scss'
-import {
-    Card,
-    Form,
-    Input,
-    Button,
-    message
-} from 'antd'
-import logo from '@assets/logo.png'
-import { useUserToken } from '@/hooks/useUser'
-import { useNavigate } from 'react-router'
-interface LoginFormValues {
-    mobile: string;
-    code: string;
-}
-const Login = () => {
-    const {sinIn, userToken} = useUserToken()
-    const navigate = useNavigate()
-    console.log(userToken)
 
-    const handleFormSubmit = async (value: LoginFormValues): Promise<void> => {
-        try {
-            await sinIn(value)
-            message.success("登录成功")
-            navigate('/')
-        } catch {
-            const errorMessage = "登录失败，请重试";
-            message.error(errorMessage);
-        }
-    }
+import LoginForm from './login-form'
+import PlaceholderImg from '@assets/images/background.png'
+import { Icon } from "@iconify/react";
+const Login = () => {
     return (
-        <div className="login">
-            <Card className="login-container">
-                <img className="login-logo" src={logo} alt="" />
-                {/* 登录表单 */}
-                <Form
-                    validateTrigger="onBlur"
-                    onFinish={handleFormSubmit}>
-                    <Form.Item
-                        name="mobile"
-                        // 多条校验逻辑 先校验第一条 第一条通过之后再校验第二条
-                        rules={[
-                            {
-                                required: true,
-                                message: '请输入手机号',
-                            },
-                            {
-                                pattern: /^1[3-9]\d{9}$/,
-                                message: '请输入正确的手机号格式'
-                            }
-                        ]}>
-                        <Input size="large" placeholder="请输入手机号" />
-                    </Form.Item>
-                    <Form.Item
-                        name="code"
-                        rules={[
-                            {
-                                required: true,
-                                message: '请输入验证码',
-                            },
-                        ]}>
-                        <Input size="large" placeholder="请输入验证码" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" size="large" block>
-                            登录
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Card>
+        <div className=' grid lg:grid-cols-2 min-h-svh '>
+            <div className='flex flex-col p-6 gap-4 md:p-10'>
+                <div className='felx'>
+                    <div className='flex items-center gap-2 justify-center md:justify-start'>
+                        <Icon icon="solar:code-square-bold" color='pink' fontSize={36} />
+                        <span>Sakura Minecraft Server Community | 后台管理系统</span>
+                    </div>
+                </div>
+                <div className="flex flex-1 items-center justify-center ">
+                        <LoginForm />
+                </div>
+            </div>
+            <div className="relative hidden bg-background-paper lg:block">
+                <img
+                    src={PlaceholderImg}
+                    alt="placeholder img"
+                    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.5] dark:grayscale"
+                />
+            </div>
         </div>
     )
 }

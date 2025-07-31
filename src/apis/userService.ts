@@ -1,20 +1,26 @@
 import { requestClient } from "@/utils";
-import type { UserSignIn, UserToken } from "@/types/userType";
+import type { UserProfile, UserSignIn, UserToken } from "@/types/userType";
 const UserApi = {
-    SignIn: "authorizations",
+    SignIn: "api/authorizations",
+    UserProfile: "api/user/profile"
 };
 
 
-type sigInResponse =  {
+type SigInResponse =  {
     data: UserToken,
     message: string,
 }
 
+type UserProfileResponse =  {
+    data: UserProfile,
+    message: string,
+}
 
-const signIn = (formData:UserSignIn) => requestClient.post<sigInResponse>({url: UserApi.SignIn, data: formData})
-
+const signIn = (formData:UserSignIn) => requestClient.post<SigInResponse>({url: UserApi.SignIn, data: formData})
+const getUserProfile = () => requestClient.get<UserProfileResponse>({url: UserApi.UserProfile})
 
 
 export {
-    signIn
+    signIn,
+    getUserProfile
 }

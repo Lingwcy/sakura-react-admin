@@ -1,6 +1,8 @@
 import axios from "axios";
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useUserStore } from "@/store";
+import { useUserToken } from "@/hooks/useUser";
+import { useNavigate } from "react-router";
 
 const request = axios.create({
     baseURL: import.meta.env.VITE_APP_BASE_API,
@@ -24,6 +26,12 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use((response) => {
     return response
 }, (error: AxiosError) => {
+	if(error.response?.status ===401){
+		const {clearUserToken} = useUserToken();
+		const navigate = useNavigate()
+		clearUserToken()
+		navigate('/')
+	}
     return Promise.reject(error)
 })
 

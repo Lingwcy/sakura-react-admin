@@ -1,7 +1,7 @@
 import { useUserStore } from "@/store";
 import { useMutation } from "@tanstack/react-query";
-import { signIn } from "@/apis/userService";
-import type { UserSignIn } from "@/types/userType";
+import { signIn, getUserProfile } from "@/apis/userService";
+import type { UserProfile, UserSignIn } from "@/types/userType";
 
 
 
@@ -23,14 +23,47 @@ const useUserToken = () => {
         }
     }
 
+    const clearUserToken =() => setUserToken({
+        token: '',
+        refresh_token: userToken.refresh_token
+    })
+
     return {
         sinIn,
-        userToken
+        userToken,
+        clearUserToken
     };
 
 }
 
+const useUserProfile = () => {
+    const userProfile = useUserStore((state) => (state.userProfile))
+    const setUserProfile = useUserStore((sate) => (sate.setUserProfile))
+
+    const userProfileMutaition = useMutation({
+        mutationFn: getUserProfile,
+    })
+
+    const getUserInfo = async () => {
+        try {
+            const result = await userProfileMutaition.mutateAsync();
+            setUserProfile(result.data)
+        } catch (e: unknown) {
+            console.log('登录错误:', e)
+            throw e;
+        }
+    }
+
+    const clearUserInfo = () => setUserProfile({} as UserProfile)
+
+    return {
+        getUserInfo,
+        userProfile,
+        clearUserInfo
+    }
+}
 
 export {
-    useUserToken
+    useUserToken,
+    useUserProfile
 }

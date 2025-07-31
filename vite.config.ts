@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
+import { viteMockServe } from 'vite-plugin-mock'
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(),tailwindcss(),viteMockServe()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -15,6 +17,12 @@ export default defineConfig({
       "@utils": path.resolve(__dirname, './src/utils'),
       "@types": path.resolve(__dirname, './src/types'),
       "@hooks": path.resolve(__dirname, './src/hooks')
+    }
+    
+  },
+  css:{
+    modules:{
+      localsConvention:'camelCase'
     }
   }
 })
