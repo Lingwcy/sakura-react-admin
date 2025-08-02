@@ -11,7 +11,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useSystemSideBar } from "@/hooks/use-system"
-import { useUserProfile } from "@/hooks/useUser"
+import { useUserProfile } from "@/hooks/use-user"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const {sidebarNavItems, sidebarTeams} = useSystemSideBar()

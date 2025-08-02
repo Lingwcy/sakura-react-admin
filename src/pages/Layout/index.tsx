@@ -14,7 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useUserProfile } from "@/hooks/useUser"
+import { useUserProfile } from "@/hooks/use-user"
 import { Outlet } from "react-router"
 export default function () {
   const { getUserInfo } = useUserProfile()

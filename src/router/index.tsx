@@ -12,7 +12,9 @@ import { TwoWingsMiddle } from "@/components/css-playground";
 import ComponentLayout from "@/pages/Component";
 import ServerCardPlayground from "@/pages/Component/server-card-playground";
 import ServerComponentLayout from "@/pages/Server";
-import ServerList from "@/pages/Server/server-list";
+import ArchiveServerPage from "@/pages/Server/achrive-list";
+import ToolsComponentLayout from "@/pages/Tools";
+import APITools from "@/pages/Tools/api-tool";
 const router = createBrowserRouter([
     {
         path: '/',
@@ -35,11 +37,21 @@ const router = createBrowserRouter([
                 element:<ServerComponentLayout/>,
                 children: [
                     {
-                        path: 'list',
-                        Component: ServerList
+                        path: 'archive',
+                        Component: ArchiveServerPage
                     }
                 ]
 
+            },
+            {
+                path:'tool',
+                element:<ToolsComponentLayout/>,
+                children:[
+                    {
+                        path: 'api',
+                        Component: APITools
+                    }
+                ]
             },
             {
                 path: 'cssplayground',

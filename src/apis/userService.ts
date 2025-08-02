@@ -1,9 +1,6 @@
 import { requestClient } from "@/utils";
 import type { UserProfile, UserSignIn, UserToken } from "@/types/userType";
-const UserApi = {
-    SignIn: "api/authorizations",
-    UserProfile: "api/user/profile"
-};
+import { apiList } from "./api-list";
 
 
 type SigInResponse =  {
@@ -16,8 +13,8 @@ type UserProfileResponse =  {
     message: string,
 }
 
-const signIn = (formData:UserSignIn) => requestClient.post<SigInResponse>({url: UserApi.SignIn, data: formData})
-const getUserProfile = () => requestClient.get<UserProfileResponse>({url: UserApi.UserProfile})
+const signIn = (formData:UserSignIn) => requestClient.post<SigInResponse>({url: apiList.user.signIn, data: formData})
+const getUserProfile = () => requestClient.get<UserProfileResponse>({url: apiList.user.userProfile})
 
 
 export {

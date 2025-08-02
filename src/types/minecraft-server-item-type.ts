@@ -19,8 +19,8 @@ export type MinecraftServerItem = {
     bedrockAddressPort: number,
     backendType: MinecraftServerType,
     edition: MinecraftEdition,
-    version: MinecraftServerVersion[]
-    gamemodes: ServerGamemodes[]
+    version: MinecraftServerVersion
+    gamemodes: ServerGamemodes
     isWhitelist: ServerWhitelist,
     isAuthMode: ServerAuthMode,
     isCommercial: ServerCommercialType,

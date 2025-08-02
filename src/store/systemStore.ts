@@ -6,7 +6,8 @@ import {
     GalleryVerticalEnd,
     Settings2,
     SquareTerminal,
-    Cross
+    Cross,
+    Key,
 } from "lucide-react"
 type Store = {
     sidebarConfig: {
@@ -24,7 +25,7 @@ const initialSidebarData: SilderNavItem[] = [
         items: [
             {
                 title: "已收录",
-                url: "/server/list",
+                url: "/server/archive",
             },
             {
                 title: "待审核",
@@ -46,6 +47,17 @@ const initialSidebarData: SilderNavItem[] = [
                 url: "component/servercard",
             },
         ],
+    },
+    {
+        title: "工具",
+        icon: Key,
+        url: "#",
+        items: [
+            {
+                title: '接口器',
+                url: '/tool/api'
+            }
+        ]
     },
     {
         title: "文档",

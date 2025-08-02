@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useUserStore } from "@/store";
-import { useUserToken } from "@/hooks/useUser";
+import { useUserToken } from "@/hooks/use-user";
 import { useNavigate } from "react-router";
 
 const request = axios.create({

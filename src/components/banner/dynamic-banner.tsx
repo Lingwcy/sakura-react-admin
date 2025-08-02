@@ -13,7 +13,7 @@ export default function DynamicBanner({ url }: DynamicBannerProps) {
 
     return isVideBanner() ? (
         <video autoPlay loop muted
-            className="max-h-[60px]  w-full object-cover rounded-t-sm">
+            className="min-w-[100px] max-h-[60px]  w-full object-cover rounded-t-sm">
             <source src={url} type="video/webm" />
         </video>
     ) : (

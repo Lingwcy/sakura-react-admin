@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useUserToken } from "@/hooks/useUser";
+import { useUserToken } from "@/hooks/use-user";
 import { useNavigate } from 'react-router'
 import { useEffect } from "react";
 type AuthRoutProps = {
