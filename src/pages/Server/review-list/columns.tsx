@@ -50,3 +50,6 @@ const defaultColums = [
     })
 ]
 
+
+export default defaultColums
+

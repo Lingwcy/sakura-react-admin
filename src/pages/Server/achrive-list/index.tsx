@@ -5,7 +5,10 @@ import servermockjson from '@assets/mock-server-list.json'
 import type { MinecraftServerItem } from "@/types/minecraft-server-item-type";
 import { SakuraTable } from '@/components/table';
 
-const mockdata = servermockjson as MinecraftServerItem[];
+const mockdata = servermockjson.map(item => ({
+    ...item,
+    arichiveDate: new Date(item.arichiveDate)
+})) as MinecraftServerItem[];
 
 
 export default function ArchiveServerPage() {
