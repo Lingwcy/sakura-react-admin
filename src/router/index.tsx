@@ -15,6 +15,10 @@ import ServerComponentLayout from "@/pages/Server";
 import ArchiveServerPage from "@/pages/Server/achrive-list";
 import ToolsComponentLayout from "@/pages/Tools";
 import APITools from "@/pages/Tools/api-tool";
+import BorderLoading from "@/components/loading/border-loading";
+import UserManagementLayout from "@/pages/UserManagement";
+import AdminUserManagement from "@/pages/UserManagement/admin-user-management";
+import FontUserManagement from "@/pages/UserManagement/font-user-management";
 const router = createBrowserRouter([
     {
         path: '/',
@@ -33,8 +37,8 @@ const router = createBrowserRouter([
                 Component: Publish
             },
             {
-                path:'server',
-                element:<ServerComponentLayout/>,
+                path: 'server',
+                element: <ServerComponentLayout />,
                 children: [
                     {
                         path: 'archive',
@@ -44,9 +48,23 @@ const router = createBrowserRouter([
 
             },
             {
-                path:'tool',
-                element:<ToolsComponentLayout/>,
-                children:[
+                path: 'usermanagement',
+                element: <UserManagementLayout />,
+                children: [
+                    {
+                        path: 'user',
+                        Component: AdminUserManagement
+                    },
+                    {
+                        path: 'font-user',
+                        Component: FontUserManagement
+                    }
+                ]
+            },
+            {
+                path: 'tool',
+                element: <ToolsComponentLayout />,
+                children: [
                     {
                         path: 'api',
                         Component: APITools
@@ -55,17 +73,21 @@ const router = createBrowserRouter([
             },
             {
                 path: 'cssplayground',
-                element: <CssPlaygroundLayout/>,
+                element: <CssPlaygroundLayout />,
                 children: [
                     {
                         path: 'twowings',
                         Component: TwoWingsMiddle
+                    },
+                    {
+                        path: 'loading-2',
+                        element: <BorderLoading mode="dev" />
                     }
                 ]
             },
             {
-                path:'component',
-                element: <ComponentLayout/>,
+                path: 'component',
+                element: <ComponentLayout />,
                 children: [
                     {
                         path: 'servercard',

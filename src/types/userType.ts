@@ -16,3 +16,10 @@ export type UserProfile = {
     name: string,
     email: string,
 }
+
+export type UserItem = {
+    id: string,
+    avatar:string,
+    name: string,
+    email: string
+}

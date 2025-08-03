@@ -1,0 +1,35 @@
+.loading {
+  position: relative;
+  width: 35vmin;
+  height: 35vmin;
+  background: linear-gradient(120deg, #a5ebf2 0%, #d69fed 100%);
+  opacity: 0.8;
+  margin: 25vh auto;
+  border-radius: 35%;
+  animation: rotateMain 8s linear infinite;
+}
+
+.loading::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #8bb4d3 0%, #de55d7 100%);
+  opacity: 0.8;
+  box-shadow: 5px 5px 90px rgba(10, 102, 255, 0.5);
+  border-radius: 35%;
+  animation: rotateMain 8s linear 2s infinite;
+}
+
+@keyframes rotateMain {
+  50% {
+    transform: rotateZ(180deg);
+    border-radius: 50%;
+  }
+  100% {
+    transform: rotateZ(360deg);
+    border-radius: 35%;
+  }
+}

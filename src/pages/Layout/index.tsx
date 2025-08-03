@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sidebar"
 import { useUserProfile } from "@/hooks/use-user"
 import { Outlet } from "react-router"
+import { Toaster } from "@/components/ui/sonner"
+import BorderLoading from "@/components/loading/border-loading"
 export default function () {
   const { getUserInfo } = useUserProfile()
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function () {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <Toaster />
           <Outlet />
         </div>
       </SidebarInset>

@@ -3,9 +3,9 @@ import { Input } from "@/components/ui/input"
 import {
     flexRender,
     getCoreRowModel,
+    getPaginationRowModel,
     getFilteredRowModel,
     useReactTable,
-    getPaginationRowModel,
     getSortedRowModel,
 } from "@tanstack/react-table"
 import type { SortingState, ColumnFiltersState, VisibilityState, ColumnDef } from "@tanstack/react-table"
@@ -24,15 +24,29 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import React from "react"
-
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination"
 interface SakuraTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     searchPlaceholder: string,
     searchKey: string,
+    createButtonText: string
+    serverPagination?: {
+        totalPages: number,
+        currentPage: number,
+        totalCount: number,
+        setPage?: (page: number) => void,
+        getPage?: number
+    }
     onClickCreate: () => void,
-
-
 }
 
 export function SakuraTable<TData, TValue>({
@@ -40,6 +54,8 @@ export function SakuraTable<TData, TValue>({
     data,
     searchPlaceholder,
     searchKey,
+    createButtonText,
+    serverPagination,
     onClickCreate,
 }: SakuraTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -48,15 +64,18 @@ export function SakuraTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
     const [sorting, setSorting] = React.useState<SortingState>([])
+    const safeData = React.useMemo(() => data || [], [data])
+
     const table = useReactTable({
-        data,
+        data: safeData,
         columns,
+        manualPagination: false,
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         state: {
             sorting,
@@ -64,7 +83,6 @@ export function SakuraTable<TData, TValue>({
             columnVisibility,
         },
     })
-
 
     return (
         <div className="flex flex-col">
@@ -106,7 +124,7 @@ export function SakuraTable<TData, TValue>({
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <Button variant="outline" className="bg-pink-900 text-white" onClick={onClickCreate}>
-                    新增服务器
+                    {createButtonText}
                 </Button>
             </div>
             <div className="overflow-hidden rounded-md border">
@@ -154,55 +172,116 @@ export function SakuraTable<TData, TValue>({
                 </Table>
             </div>
             <div className="flex items-center space-x-2 py-4 justify-center">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    上一页
-                </Button>
+                <Pagination>
+                    <PaginationContent>
+                        {serverPagination ? (
+                            // 服务器端分页
+                            <>
+                                <PaginationItem
+                                    onClick={() => {
+                                        if (serverPagination.currentPage > 1) {
+                                            serverPagination.setPage(serverPagination.currentPage - 1);
+                                        }
+                                    }}
+                                >
+                                    <PaginationPrevious
+                                        href="#"
+                                        className={serverPagination.currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+                                    />
+                                </PaginationItem>
 
-                {/* 页码按钮 */}
-                {(() => {
-                    const pageCount = table.getPageCount();
-                    const currentPage = table.getState().pagination.pageIndex;
-                    const maxVisiblePages = 10;
+                                {/* 服务器端页码按钮 */}
+                                {(() => {
+                                    const totalPages = serverPagination.totalPages;
+                                    const currentPage = serverPagination.currentPage;
+                                    const maxVisiblePages = 10;
 
-                    // 计算显示的页码范围
-                    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
-                    const endPage = Math.min(pageCount - 1, startPage + maxVisiblePages - 1);
+                                    // 计算显示的页码范围
+                                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                                    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-                    // 调整起始页码如果接近末尾
-                    if (endPage - startPage + 1 < maxVisiblePages) {
-                        startPage = Math.max(0, endPage - maxVisiblePages + 1);
-                    }
+                                    // 调整起始页码如果接近末尾
+                                    if (endPage - startPage + 1 < maxVisiblePages) {
+                                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                                    }
 
-                    const pages = [];
-                    for (let i = startPage; i <= endPage; i++) {
-                        pages.push(
-                            <Button
-                                key={i}
-                                variant={i === currentPage ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => table.setPageIndex(i)}
-                            >
-                                {i + 1}
-                            </Button>
-                        );
-                    }
+                                    const pages = [];
+                                    for (let i = startPage; i <= endPage; i++) {
+                                        pages.push(
+                                            <PaginationItem key={i}>
+                                                <PaginationLink
+                                                    href="#"
+                                                    onClick={() => serverPagination.setPage && serverPagination.setPage(i)}
+                                                    className={i === currentPage ? 'bg-primary text-primary-foreground' : ''}
+                                                >
+                                                    {i}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                    }
 
-                    return pages;
-                })()}
+                                    return pages;
+                                })()}
 
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
-                    下一页
-                </Button>
+                                <PaginationItem
+                                    onClick={() => {
+                                        if (serverPagination.currentPage < serverPagination.totalPages && serverPagination.setPage) {
+                                            serverPagination.setPage(serverPagination.currentPage + 1);
+                                        }
+                                    }}
+                                >
+                                    <PaginationNext
+                                        href="#"
+                                        className={serverPagination.currentPage >= serverPagination.totalPages ? 'pointer-events-none opacity-50' : ''}
+                                    />
+                                </PaginationItem>
+                            </>
+                        ) : (
+                            // 客户端分页（原有逻辑）
+                            <>
+                                <PaginationItem onClick={() => table.previousPage()}>
+                                    <PaginationPrevious href="#" />
+                                </PaginationItem>
+                                {/* 页码按钮 */}
+                                {(() => {
+                                    const pageCount = table.getPageCount();
+                                    const currentPage = table.getState().pagination.pageIndex;
+                                    const maxVisiblePages = 10;
+
+                                    // 计算显示的页码范围
+                                    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+                                    const endPage = Math.min(pageCount - 1, startPage + maxVisiblePages - 1);
+
+                                    // 调整起始页码如果接近末尾
+                                    if (endPage - startPage + 1 < maxVisiblePages) {
+                                        startPage = Math.max(0, endPage - maxVisiblePages + 1);
+                                    }
+
+                                    const pages = [];
+                                    for (let i = startPage; i <= endPage; i++) {
+                                        pages.push(
+                                            <PaginationItem key={i}>
+                                                <PaginationLink onClick={() => table.setPageIndex(i)} >{i + 1}</PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                    }
+
+                                    return pages;
+                                })()}
+                                <PaginationItem>
+                                    <PaginationEllipsis />
+                                </PaginationItem>
+                                <PaginationItem onClick={() => table.nextPage()}>
+                                    <PaginationNext href="#" />
+                                </PaginationItem>
+                            </>
+                        )}
+                    </PaginationContent>
+                </Pagination>
+
+
+
+
             </div>
         </div>
     )

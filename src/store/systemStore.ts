@@ -8,6 +8,7 @@ import {
     SquareTerminal,
     Cross,
     Key,
+    UserCog2Icon
 } from "lucide-react"
 type Store = {
     sidebarConfig: {
@@ -34,6 +35,21 @@ const initialSidebarData: SilderNavItem[] = [
             {
                 title: "黑名单",
                 url: "#",
+            },
+        ],
+    },
+    {
+        title: "用户管理",
+        url: "#",
+        icon: UserCog2Icon,
+        items: [
+            {
+                title: "后台用户",
+                url: "usermanagement/user",
+            },
+            {
+                title: "客户端用户",
+                url: "usermanagement/font-user",
             },
         ],
     },
@@ -81,6 +97,10 @@ const initialSidebarData: SilderNavItem[] = [
             {
                 title: '双飞翼布局',
                 url: '/cssplayground/twowings'
+            },
+            {
+                title: '二级加载动画',
+                url: '/cssplayground/loading-2'
             }
         ]
     }

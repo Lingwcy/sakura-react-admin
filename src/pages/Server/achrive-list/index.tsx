@@ -16,6 +16,7 @@ export default function ArchiveServerPage() {
                 columns={columns}
                 data={data}
                 searchPlaceholder='搜索名称'
+                createButtonText='新增服务器'
                 searchKey='name'
                 onClickCreate={() => { }}
             />
