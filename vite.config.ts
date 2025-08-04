@@ -1,35 +1,18 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import { viteMockServe } from 'vite-plugin-mock'
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    viteMockServe({
-      mockPath: 'mock',
-      enable: true,
-    })
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@assets": path.resolve(__dirname, "./src/assets"),
-      "@apis": path.resolve(__dirname, './src/apis'),
-      "@pages": path.resolve(__dirname, './src/pages'),
-      "@router": path.resolve(__dirname, './src/router'),
-      "@store": path.resolve(__dirname, './src/store'),
-      "@utils": path.resolve(__dirname, './src/utils'),
-      "@types": path.resolve(__dirname, './src/types'),
-      "@hooks": path.resolve(__dirname, './src/hooks')
-    }
-    
-  },
-  css:{
-    modules:{
-      localsConvention:'camelCase'
-    }
-  }
+
+import { defineConfig, loadEnv } from 'vite'
+
+import viteDevConfig from './vite.dev.config'
+import viteBuildConfig from './vite.build.config'
+import viteBaseConfig from './vite.base.config'
+const envResolver = {
+  "build": Object.assign({}, viteBaseConfig, viteBuildConfig),
+  "serve": Object.assign({}, viteBaseConfig, viteDevConfig),
+}
+
+
+
+export default defineConfig(({ command, mode }) => {
+  loadEnv(mode, process.cwd(), "")
+
+  return envResolver[command];
 })

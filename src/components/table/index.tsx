@@ -33,12 +33,17 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
-interface SakuraTableProps<TData, TValue> {
+interface SakuraTableProps<TData extends { id: string }, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     searchPlaceholder: string,
     searchKey: string,
-    createButtonText: string
+    createButtonText: string,
+    onDeleteItems: (ids: string[]) => void,
+    createItemDialog?: React.ComponentType<{
+    open: boolean;
+    onClose: () => void;
+  }>;
     serverPagination?: {
         totalPages: number,
         currentPage: number,
@@ -46,17 +51,17 @@ interface SakuraTableProps<TData, TValue> {
         setPage?: (page: number) => void,
         getPage?: number
     }
-    onClickCreate: () => void,
 }
 
-export function SakuraTable<TData, TValue>({
+export function SakuraTable<TData extends { id: string }, TValue>({
     columns,
     data,
     searchPlaceholder,
     searchKey,
     createButtonText,
     serverPagination,
-    onClickCreate,
+    onDeleteItems,
+    createItemDialog:CreateItemDialog
 }: SakuraTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -65,11 +70,14 @@ export function SakuraTable<TData, TValue>({
         React.useState<VisibilityState>({})
     const [sorting, setSorting] = React.useState<SortingState>([])
     const safeData = React.useMemo(() => data || [], [data])
+    const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
 
     const table = useReactTable({
         data: safeData,
         columns,
         manualPagination: false,
+        getRowId: (origin) => origin.id,
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
@@ -77,16 +85,27 @@ export function SakuraTable<TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
+        enableRowSelection: true,
+        enableMultiRowSelection: true,
+        onRowSelectionChange: (state) => {
+            setRowSelection(state)
+            console.log(rowSelection)
+        },
         state: {
             sorting,
             columnFilters,
             columnVisibility,
+            rowSelection
         },
     })
 
+    const handleCreateClick = () => {
+        setIsCreateDialogOpen(true)
+    }
+
     return (
         <div className="flex flex-col">
-            <div className="flex py-4 space-x-1.5">
+            <div className="flex py-4 space-x-1.5 items-center">
                 <Input
                     placeholder={searchPlaceholder}
                     value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -95,6 +114,18 @@ export function SakuraTable<TData, TValue>({
                     }
                     className="max-w-sm"
                 />
+                {table.getFilteredSelectedRowModel().rows.length > 0 &&
+                    <div className="flex justify-center items-center gap-3 md:flex-row-reverse">
+                        <div className="text-muted-foreground  text-sm hidden lg:block">
+                            {table.getFilteredSelectedRowModel().rows.length} / {table.getRowModel().rows.length}行 被你选中了
+                        </div>
+
+                        <Button onClick={() => {
+                            const selectedIds = Object.keys(rowSelection).filter(id => rowSelection[id]);
+                            onDeleteItems(selectedIds);
+                        }}>
+                            删除选中
+                        </Button></div>}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">
@@ -123,7 +154,7 @@ export function SakuraTable<TData, TValue>({
                             })}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="outline" className="bg-pink-900 text-white" onClick={onClickCreate}>
+                <Button variant="outline" className="bg-pink-900 text-white" onClick={handleCreateClick}>
                     {createButtonText}
                 </Button>
             </div>
@@ -278,11 +309,8 @@ export function SakuraTable<TData, TValue>({
                         )}
                     </PaginationContent>
                 </Pagination>
-
-
-
-
             </div>
+            <CreateItemDialog open={isCreateDialogOpen} onClose={() => setIsCreateDialogOpen(false)}/>
         </div>
     )
 }

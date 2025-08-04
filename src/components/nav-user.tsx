@@ -41,6 +41,25 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
 
+  // 如果用户数据还没有加载完成，显示默认值
+  if (!user || !user.name || !user.email || !user.avatar) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" disabled>
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarFallback className="rounded-lg">--</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">加载中...</span>
+              <span className="truncate text-xs">--</span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    )
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>

@@ -45,15 +45,19 @@ const mockUsers = {
         const deletedUsers: UserItem[] = []        
         const idArray = Array.isArray(ids) ? ids : [ids];
         
-        idArray.forEach((id) => {
-            const index = users.findIndex((user) => user.id === id)
-            if(index !== -1) {
-                const deletedUser = users[index]; 
-                users.splice(index, 1);
-                deletedUsers.push(deletedUser);
-            }
-        })
-        return deletedUsers
+        // Sort indices in descending order to avoid index shifting issues
+        const indicesToDelete = idArray
+            .map(id => users.findIndex(user => user.id === id))
+            .filter(index => index !== -1)
+            .sort((a, b) => b - a);
+
+        indicesToDelete.forEach(index => {
+            const deletedUser = users[index];
+            users.splice(index, 1);
+            deletedUsers.push(deletedUser);
+        });
+
+        return deletedUsers;
     },
     getUserById: (id: string) => {
         return users.find(user => user.id === id) || null;
