@@ -39,7 +39,7 @@ interface SakuraTableProps<TData extends { id: string }, TValue> {
     searchPlaceholder: string,
     searchKey: string,
     createButtonText: string,
-    onDeleteItems: (ids: string[]) => void,
+    onDeleteItems?: (ids: string[]) => void,
     createItemDialog?: React.ComponentType<{
     open: boolean;
     onClose: () => void;

@@ -21,7 +21,6 @@ export default function ArchiveServerPage() {
                 searchPlaceholder='搜索名称'
                 createButtonText='新增服务器'
                 searchKey='name'
-                onClickCreate={() => { }}
             />
         </div>
     )
