@@ -2,10 +2,11 @@ import { SakuraTable } from '@/components/table';
 import createAdminUserColumns from './colums';
 import { useUserList } from '@/hooks/use-user';
 import BorderLoading from '@/components/loading/border-loading';
-import CreateUserDialog from '@/components/createDialog/createUserDialog';
+import UserDialog from './dialog';
 
 export default function AdminUserManagement() {
     const { userListData, pagination, isLoading, error, isFeching, deleteUser } = useUserList()
+
     const adminUserColumns = createAdminUserColumns(deleteUser)
 
     const handleDeleteSelectedUser = (ids: string[]) => {
@@ -30,7 +31,9 @@ export default function AdminUserManagement() {
                     searchKey='name'
                     serverPagination={pagination}
                     onDeleteItems = {handleDeleteSelectedUser}
-                    createItemDialog = {CreateUserDialog}
+                    itemDialog = {UserDialog}
+                    enableCreateAndUpdate = {true}
+                    enableSelected = {true}
                 />
             )}
         </div>

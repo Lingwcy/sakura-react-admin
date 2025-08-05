@@ -12,12 +12,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import type { UseMutationResult } from "@tanstack/react-query"
 const columnHelper = createColumnHelper<UserItem>()
 
-// 将 columns 定义为一个函数，接受 deleteUser 作为参数
-const createAdminUserColumns = (deleteUser: UseMutationResult) => {
+// 将 columns 定义为一个函数，接受 deleteUser 作为参数，返回一个接受编辑回调的函数
+const createAdminUserColumns = (deleteUser: UseMutationResult) => (editCallback: (user: UserItem) => void) => {
     const handleDeleteUser = (id: string) => {
         deleteUser.mutate([id])
     }
-
     return [
         columnHelper.display({
             id: 'select',
@@ -82,7 +81,9 @@ const createAdminUserColumns = (deleteUser: UseMutationResult) => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem>编辑</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => editCallback(row.original)}>
+                                    编辑
+                                </DropdownMenuItem>
                                 <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteUser(row.original.id)}>
                                     删除
                                 </DropdownMenuItem>

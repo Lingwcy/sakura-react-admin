@@ -33,10 +33,16 @@ const mockUsers = {
         users.push(newUser);
         return newUser;
     },
-    updateUser: (id: string, userData: UserItem) => {
+    updateUser: (id: string, userData: Partial<UserItem>) => {
         const index = users.findIndex(user => user.id === id);
         if (index !== -1) {
-            users[index] = { ...users[index], ...userData };
+            // Only update fields that are provided and not empty
+            const filteredUserData = Object.fromEntries(
+                Object.entries(userData).filter(([key, value]) => 
+                    value !== undefined && value !== '' && key !== 'id'
+                )
+            );
+            users[index] = { ...users[index], ...filteredUserData };
             return users[index];
         }
         return null;

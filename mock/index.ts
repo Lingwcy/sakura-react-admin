@@ -1,6 +1,14 @@
 import type { MockMethod } from 'vite-plugin-mock'
 import { faker } from "@faker-js/faker";
-import {mockUsers}from './mockUser';
+import { mockUsers } from './mockUser';
+import type { Recordable } from 'vite-plugin-mock';
+
+interface Option {
+    url: Recordable;
+    body: Recordable;
+    query: Recordable;
+    headers: Recordable;
+}
 export default [
     {
         url: '/api/authorizations',
@@ -33,7 +41,7 @@ export default [
     {
         url: '/api/users',
         method: 'get',
-        response: function (opt) {
+        response: function (opt:Option) {
             try {
                 const currentPage = Number(opt?.query?.page) || 1
                 const size = 10
@@ -63,11 +71,11 @@ export default [
         }
     },
     {
-        url: '/api/users',
+        url: '/api/user',
         method: 'post',
-        response: function (opt: any) {
+        response: function (opt: Option) {
             try {
-                const { name, email, avatar } = JSON.parse(opt.body || '{}');
+                const { name, email, avatar } = opt.body || {};
 
                 if (!name || !email) {
                     return {
@@ -93,12 +101,14 @@ export default [
         }
     },
     {
-        url: '/api/users/:id',
+        url: '/api/user/:id',
         method: 'put',
-        response: function (opt: any) {
+        response: function (opt: Option) {
             try {
-                const { id } = opt?.query || {};
-                const userData = JSON.parse(opt?.body || '{}');
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+               
+                const userData = opt.body || {};
 
                 if (!id) {
                     return {
@@ -133,7 +143,7 @@ export default [
     {
         url: '/api/users/:ids',
         method: 'delete',
-        response: function (opt: any) {
+        response: function (opt: Option) {
             try {
                 // Extract IDs from URL path instead of query
                 const urlParts = opt.url.split('/');
@@ -175,9 +185,11 @@ export default [
     {
         url: '/api/users/:id',
         method: 'get',
-        response: function (opt: any) {
+        response: function (opt: Option) {
             try {
-                const { id } = opt?.query || {};
+                // Extract ID from URL path
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
 
                 if (!id) {
                     return {

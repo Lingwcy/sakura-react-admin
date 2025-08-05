@@ -3,6 +3,8 @@ export const apiList = {
         signIn: "api/authorizations",
         userProfile: "api/user/profile",
         userList: "api/users",
-        deleteUsers: "api/users"
+        deleteUsers: "api/users",
+        updateUsers: "api/user",
+        createUser: "api/user"
     }
 }

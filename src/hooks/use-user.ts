@@ -1,6 +1,6 @@
 import { useUserStore } from "@/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { signIn, getUserProfile, getUserList, deleteUsers } from "@/apis/userService";
+import { signIn, getUserProfile, getUserList, deleteUsers, updateUser as updateUserApi, createUser as createUserApi } from "@/apis/userService";
 import type { UserProfile, UserSignIn } from "@/types/userType";
 import { useState } from "react";
 import { toast } from "sonner"
@@ -109,6 +109,41 @@ const useUserList = () => {
         },
     })
 
+    const createUser = useMutation({
+        mutationFn: createUserApi,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user-list', currentPage] });
+            toast("创建用户成功", {
+                description: `您在 ${(new Date()).toUTCString()} 创建了用户`,
+                action: {
+                    label: "确认",
+                    onClick: () => console.log("用户已经确认"),
+                },
+            })
+        },
+        onError: (error: Error) => {
+            toast(`创建用户失败 ${error.message}`)
+        },
+    })
+
+
+    const updateUser = useMutation({
+        mutationFn: updateUserApi,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user-list', currentPage] });
+            toast("更新用户成功", {
+                description: `您在 ${(new Date()).toUTCString()} 更新了用户`,
+                action: {
+                    label: "确认",
+                    onClick: () => console.log("用户已经确认"),
+                },
+            })
+        },
+        onError: (error: Error) => {
+            toast(`更新用户失败 ${error.message}`)
+        },
+    })
+
     const defaultData = {
         users: [],
         currentPage: 1,
@@ -132,7 +167,9 @@ const useUserList = () => {
             getPage: currentPage,
         },
         isFeching: query.isFetching,
-        deleteUser
+        deleteUser,
+        updateUser,
+        createUser
     }
 }
 
@@ -140,5 +177,6 @@ export {
     useUserToken,
     useUserProfile,
     useUserList,
+    
 
 }
