@@ -1,14 +1,12 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+
 import {
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
-    getFilteredRowModel,
     useReactTable,
     getSortedRowModel,
 } from "@tanstack/react-table"
-import type { SortingState, ColumnFiltersState, VisibilityState, ColumnDef } from "@tanstack/react-table"
+import type { SortingState, VisibilityState, ColumnDef } from "@tanstack/react-table"
 import {
     Table,
     TableBody,
@@ -17,12 +15,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import React from "react"
 import {
     Pagination,
@@ -33,21 +25,11 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
-interface SakuraTableProps<TData extends { id: string }, TValue> {
-    columns: ColumnDef<TData, TValue>[] | ((editCallback: (item: TData) => void) => ColumnDef<TData, TValue>[])
+interface SakuraTableProps<TData, TValue> {
+    columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    searchPlaceholder: string,
-    searchKey: string,
-    createButtonText: string,
-    enableSelected?: boolean,
-    enableCreateAndUpdate?: boolean
-    onDeleteItems?: (ids: string[]) => void,
-    itemDialog?: React.ComponentType<{
-        open: boolean;
-        enableSelected: boolean
-        onClose: () => void;
-        updateUserItem?: TData;
-    }>;
+    rowSelection?: Record<string,boolean>
+    onRowSelectionChange?: (row:Record<string,boolean>) => void
     serverPagination?: {
         totalPages: number,
         currentPage: number,
@@ -60,19 +42,11 @@ interface SakuraTableProps<TData extends { id: string }, TValue> {
 export function SakuraTable<TData extends { id: string }, TValue>({
     columns,
     data,
-    searchPlaceholder,
-    searchKey,
-    createButtonText,
     serverPagination,
-    onDeleteItems,
-    enableSelected = false,
-    enableCreateAndUpdate = false,
-    itemDialog: ItemDialog
+    onRowSelectionChange,
+    rowSelection,
 }: SakuraTableProps<TData, TValue>) {
-    // 筛选状态
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
+
     // 可见性状态
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
@@ -80,38 +54,12 @@ export function SakuraTable<TData extends { id: string }, TValue>({
     const [sorting, setSorting] = React.useState<SortingState>([])
     // 避免表格数据重渲染缓存
     const safeData = React.useMemo(() => data || [], [data])
-    // row选择状态
-    const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
-    // create模式状态
-    const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-    // 编辑模式状态
-    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
-    // 编辑的TData
-    const [editingItem, setEditingItem] = React.useState<TData | undefined>(undefined)
-
-    // 用户点击编辑内容
-    const handleEditClick = React.useCallback((item: TData) => {
-        setEditingItem(item)
-        setIsEditDialogOpen(true)
-    }, [])
-
-    // 处理动态columns
-    // columns可能是一个柯里化函数，旨在为columns.tsx传入各种必要的表格操作Hook
-    // 调用构造时必须进行判断
-    const resolvedColumns = React.useMemo(() => {
-        if (typeof columns === 'function') {
-            return columns(handleEditClick)
-        }
-        return columns
-    }, [columns, handleEditClick])
 
     const table = useReactTable({
         data: safeData,
-        columns: resolvedColumns,
+        columns: columns,
         manualPagination: false,
         getRowId: (origin) => origin.id,
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
@@ -119,83 +67,18 @@ export function SakuraTable<TData extends { id: string }, TValue>({
         onColumnVisibilityChange: setColumnVisibility,
         enableRowSelection: true,
         enableMultiRowSelection: true,
-        onRowSelectionChange: (state) => {
-            setRowSelection(state)
-            console.log(rowSelection)
-        },
+        onRowSelectionChange: onRowSelectionChange,
         state: {
             sorting,
-            columnFilters,
             columnVisibility,
             rowSelection
         },
     })
 
-    const handleCreateClick = () => {
-        setIsCreateDialogOpen(true)
-    }
-
-    const handleCloseDialog = () => {
-        setIsCreateDialogOpen(false)
-        setIsEditDialogOpen(false)
-        setEditingItem(undefined)
-    }
 
     return (
         <div className="flex flex-col">
-            <div className="flex py-4 space-x-1.5 items-center">
-                <Input
-                    placeholder={searchPlaceholder}
-                    value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-                {enableSelected && table.getFilteredSelectedRowModel().rows.length > 0 &&
-                    <div className="flex justify-center items-center gap-3 md:flex-row-reverse">
-                        <div className="text-muted-foreground  text-sm hidden lg:block">
-                            {table.getFilteredSelectedRowModel().rows.length} / {table.getRowModel().rows.length}行 被你选中了
-                        </div>
 
-                        <Button onClick={() => {
-                            const selectedIds = Object.keys(rowSelection).filter(id => rowSelection[id]);
-                            onDeleteItems(selectedIds);
-                        }}>
-                            删除选中
-                        </Button></div>}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            属性筛选
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter(
-                                (column) => column.getCanHide()
-                            )
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                )
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <Button variant="outline" className="bg-pink-900 text-white" onClick={handleCreateClick}>
-                    {createButtonText}
-                </Button>
-            </div>
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
@@ -348,14 +231,6 @@ export function SakuraTable<TData extends { id: string }, TValue>({
                     </PaginationContent>
                 </Pagination>
             </div>
-            {enableCreateAndUpdate && (
-                <ItemDialog
-                    open={isCreateDialogOpen || isEditDialogOpen}
-                    enableSelected={true}
-                    onClose={handleCloseDialog}
-                    updateUserItem={editingItem}
-                />
-            )}
         </div>
     )
 }

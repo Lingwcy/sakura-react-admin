@@ -36,7 +36,6 @@ const mockUsers = {
     updateUser: (id: string, userData: Partial<UserItem>) => {
         const index = users.findIndex(user => user.id === id);
         if (index !== -1) {
-            // Only update fields that are provided and not empty
             const filteredUserData = Object.fromEntries(
                 Object.entries(userData).filter(([key, value]) => 
                     value !== undefined && value !== '' && key !== 'id'
@@ -50,8 +49,6 @@ const mockUsers = {
     deleteUser: (ids: string | string[]) => {
         const deletedUsers: UserItem[] = []        
         const idArray = Array.isArray(ids) ? ids : [ids];
-        
-        // Sort indices in descending order to avoid index shifting issues
         const indicesToDelete = idArray
             .map(id => users.findIndex(user => user.id === id))
             .filter(index => index !== -1)

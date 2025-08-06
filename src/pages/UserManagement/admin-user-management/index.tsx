@@ -3,11 +3,13 @@ import createAdminUserColumns from './colums';
 import { useUserList } from '@/hooks/use-user';
 import BorderLoading from '@/components/loading/border-loading';
 import UserDialog from './dialog';
-
+import { useMemo } from 'react';
 export default function AdminUserManagement() {
-    const { userListData, pagination, isLoading, error, isFeching, deleteUser } = useUserList()
+    const { userListData, pagination, isLoading, error, isFeching, deleteUser, filterName, setFilterName } = useUserList()
 
-    const adminUserColumns = createAdminUserColumns(deleteUser)
+    const adminUserColumns = useMemo(() => {
+        return createAdminUserColumns(deleteUser)
+    },[deleteUser])
 
     const handleDeleteSelectedUser = (ids: string[]) => {
         deleteUser.mutate(ids)
@@ -34,6 +36,10 @@ export default function AdminUserManagement() {
                     itemDialog = {UserDialog}
                     enableCreateAndUpdate = {true}
                     enableSelected = {true}
+                    enableSearch = {true}
+                    searchValue= {filterName}
+                    onSearchChange={setFilterName}
+
                 />
             )}
         </div>

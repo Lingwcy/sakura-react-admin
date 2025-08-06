@@ -4,7 +4,7 @@ import { signIn, getUserProfile, getUserList, deleteUsers, updateUser as updateU
 import type { UserProfile, UserSignIn } from "@/types/userType";
 import { useState } from "react";
 import { toast } from "sonner"
-
+import { UserItem } from "@/types/userType";
 const useUserToken = () => {
     const userToken = useUserStore((state) => state.userToken)
     const setUserToken = useUserStore((state) => state.setUserToken)
@@ -65,12 +65,13 @@ const useUserProfile = () => {
 
 const useUserList = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [filterName, setFilterName] = useState<string>("")
     const queryClient = useQueryClient();
     const query = useQuery({
-        queryKey: ['user-list', currentPage],
+        queryKey: ['user-list', currentPage, filterName],
         queryFn: async () => {
             try {
-                const result = await getUserList(currentPage);
+                const result = await getUserList(currentPage, filterName);
 
                 if (result && result.code === 200 && result.data) {
                     return result.data;
@@ -95,7 +96,7 @@ const useUserList = () => {
     const deleteUser = useMutation({
         mutationFn: deleteUsers,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user-list', currentPage] });
+            queryClient.invalidateQueries({ queryKey: ['user-list' ]});
             toast("删除用户成功", {
                 description: `您在 ${(new Date()).toUTCString()} 删除了用户`,
                 action: {
@@ -112,7 +113,7 @@ const useUserList = () => {
     const createUser = useMutation({
         mutationFn: createUserApi,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user-list', currentPage] });
+            queryClient.invalidateQueries({ queryKey: ['user-list'] });
             toast("创建用户成功", {
                 description: `您在 ${(new Date()).toUTCString()} 创建了用户`,
                 action: {
@@ -126,11 +127,10 @@ const useUserList = () => {
         },
     })
 
-
     const updateUser = useMutation({
         mutationFn: updateUserApi,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user-list', currentPage] });
+            queryClient.invalidateQueries({ queryKey: ['user-list'] });
             toast("更新用户成功", {
                 description: `您在 ${(new Date()).toUTCString()} 更新了用户`,
                 action: {
@@ -158,6 +158,8 @@ const useUserList = () => {
     return {
         userListData: data,
         isLoading: query.isLoading,
+        setFilterName,
+        filterName,
         error: query.error,
         pagination: {
             totalCount: Number(data.totalCount) || 0,
@@ -173,10 +175,77 @@ const useUserList = () => {
     }
 }
 
+const useUserTable = () => {
+    const {updateUser, deleteUser, createUser} = useUserList()
+    // create模式状态
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    // 编辑模式状态
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+    // 编辑的TData
+    const [editingItem, setEditingItem] = useState<UserItem | undefined>(undefined)
+
+        // 管理选中状态
+    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+
+        // 删除选中项的逻辑
+    const handleDeleteSelected = () => {
+        const selectedIds = Object.keys(rowSelection).filter(id => rowSelection[id]);
+        deleteUser.mutate(selectedIds);
+        setRowSelection({});
+    };
+    // 计算选中数量
+    const selectedCount = Object.keys(rowSelection).filter(id => rowSelection[id]).length;
+
+    // 用户点击编辑内容
+    const handleOpenEditDialog = (item: UserItem) => {
+        setEditingItem(item)
+        setIsEditDialogOpen(true)
+    }
+
+    const handleOpenCreateDialog = () => {
+        setIsCreateDialogOpen(true)
+    }
+
+    const handleCloseDialog = () => {
+        setIsCreateDialogOpen(false)
+        setIsEditDialogOpen(false)
+        setEditingItem(undefined)
+    }
+
+    const handleEditUser = (user: UserItem & {password:string}) => {
+        updateUser.mutate({ id: user.id, user: user })
+    }
+    const handleDeleteUser = (id: string) => {
+        deleteUser.mutate([id])
+    }
+
+    const handleCreateUser = (user: Omit<UserItem, 'id'> & {password:string}) => {
+        createUser.mutate(user)
+    }
+
+    return {
+        handleCreateUser,
+        handleDeleteUser,
+        handleEditUser,
+        handleOpenEditDialog,
+        handleCloseDialog,
+        handleOpenCreateDialog,
+        handleDeleteSelected,
+        setRowSelection,
+        rowSelection,
+        selectedCount,
+        isCreateDialogOpen,
+        isEditDialogOpen,
+        editingItem
+    }
+}
+
+
+
 export {
     useUserToken,
     useUserProfile,
     useUserList,
-    
+    useUserTable
 
 }

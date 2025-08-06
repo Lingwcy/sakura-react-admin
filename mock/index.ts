@@ -44,12 +44,21 @@ export default [
         response: function (opt:Option) {
             try {
                 const currentPage = Number(opt?.query?.page) || 1
+                const name = opt?.query?.name || ''
                 const size = 10
-                const totalCount = mockUsers.users.length
-
+                
+                // 筛选器
+                let filteredUsers = mockUsers.users
+                if (name) {
+                    filteredUsers = mockUsers.users.filter(user => 
+                        user.name.toLowerCase().includes(name.toLowerCase())
+                    )
+                }
+                
+                const totalCount = filteredUsers.length
                 const startIndex = (currentPage - 1) * size
                 const endIndex = startIndex + size
-                const paginatedUsers = mockUsers.users.slice(startIndex, endIndex)
+                const paginatedUsers = filteredUsers.slice(startIndex, endIndex)
 
                 return {
                     code: 200,
