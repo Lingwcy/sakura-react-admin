@@ -18,11 +18,15 @@ import {
 import { useUserProfile } from "@/hooks/use-user"
 import { Outlet } from "react-router"
 import { Toaster } from "@/components/ui/sonner"
+import { useBread } from "@/hooks/use-system"
 export default function () {
   const { getUserInfo } = useUserProfile()
   useEffect(() => {
     getUserInfo();
   }, [])
+
+  const {currentBread} = useBread()
+
   return (
     <div className="h-full w-full flex flex-col">
       <SidebarProvider>
@@ -37,15 +41,22 @@ export default function () {
               />
               <Breadcrumb>
                 <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="#">
-                      测试环境
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>默认</BreadcrumbPage>
-                  </BreadcrumbItem>
+                  {currentBread && currentBread.length > 0 && (
+                    <>
+                      {currentBread.map((bread, index) => (
+                        <BreadcrumbItem key={index}>
+                          {index === currentBread.length - 1 ? (
+                            <BreadcrumbPage>{bread}</BreadcrumbPage>
+                          ) : (
+                            <>
+                              <BreadcrumbLink href="#">{bread}</BreadcrumbLink>
+                              <BreadcrumbSeparator />
+                            </>
+                          )}
+                        </BreadcrumbItem>
+                      ))}
+                    </>
+                  )}
                 </BreadcrumbList>
               </Breadcrumb>
             </div>

@@ -16,13 +16,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-
+import { useBread } from "@/hooks/use-system"
 export function NavMain({
   items,
 }: {
   items: AppRouteObject[]
 }) {
-
+  const {handleSetCurrentBread} = useBread()
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -51,7 +51,7 @@ export function NavMain({
                     ?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.meta!.label}>
                       <SidebarMenuSubButton asChild>
-                        <NavLink to={subItem.meta!.key} >
+                        <NavLink to={subItem.meta!.key} onClick={() => handleSetCurrentBread(subItem.meta.key)}>
                           <span>{subItem.meta!.label}</span>
                         </NavLink>
                       </SidebarMenuSubButton>

@@ -14,8 +14,15 @@ import {
 type Store = {
     sidebarConfig: {
         teams: SidebarTeam[],
-        items: SilderNavItem[]
+        items: SilderNavItem[],
     }
+    breadConfig: {
+        currentBread: string[]
+    }
+}
+
+type Action = {
+    setCurrentBread: (data: string[]) => void
 }
 
 const initialSidebarData: SilderNavItem[] = [
@@ -127,12 +134,22 @@ const initialSidebarTeamData: SidebarTeam[] = [
 ]
 
 
-const useSystemStore = create<Store>()(
-    () => ({
+const useSystemStore = create<Store & Action>()(
+    (set) => ({
         sidebarConfig: {
             teams: initialSidebarTeamData,
-            items: initialSidebarData
+            items: initialSidebarData,
+
         },
+        breadConfig: {
+            currentBread: ['首页', '关于项目']
+        },
+        setCurrentBread: (data) => {
+            set((state) => ({
+                ...state,
+                breadConfig: { ...state, currentBread: data }
+            }))
+        }
     })
 )
 
