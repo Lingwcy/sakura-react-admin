@@ -13,7 +13,7 @@ export default function UserPermissionManagementPage() {
     const columns = UserPermissionColums()
 
     return (
-        <div className="container mx-auto py-10 h-[calc(100vh-105px)]">
+        <div className="container mx-auto">
             <SakuraTableBar
                 enableSearch={false}
                 enableCreate={false}

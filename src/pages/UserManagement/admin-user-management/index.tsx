@@ -32,7 +32,7 @@ export default function AdminUserManagement() {
 
 
     return (
-        <div className="container mx-auto py-10 h-[calc(100vh-105px)]">
+        <div className="container mx-auto">
             <SakuraTableBar
                 enableSearch={true}
                 enableCreate={true}

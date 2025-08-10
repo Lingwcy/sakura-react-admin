@@ -14,7 +14,7 @@ const mockdata = servermockjson.map(item => ({
 export default function ArchiveServerPage() {
     const [data] = useState<MinecraftServerItem[]>(mockdata);
     return (
-        <div className="container mx-auto py-10 h-[calc(100vh-105px)]">
+        <div className="container mx-auto py-4">
             <SakuraTable
                 columns={columns}
                 data={data}

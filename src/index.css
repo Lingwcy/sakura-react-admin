@@ -3,6 +3,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+body {
+  /* Removed overflow restrictions */
+  height: 100vh;
+  margin: 0;
+}
+
+html, #root {
+  height: 100%;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -120,11 +129,19 @@
   }
 }
 
-
 @keyframes breathing {
-  0% { opacity: 0.7; transform: scale(0.85); }
-  50% { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0.7; transform: scale(0.85); }
+  0% {
+    opacity: 0.7;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(0.85);
+  }
 }
 
 .animate-breathing {

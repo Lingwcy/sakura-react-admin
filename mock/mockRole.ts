@@ -8,6 +8,27 @@ export enum BasicStatus {
 	DISABLE = 0,
 	ENABLE = 1,
 }
+const HERO_PERMISSION = {
+	id: "7000",
+	parentId: "",
+	label: "首页",
+	name: "首页",
+	icon: "line-md:sun-rising-loop",
+	type: PermissionType.CATALOGUE,
+	route: "hero",
+	order: 1,
+	children: [
+		{
+			id: "7001",
+			parentId: "7000",
+			label: "关于项目",
+			name: "关于项目",
+			type: PermissionType.MENU,
+			route: "about-project",
+			component: "/Hero/about-project/index.tsx",
+		},
+	],
+}
 const SERVER_PERMISSION = {
 	id: "1000",
 	parentId: "",
@@ -16,7 +37,7 @@ const SERVER_PERMISSION = {
 	icon: "line-md:hazard-lights-filled-loop",
 	type: PermissionType.CATALOGUE,
 	route: "server",
-	order: 2,
+	order: 3,
 	children: [
 		{
 			id: "1001",
@@ -55,7 +76,7 @@ const USER_PERMISSION = {
 	icon: "line-md:account",
 	type: PermissionType.CATALOGUE,
 	route: "usermanagement",
-	order: 1,
+	order: 2,
 	children: [
 		{
 			id: "2001",
@@ -85,7 +106,7 @@ const PERMISSION_PERMISSION = {
 	icon: "line-md:gauge-loop",
 	type: PermissionType.CATALOGUE,
 	route: "auth",
-	order: 2,
+	order: 4,
 	children: [
 		{
 			id: "3001",
@@ -106,7 +127,7 @@ const COMPONENTS_PERMISSION = {
 	icon: "line-md:document-add-twotone",
 	type: PermissionType.CATALOGUE,
 	route: "component",
-	order: 3,
+	order: 5,
 	children: [
 		{
 			id: "4001",
@@ -127,7 +148,7 @@ const TOOLS_PERMISSION = {
 	icon: "line-md:peanut",
 	type: PermissionType.CATALOGUE,
 	route: "tool",
-	order: 4,
+	order: 6,
 	children: [
 		{
 			id: "5001",
@@ -148,7 +169,7 @@ const CSSLAYOUT_PERMISSION = {
 	icon: "line-md:sun-rising-loop",
 	type: PermissionType.CATALOGUE,
 	route: "cssplayground",
-	order: 5,
+	order: 7,
 	children: [
 		{
 			id: "6002",
@@ -170,10 +191,11 @@ export const PERMISSION_LIST = [
 	COMPONENTS_PERMISSION,
 	TOOLS_PERMISSION,
 	CSSLAYOUT_PERMISSION,
+	HERO_PERMISSION,
 ];
 
 
- const ADMIN_ROLE = {
+const ADMIN_ROLE = {
 	id: "1",
 	name: "Admin",
 	label: "admin",
