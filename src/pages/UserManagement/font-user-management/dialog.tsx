@@ -24,7 +24,7 @@ interface UserDialogProps {
     onClose: () => void
     updateUserItem?: UserItem
     handleCreate: (user: Omit<UserItem,'id'> & {password: string}) => void
-    hanldeEdit: (user:UserItem) => void
+    handleEdit: (user:UserItem) => void
 }
 
 const FormSchema = z.object({
@@ -39,7 +39,7 @@ const FormSchema = z.object({
         .min(6, { message: "密码最短需要6个字符" })
         .max(20, { message: "密码最长不能超过20个字符" }),
 });
-export default function UserDialog({ open, onClose, updateUserItem, handleCreate, hanldeEdit }: UserDialogProps) {
+export default function UserDialog({ open, onClose, updateUserItem, handleCreate, handleEdit }: UserDialogProps) {
     const isUpdateMode = !!updateUserItem
 
     console.log(`open:${open}`)
@@ -106,7 +106,7 @@ export default function UserDialog({ open, onClose, updateUserItem, handleCreate
                 if (!data.password || data.password.trim() === "") {
                     delete updateData.password;
                 }
-                hanldeEdit(updateData)
+                handleEdit(updateData)
                 
             } else {
                 handleCreate(data)

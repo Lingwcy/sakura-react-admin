@@ -2,7 +2,7 @@ import { SakuraTable } from '@/components/table';
 import CreateAdminUserColumns from './colums';
 import { useUserList, useUserTable } from '@/hooks/use-user';
 import UserDialog from './dialog';
-import SakuraTableBar from './sakura-table-bar';
+import SakuraTableBar from '@/components/table/sakura-table-bar';
 export default function AdminUserManagement() {
     const {
         userListData,
@@ -59,7 +59,7 @@ export default function AdminUserManagement() {
                 enableSelected={true}
                 updateUserItem={editingItem}
                 handleCreate={handleCreateUser}
-                hanldeEdit={handleEditUser}
+                handleEdit={handleEditUser}
                 onClose={handleCloseDialog}
             />
 

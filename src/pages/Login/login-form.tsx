@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { useUserToken } from '@/hooks/use-user'
+import { useUserToken, useUserProfile } from '@/hooks/use-user'
 import { useNavigate } from 'react-router'
 import { Button } from "@/components/ui/button"
 
@@ -31,6 +31,7 @@ const FormSchema = z.object({
 
 export default function LoginForm() {
     const { sinIn } = useUserToken()
+    const { getUserInfo } = useUserProfile()
     const navigate = useNavigate()
     const form = useForm({
         resolver: zodResolver(FormSchema),
@@ -45,8 +46,15 @@ export default function LoginForm() {
         if (!result.success) {
             console.error(result.error);
         } else {
-            await sinIn(result.data)
-            navigate('/')
+            try {
+                await sinIn(result.data)
+                await getUserInfo()
+                navigate('/')
+                //bug navigate('/')不会主动跳转，只能刷新页面 才会触发重定向
+                window.location.reload()
+            } catch (error) {
+                console.error('登录或获取用户信息失败:', error)
+            }
         }
     }
 

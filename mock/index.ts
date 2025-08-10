@@ -2,7 +2,7 @@ import type { MockMethod } from 'vite-plugin-mock'
 import { faker } from "@faker-js/faker";
 import { mockUsers } from './mockUser';
 import type { Recordable } from 'vite-plugin-mock';
-
+import { PERMISSION_LIST, ROLE_LIST } from './mockRole';
 interface Option {
     url: Recordable;
     body: Recordable;
@@ -31,9 +31,10 @@ export default [
                 code: 200,
                 data: {
                     id: faker.string.uuid(),
-                    name: faker.person.fullName(),
-                    email: faker.internet.email(),
-                    avatar: faker.image.avatarGitHub(),
+                    userRole: ROLE_LIST[0],
+                    name: "lingwcy",
+                    email: "lingwcy@126.com",
+                    avatar: "https://avatars.githubusercontent.com/u/74972266?v=4&size=64",
                 },
             }
         },
@@ -41,20 +42,20 @@ export default [
     {
         url: '/api/users',
         method: 'get',
-        response: function (opt:Option) {
+        response: function (opt: Option) {
             try {
                 const currentPage = Number(opt?.query?.page) || 1
                 const name = opt?.query?.name || ''
                 const size = 10
-                
+
                 // 筛选器
                 let filteredUsers = mockUsers.users
                 if (name) {
-                    filteredUsers = mockUsers.users.filter(user => 
+                    filteredUsers = mockUsers.users.filter(user =>
                         user.name.toLowerCase().includes(name.toLowerCase())
                     )
                 }
-                
+
                 const totalCount = filteredUsers.length
                 const startIndex = (currentPage - 1) * size
                 const endIndex = startIndex + size
@@ -116,7 +117,7 @@ export default [
             try {
                 const urlParts = opt.url.split('/');
                 const id = urlParts[urlParts.length - 1];
-               
+
                 const userData = opt.body || {};
 
                 if (!id) {
@@ -229,4 +230,14 @@ export default [
             }
         }
     },
+    {
+        url: '/api/permission',
+        method: 'get',
+        response: () => {
+            return {
+                code: 200,
+                data: PERMISSION_LIST
+            }
+        },
+    }
 ] as MockMethod[]

@@ -1,12 +1,12 @@
-
+import { Role } from "./roleType"
 export type UserToken = {
     token: string,
     refresh_token: string
 }
 
 export type UserSignIn = {
-    username:string,
-    password:string
+    username: string,
+    password: string
 
 }
 
@@ -15,11 +15,14 @@ export type UserProfile = {
     avatar: string,
     name: string,
     email: string,
+    userRole: Role
 }
 
 export type UserItem = {
     id: string,
-    avatar:string,
+    roleId: number,
+    avatar: string,
     name: string,
     email: string
 }
+

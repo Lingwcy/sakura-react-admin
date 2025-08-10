@@ -8,7 +8,8 @@ import {
     SquareTerminal,
     Cross,
     Key,
-    UserCog2Icon
+    UserCog2Icon,
+    PercentDiamond,
 } from "lucide-react"
 type Store = {
     sidebarConfig: {
@@ -50,6 +51,17 @@ const initialSidebarData: SilderNavItem[] = [
             {
                 title: "客户端用户",
                 url: "usermanagement/font-user",
+            },
+        ],
+    },
+    {
+        title: "权限管理",
+        url: "#",
+        icon: PercentDiamond,
+        items: [
+            {
+                title: "后台用户权限",
+                url: "auth/permission",
             },
         ],
     },

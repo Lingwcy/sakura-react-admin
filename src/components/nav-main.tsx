@@ -1,6 +1,7 @@
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import { NavLink } from "react-router"
+import { AppRouteObject } from "@/types/router"
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,43 +20,39 @@ import {
 export function NavMain({
   items,
 }: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+  items: AppRouteObject[]
 }) {
 
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => (
+        {items
+          .filter((item) => item.meta)
+          .sort((a,b) => a.order - b.order) 
+          .map((item) => (
           <Collapsible
-            key={item.title}
+            key={item.meta!.label}
             asChild
-            defaultOpen={item.isActive}
+            defaultOpen={item.meta!.hideTab}
             className="group/collapsible"
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+                <SidebarMenuButton tooltip={item.meta!.label}>
+                  {item.meta!.icon}
+                  <span>{item.meta!.label}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
+                  {item.children
+                    ?.filter((subItem) => subItem.meta) // 过滤掉没有 meta 的子路由项
+                    ?.map((subItem) => (
+                    <SidebarMenuSubItem key={subItem.meta!.label}>
                       <SidebarMenuSubButton asChild>
-                        <NavLink to={subItem.url} >
-                          <span>{subItem.title}</span>
+                        <NavLink to={subItem.meta!.key} >
+                          <span>{subItem.meta!.label}</span>
                         </NavLink>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>

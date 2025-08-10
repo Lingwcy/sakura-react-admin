@@ -1,47 +1,70 @@
 import { SakuraTable } from '@/components/table';
-import createAdminUserColumns from './colums';
-import { useUserList } from '@/hooks/use-user';
-import BorderLoading from '@/components/loading/border-loading';
+import CreateAdminUserColumns from './colums';
+import { useUserList, useUserTable } from '@/hooks/use-user';
 import UserDialog from './dialog';
-import { useMemo } from 'react';
+import SakuraTableBar from '@/components/table/sakura-table-bar';
 export default function AdminUserManagement() {
-    const { userListData, pagination, isLoading, error, isFeching, deleteUser, filterName, setFilterName } = useUserList()
+    const {
+        userListData,
+        pagination,
+        filterName,
+        setFilterName,
+    } = useUserList()
 
-    const adminUserColumns = useMemo(() => {
-        return createAdminUserColumns(deleteUser)
-    },[deleteUser])
+    const {
+        handleCreateUser,
+        handleEditUser,
+        handleDeleteUser,
+        handleOpenCreateDialog,
+        handleOpenEditDialog,
+        handleCloseDialog,
+        handleDeleteSelected,
+        rowSelection,
+        selectedCount,
+        setRowSelection,
+        isCreateDialogOpen,
+        isEditDialogOpen,
+        editingItem,
+    } = useUserTable()
 
-    const handleDeleteSelectedUser = (ids: string[]) => {
-        deleteUser.mutate(ids)
-    }
+
+    const columns = CreateAdminUserColumns({ handleOpenEditDialog, handleDeleteUser })
+
+
     return (
         <div className="container mx-auto py-10 h-[calc(100vh-105px)]">
-            {isLoading || isFeching ? (
-                <div className="flex justify-center items-center h-64">
-                    <BorderLoading />
-                </div>
-            ) : error ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="text-lg text-red-500">加载失败: {error.message}</div>
-                </div>
-            ) : (
-                <SakuraTable
-                    columns={adminUserColumns}
-                    data={userListData?.users || []}
-                    createButtonText='新增用户'
-                    searchPlaceholder='搜索名称'
-                    searchKey='name'
-                    serverPagination={pagination}
-                    onDeleteItems = {handleDeleteSelectedUser}
-                    itemDialog = {UserDialog}
-                    enableCreateAndUpdate = {true}
-                    enableSelected = {true}
-                    enableSearch = {true}
-                    searchValue= {filterName}
-                    onSearchChange={setFilterName}
+            <SakuraTableBar
+                enableSearch={true}
+                enableCreate={true}
+                enableSelected={true}
+                searchValue={filterName}
+                selectCount={selectedCount}
+                onSearchChange={setFilterName}
+                onOpenCreateDialog={handleOpenCreateDialog}
+                onDeleteItems={handleDeleteSelected}
+                searchPlaceholder='搜索名称'
+                createButtonText='创建用户'
+            />
+            <SakuraTable
+                columns={columns}
+                data={userListData?.users || []}
+                serverPagination={pagination}
+                rowSelection={rowSelection}
+                enablePagination={true}
+                onRowSelectionChange={setRowSelection}
+            />
 
-                />
-            )}
+
+            <UserDialog
+                open={isCreateDialogOpen || isEditDialogOpen}
+                enableSelected={true}
+                updateUserItem={editingItem}
+                handleCreate={handleCreateUser}
+                handleEdit={handleEditUser}
+                onClose={handleCloseDialog}
+            />
+
+
         </div>
     )
 }

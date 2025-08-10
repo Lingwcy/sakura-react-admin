@@ -18,12 +18,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { UserItem } from "@/types/userType"
-import { useUserList } from "@/hooks/use-user"
 interface UserDialogProps {
     open: boolean
     enableSelected: boolean
     onClose: () => void
     updateUserItem?: UserItem
+    handleCreate: (user: Omit<UserItem,'id'> & {password: string}) => void
+    handleEdit: (user:UserItem) => void
 }
 
 const FormSchema = z.object({
@@ -38,9 +39,10 @@ const FormSchema = z.object({
         .min(6, { message: "密码最短需要6个字符" })
         .max(20, { message: "密码最长不能超过20个字符" }),
 });
-export default function UserDialog({ open, onClose, updateUserItem }: UserDialogProps) {
-    const {updateUser, createUser} = useUserList()
+export default function UserDialog({ open, onClose, updateUserItem, handleCreate, handleEdit }: UserDialogProps) {
     const isUpdateMode = !!updateUserItem
+
+    console.log(`open:${open}`)
 
     // 根据模式动态创建表单验证规则
     // 主要调整 更新模式下 密码的修改是可选的。
@@ -104,9 +106,10 @@ export default function UserDialog({ open, onClose, updateUserItem }: UserDialog
                 if (!data.password || data.password.trim() === "") {
                     delete updateData.password;
                 }
-                updateUser.mutate({ id: updateData.id, user: updateData })
+                handleEdit(updateData)
+                
             } else {
-                createUser.mutate(data)
+                handleCreate(data)
             }
             onClose?.(); // 成功后关闭对话框
         }

@@ -2,21 +2,32 @@ import { createColumnHelper } from "@tanstack/react-table"
 import type { UserItem } from "@/types/userType"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { MoveDownIcon } from "lucide-react"
 import {
     DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
-import { Checkbox } from "@/components/ui/checkbox"
-import type { UseMutationResult } from "@tanstack/react-query"
+
+
 const columnHelper = createColumnHelper<UserItem>()
 
-// 将 columns 定义为一个函数，接受 deleteUser 作为参数，返回一个接受编辑回调的函数
-const createAdminUserColumns = (deleteUser: UseMutationResult) => (editCallback: (user: UserItem) => void) => {
-    const handleDeleteUser = (id: string) => {
-        deleteUser.mutate([id])
-    }
+interface CreateAdminUserColumnsProps {
+    handleOpenEditDialog: (item: UserItem) => void,
+    handleDeleteUser: (id: string) => void
+
+}
+
+export default function CreateAdminUserColumns({
+    handleOpenEditDialog,
+    handleDeleteUser
+}: CreateAdminUserColumnsProps) {
+
+
+
     return [
         columnHelper.display({
             id: 'select',
@@ -70,10 +81,44 @@ const createAdminUserColumns = (deleteUser: UseMutationResult) => (editCallback:
 
         columnHelper.display({
             id: "actions",
-            header: "操作",
+            header: ({ table }) => {
+                return (
+                    <div className=" flex">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="ml-auto">
+                                    属性筛选
+                                    <MoveDownIcon />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {table
+                                    .getAllColumns()
+                                    .filter(
+                                        (column) => column.getCanHide()
+                                    )
+                                    .map((column) => {
+                                        return (
+                                            <DropdownMenuCheckboxItem
+                                                key={column.id}
+                                                className="capitalize"
+                                                checked={column.getIsVisible()}
+                                                onCheckedChange={(value) =>
+                                                    column.toggleVisibility(!!value)
+                                                }
+                                            >
+                                                {column.id}
+                                            </DropdownMenuCheckboxItem>
+                                        )
+                                    })}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                )
+            },
             cell: ({ row }) => {
                 return (
-                    <div>
+                    <div className=" flex justify-end">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 p-0">
@@ -81,7 +126,7 @@ const createAdminUserColumns = (deleteUser: UseMutationResult) => (editCallback:
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => editCallback(row.original)}>
+                                <DropdownMenuItem onClick={() => handleOpenEditDialog(row.original)}>
                                     编辑
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteUser(row.original.id)}>
@@ -94,6 +139,5 @@ const createAdminUserColumns = (deleteUser: UseMutationResult) => (editCallback:
             },
         },),
     ]
-}
 
-export default createAdminUserColumns
+}

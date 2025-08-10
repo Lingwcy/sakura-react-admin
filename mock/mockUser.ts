@@ -1,11 +1,13 @@
 import mockjs from "mockjs";
 import { faker } from "@faker-js/faker";
-
+import { ROLE_LIST } from "./mockRole";
 const random = mockjs.Random;
 
 const generateMockUser = () => {
     return {
         id: random.guid(),
+        role: ROLE_LIST[random.integer(1,2)],
+        roleId: random.integer(1,2),
         name: random.cname(),
         email: random.email(),
         avatar: faker.image.avatarGitHub()

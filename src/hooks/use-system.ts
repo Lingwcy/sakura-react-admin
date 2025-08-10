@@ -1,14 +1,14 @@
 import { useSystemStore } from "@/store";
-
+import { usePermissionRoutes } from "@/router/hooks/use-permission-routes";
 const useSystemSideBar = () => {
+    const route = usePermissionRoutes()
+
     const sidebarConfig = useSystemStore((state) => state.sidebarConfig)
     const sidebarTeams = () => sidebarConfig.teams
-    const sidebarNavItems = () => sidebarConfig.items
-
 
     return {
         sidebarTeams,
-        sidebarNavItems
+        sidebarNavItems : route
     }
 }
 

@@ -9,7 +9,7 @@ interface SakuraTableBarProps {
     createButtonText?: string
     selectCount?: number
     onDeleteItems?: () => void
-    onOpenCreateDialog: () => void
+    onOpenCreateDialog?: () => void
     onSearchChange?: (value: string) => void
 }
 

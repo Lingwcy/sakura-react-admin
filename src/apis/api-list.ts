@@ -6,5 +6,9 @@ export const apiList = {
         deleteUsers: "api/users",
         updateUsers: "api/user",
         createUser: "api/user"
+    },
+    permission: {
+        getPermissionList: "api/permission"
     }
+
 }

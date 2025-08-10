@@ -39,6 +39,7 @@ const useUserToken = () => {
 const useUserProfile = () => {
     const userProfile = useUserStore((state) => (state.userProfile))
     const setUserProfile = useUserStore((sate) => (sate.setUserProfile))
+    const userPermission = useUserStore((state) => (state.userProfile.userRole?.permission))
 
     const userProfileMutaition = useMutation({
         mutationFn: getUserProfile,
@@ -47,7 +48,7 @@ const useUserProfile = () => {
     const getUserInfo = async () => {
         try {
             const result = await userProfileMutaition.mutateAsync();
-            setUserProfile(result.data)
+            setUserProfile(result.data);
         } catch (e: unknown) {
             console.log('登录错误:', e)
             throw e;
@@ -59,9 +60,12 @@ const useUserProfile = () => {
     return {
         getUserInfo,
         userProfile,
-        clearUserInfo
+        clearUserInfo,
+        userPermission
     }
 }
+
+
 
 const useUserList = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -96,7 +100,7 @@ const useUserList = () => {
     const deleteUser = useMutation({
         mutationFn: deleteUsers,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user-list' ]});
+            queryClient.invalidateQueries({ queryKey: ['user-list'] });
             toast("删除用户成功", {
                 description: `您在 ${(new Date()).toUTCString()} 删除了用户`,
                 action: {
@@ -176,7 +180,7 @@ const useUserList = () => {
 }
 
 const useUserTable = () => {
-    const {updateUser, deleteUser, createUser} = useUserList()
+    const { updateUser, deleteUser, createUser } = useUserList()
     // create模式状态
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
     // 编辑模式状态
@@ -184,10 +188,10 @@ const useUserTable = () => {
     // 编辑的TData
     const [editingItem, setEditingItem] = useState<UserItem | undefined>(undefined)
 
-        // 管理选中状态
+    // 管理选中状态
     const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
-        // 删除选中项的逻辑
+    // 删除选中项的逻辑
     const handleDeleteSelected = () => {
         const selectedIds = Object.keys(rowSelection).filter(id => rowSelection[id]);
         deleteUser.mutate(selectedIds);
@@ -212,14 +216,14 @@ const useUserTable = () => {
         setEditingItem(undefined)
     }
 
-    const handleEditUser = (user: UserItem & {password:string}) => {
+    const handleEditUser = (user: UserItem & { password: string }) => {
         updateUser.mutate({ id: user.id, user: user })
     }
     const handleDeleteUser = (id: string) => {
         deleteUser.mutate([id])
     }
 
-    const handleCreateUser = (user: Omit<UserItem, 'id'> & {password:string}) => {
+    const handleCreateUser = (user: Omit<UserItem, 'id'> & { password: string }) => {
         createUser.mutate(user)
     }
 
@@ -246,6 +250,6 @@ export {
     useUserToken,
     useUserProfile,
     useUserList,
-    useUserTable
+    useUserTable,
 
 }
