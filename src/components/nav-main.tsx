@@ -22,46 +22,48 @@ export function NavMain({
 }: {
   items: AppRouteObject[]
 }) {
-  const {handleSetCurrentBread} = useBread()
+  const { handleSetCurrentBread } = useBread()
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items
           .filter((item) => item.meta)
-          .sort((a,b) => a.order - b.order) 
+          .sort((a, b) => a.order - b.order)
           .map((item) => (
-          <Collapsible
-            key={item.meta!.label}
-            asChild
-            defaultOpen={item.meta!.hideTab}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.meta!.label}>
-                  {item.meta!.icon}
-                  <span>{item.meta!.label}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.children
-                    ?.filter((subItem) => subItem.meta) // 过滤掉没有 meta 的子路由项
-                    ?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.meta!.label}>
-                      <SidebarMenuSubButton asChild>
-                        <NavLink to={subItem.meta!.key} onClick={() => handleSetCurrentBread(subItem.meta.key)}>
-                          <span>{subItem.meta!.label}</span>
-                        </NavLink>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
+            <Collapsible
+              key={item.meta!.label}
+              asChild
+              defaultOpen={item.meta!.hideTab}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={item.meta!.label}>
+                    <div className="text-pink-900 p-1 rounded">
+                      {item.meta!.icon}
+                    </div>
+                    <span className="text-pink-500 font-bold">{item.meta!.label}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.children
+                      ?.filter((subItem) => subItem.meta) // 过滤掉没有 meta 的子路由项
+                      ?.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.meta!.label}>
+                          <SidebarMenuSubButton asChild>
+                            <NavLink to={subItem.meta!.key} onClick={() => handleSetCurrentBread(subItem.meta.key)}>
+                              <span className="text-pink-800">{subItem.meta!.label}</span>
+                            </NavLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          ))}
       </SidebarMenu>
     </SidebarGroup>
   )

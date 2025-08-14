@@ -1,10 +1,40 @@
+export interface Permission {
+	id: string;
+	parentId: string;
+	name: string;
+	label: string;
+	type: PermissionType;
+	route: string;
+	status?: PermissionBasicStatus;
+	order?: number;
+	icon?: string;
+	component?: string;
+	hide?: boolean;
+	children?: Permission[];
+}
+function PermisionTree2List(permissionTree: Permission[]) {
+	const list: Omit<Permission, 'children'>[] = []
+
+	function traverse(node: Permission[]) {
+		node.forEach((item) => {
+			if (item.children) {
+				traverse(item.children)
+				delete item.children
+			}
+			list.push(item)
+		})
+	}
+
+	traverse(permissionTree)
+	return list
+}
 export enum PermissionType {
 	CATALOGUE = 0,
 	MENU = 1,
 	BUTTON = 2,
 }
 
-export enum BasicStatus {
+export enum PermissionBasicStatus {
 	DISABLE = 0,
 	ENABLE = 1,
 }
@@ -183,7 +213,7 @@ const CSSLAYOUT_PERMISSION = {
 	],
 };
 
-
+// 将PERMISSION_LIST的树结构展平，模拟在数据库中的情况
 export const PERMISSION_LIST = [
 	SERVER_PERMISSION,
 	USER_PERMISSION,
@@ -194,24 +224,246 @@ export const PERMISSION_LIST = [
 	HERO_PERMISSION,
 ];
 
+// 扁平化权限数据，模拟数据库存储
+export const PERMISSION_LIST_FLATTENED = PermisionTree2List(PERMISSION_LIST);
+
+// 权限数据管理类
+class PermissionManager {
+	private permissions: Omit<Permission, 'children'>[] = [...PERMISSION_LIST_FLATTENED];
+
+	// 获取所有权限（扁平）
+	getAllPermissions() {
+		return [...this.permissions];
+	}
+
+	// 获取权限树
+	getPermissionTree() {
+		return PermissionListFattented2Tree(this.permissions);
+	}
+
+	// 根据ID获取权限
+	getPermissionById(id: string) {
+		return this.permissions.find(p => p.id === id);
+	}
+
+	// 添加权限
+	addPermission(permission: Omit<Permission, 'children'>) {
+		// 检查ID是否已存在
+		if (this.permissions.find(p => p.id === permission.id)) {
+			throw new Error('权限ID已存在');
+		}
+
+		// 验证父节点是否存在（如果有父节点）
+		if (permission.parentId && !this.permissions.find(p => p.id === permission.parentId)) {
+			throw new Error('父节点不存在');
+		}
+
+		this.permissions.push(permission);
+		return permission;
+	}
+
+	// 更新权限
+	updatePermission(id: string, updates: Partial<Omit<Permission, 'children' | 'id'>>) {
+		const index = this.permissions.findIndex(p => p.id === id);
+		if (index === -1) {
+			throw new Error('权限不存在');
+		}
+
+		// 如果更新父节点，验证父节点是否存在
+		if (updates.parentId && !this.permissions.find(p => p.id === updates.parentId)) {
+			throw new Error('父节点不存在');
+		}
+
+		// 检查是否会形成循环引用
+		if (updates.parentId && this.wouldCreateCycle(id, updates.parentId)) {
+			throw new Error('不能将节点设置为自己的子节点');
+		}
+
+		this.permissions[index] = { ...this.permissions[index], ...updates };
+		return this.permissions[index];
+	}
+
+	// 删除权限
+	deletePermission(id: string) {
+		const index = this.permissions.findIndex(p => p.id === id);
+		if (index === -1) {
+			throw new Error('权限不存在');
+		}
+
+		// 检查是否有子节点
+		const hasChildren = this.permissions.some(p => p.parentId === id);
+		if (hasChildren) {
+			throw new Error('存在子节点，无法删除');
+		}
+
+		const deleted = this.permissions[index];
+		this.permissions.splice(index, 1);
+		return deleted;
+	}
+
+	// 批量删除权限
+	deletePermissions(ids: string[]) {
+		const deleted: Omit<Permission, 'children'>[] = [];
+		
+		// 按层级排序，先删除子节点
+		const sortedIds = this.sortByHierarchy(ids);
+		
+		for (const id of sortedIds) {
+			try {
+				const deletedItem = this.deletePermission(id);
+				deleted.push(deletedItem);
+			} catch (error) {
+				// 如果某个删除失败，继续删除其他的
+				console.warn(`删除权限 ${id} 失败:`, error);
+			}
+		}
+		
+		return deleted;
+	}
+
+	// 获取所有目录类型的权限
+	getCataloguePermissions() {
+		return this.permissions.filter(p => p.type === PermissionType.CATALOGUE);
+	}
+
+	// 获取下一个可用的根权限节点ID
+	getNextRootPermissionId(): string {
+		const rootPermissions = this.permissions.filter(p => !p.parentId || p.parentId === '');
+		const rootIds = rootPermissions.map(p => parseInt(p.id)).filter(id => !isNaN(id));
+		
+		if (rootIds.length === 0) {
+			return '1000';
+		}
+		
+		// 找到最大的根ID，然后递增到下一个百位数
+		const maxRootId = Math.max(...rootIds);
+		let nextId = Math.ceil((maxRootId + 1) / 1000) * 1000;
+		
+		// 确保ID不存在
+		while (this.permissions.find(p => p.id === nextId.toString())) {
+			nextId += 1000;
+		}
+		
+		return nextId.toString();
+	}
+
+	// 根据父节点ID获取下一个可用的子节点ID
+	getNextChildPermissionId(parentId: string): string {
+		if (!parentId) {
+			throw new Error('父节点ID不能为空');
+		}
+		
+		// 验证父节点是否存在
+		const parentNode = this.permissions.find(p => p.id === parentId);
+		if (!parentNode) {
+			throw new Error('父节点不存在');
+		}
+		
+		// 获取该父节点下的所有子节点
+		const childPermissions = this.permissions.filter(p => p.parentId === parentId);
+		const childIds = childPermissions.map(p => parseInt(p.id)).filter(id => !isNaN(id));
+		
+		const parentIdNum = parseInt(parentId);
+		if (isNaN(parentIdNum)) {
+			throw new Error('父节点ID格式不正确');
+		}
+		
+		// 如果没有子节点，返回父节点ID+1
+		if (childIds.length === 0) {
+			return (parentIdNum + 1).toString();
+		}
+		
+		// 找到最大的子节点ID，然后递增1
+		const maxChildId = Math.max(...childIds);
+		let nextId = maxChildId + 1;
+		
+		// 确保ID不存在
+		while (this.permissions.find(p => p.id === nextId.toString())) {
+			nextId++;
+		}
+		
+		return nextId.toString();
+	}
+
+	// 检查是否会形成循环引用
+	private wouldCreateCycle(nodeId: string, newParentId: string): boolean {
+		let currentId = newParentId;
+		while (currentId) {
+			if (currentId === nodeId) {
+				return true;
+			}
+			const parent = this.permissions.find(p => p.id === currentId);
+			currentId = parent?.parentId || '';
+		}
+		return false;
+	}
+
+	// 按层级排序（子节点在前）
+	private sortByHierarchy(ids: string[]): string[] {
+		const getDepth = (id: string): number => {
+			let depth = 0;
+			let currentId = id;
+			while (currentId) {
+				const item = this.permissions.find(p => p.id === currentId);
+				if (!item?.parentId) break;
+				currentId = item.parentId;
+				depth++;
+			}
+			return depth;
+		};
+
+		return ids.sort((a, b) => getDepth(b) - getDepth(a));
+	}
+}
+
+// 创建权限管理器实例
+export const permissionManager = new PermissionManager();
+
+function PermissionListFattented2Tree(list: Omit<Permission[], 'children'>) {
+	const copyList = list.map((item) => ({ ...item, children: [] }))
+	const mapNode = new Map<string, Permission>()
+	copyList.forEach(node => mapNode.set(node.id, node))
+
+	const roots: Permission[] = []
+	copyList.forEach(item => {
+		const parentId = item.parentId
+		if(!parentId || !mapNode.has(parentId)){
+			roots.push(item)
+		}else{
+			const parentNode = mapNode.get(parentId) //找到父节点
+			parentNode!.children = parentNode!.children ?? [];
+			parentNode!.children.push(item);
+			
+		}
+	})
+
+	return roots
+
+}
+export const PERMISSION_LIST_FATTENDTED = PermisionTree2List(PERMISSION_LIST)
+export const PERMISSION_TREE = PermissionListFattented2Tree(PERMISSION_LIST_FATTENDTED)
 
 const ADMIN_ROLE = {
 	id: "1",
 	name: "Admin",
 	label: "admin",
-	status: BasicStatus.ENABLE,
+	status: PermissionBasicStatus.ENABLE,
 	order: 1,
 	desc: "Super Admin",
-	permission: PERMISSION_LIST,
+	permission: permissionManager.getPermissionTree(),
 };
 const TEST_ROLE = {
 	id: "2",
 	name: "Test",
 	label: "test",
-	status: BasicStatus.ENABLE,
+	status: PermissionBasicStatus.ENABLE,
 	order: 2,
 	desc: "test",
-	permission: [USER_PERMISSION, COMPONENTS_PERMISSION, TOOLS_PERMISSION],
+	permission: [
+		{...USER_PERMISSION, children: [...(USER_PERMISSION.children || [])]},
+		{...COMPONENTS_PERMISSION, children: [...(COMPONENTS_PERMISSION.children || [])]},
+		{...TOOLS_PERMISSION, children: [...(TOOLS_PERMISSION.children || [])]}
+	],
 };
 export const ROLE_LIST = [ADMIN_ROLE, TEST_ROLE];
 

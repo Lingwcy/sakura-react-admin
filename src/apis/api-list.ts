@@ -8,7 +8,14 @@ export const apiList = {
         createUser: "api/user"
     },
     permission: {
-        getPermissionList: "api/permission"
+        getPermissionList: "api/permission",
+        getPermissionById: "api/permission",
+        createPermissionNode: "api/permission",
+        deletePermissionNode: "api/permission",
+        updatePermssionNode: "api/permsission",
+        getRootPermissionList: "api/permissions/catalogue",
+        getNextRootId: "api/permission/next-root-id",
+        getNextChildId: "api/permission/next-child-id",
     }
 
 }

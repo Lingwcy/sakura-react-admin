@@ -2,13 +2,39 @@ import type { MockMethod } from 'vite-plugin-mock'
 import { faker } from "@faker-js/faker";
 import { mockUsers } from './mockUser';
 import type { Recordable } from 'vite-plugin-mock';
-import { PERMISSION_LIST, ROLE_LIST } from './mockRole';
+import { ROLE_LIST, permissionManager } from './mockRole';
 interface Option {
     url: Recordable;
     body: Recordable;
     query: Recordable;
     headers: Recordable;
 }
+export enum PermissionType {
+	CATALOGUE = 0,
+	MENU = 1,
+	BUTTON = 2,
+}
+
+export enum PermissionBasicStatus {
+	DISABLE = 0,
+	ENABLE = 1,
+}
+export interface Permission {
+    id: string;
+    parentId: string;
+    name: string;
+    label: string;
+    type: PermissionType;
+    route: string;
+    status?: PermissionBasicStatus;
+    order?: number;
+    icon?: string;
+    component?: string;
+    hide?: boolean;
+    children?: Permission[];
+}
+
+
 export default [
     {
         url: '/api/authorizations',
@@ -236,8 +262,240 @@ export default [
         response: () => {
             return {
                 code: 200,
-                data: PERMISSION_LIST
+                data: permissionManager.getPermissionTree()
             }
         },
-    }
+    },
+    {
+        url: '/api/permission/next-root-id',
+        method: 'get',
+        response: () => {
+            try {
+                const nextId = permissionManager.getNextRootPermissionId();
+                return {
+                    code: 200,
+                    data: { id: nextId },
+                    message: '获取下一个根权限ID成功'
+                }
+            } catch (error) {
+                console.error('Mock GET /api/permission/next-root-id error:', error);
+                return {
+                    code: 500,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                }
+            }
+        },
+    },
+    {
+        url: '/api/permission/next-child-id/:parentId',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const parentId = urlParts[urlParts.length - 1];
+
+                if (!parentId) {
+                    return {
+                        code: 400,
+                        message: '父节点ID不能为空'
+                    }
+                }
+
+                const nextId = permissionManager.getNextChildPermissionId(parentId);
+
+                return {
+                    code: 200,
+                    data: { id: nextId },
+                    message: '获取下一个子权限ID成功'
+                }
+            } catch (error) {
+                console.error('Mock GET /api/permission/next-child-id/:parentId error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                }
+            }
+        }
+    },
+    {
+        url: '/api/permission/:id',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '权限ID不能为空'
+                    }
+                }
+
+                const permission = permissionManager.getPermissionById(id);
+
+                if (!permission) {
+                    return {
+                        code: 404,
+                        message: '权限不存在'
+                    }
+                }
+
+                return {
+                    code: 200,
+                    data: permission
+                }
+            } catch (error) {
+                console.error('Mock GET /api/permission/:id error:', error)
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                }
+            }
+        }
+    },
+    {
+        url: '/api/permission',
+        method: 'post',
+        response: function (opt: Option) {
+            try {
+                const permissionData = opt.body || {};
+
+                if (!permissionData.id || !permissionData.name || !permissionData.label) {
+                    return {
+                        code: 400,
+                        message: 'ID、名称和标签不能为空'
+                    }
+                }
+
+                const newPermission = permissionManager.addPermission(permissionData as Omit<Permission, "children">);
+
+                return {
+                    code: 200,
+                    data: newPermission,
+                    message: '权限创建成功'
+                }
+            } catch (error) {
+                console.error('Mock POST /api/permission error:', error)
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                }
+            }
+        }
+    },
+    {
+        url: '/api/permission/:id',
+        method: 'put',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+                const updates = opt.body || {};
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '权限ID不能为空'
+                    }
+                }
+
+                const updatedPermission = permissionManager.updatePermission(id, updates);
+
+                return {
+                    code: 200,
+                    data: updatedPermission,
+                    message: '权限更新成功'
+                }
+            } catch (error) {
+                console.error('Mock PUT /api/permission/:id error:', error)
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                }
+            }
+        }
+    },
+    {
+        url: '/api/permission/:id',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '权限ID不能为空'
+                    }
+                }
+
+                const deletedPermission = permissionManager.deletePermission(id);
+
+                return {
+                    code: 200,
+                    data: deletedPermission,
+                    message: '权限删除成功'
+                }
+            } catch (error) {
+                console.error('Mock DELETE /api/permission/:id error:', error)
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                }
+            }
+        }
+    },
+    {
+        url: '/api/permissions/:ids',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const idsParam = urlParts[urlParts.length - 1];
+
+                if (!idsParam) {
+                    return {
+                        code: 400,
+                        message: '权限ID不能为空'
+                    }
+                }
+
+                const idsArray = idsParam.split(',').filter(id => id.trim());
+
+                if (idsArray.length === 0) {
+                    return {
+                        code: 400,
+                        message: '权限ID不能为空'
+                    }
+                }
+
+                const deletedPermissions = permissionManager.deletePermissions(idsArray);
+
+                return {
+                    code: 200,
+                    data: deletedPermissions,
+                    message: '权限批量删除成功'
+                }
+            } catch (error) {
+                console.error('Mock DELETE /api/permissions/:ids error:', error)
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                }
+            }
+        }
+    },
+    {
+        url: '/api/permissions/catalogue',
+        method: 'get',
+        response: () => {
+            return {
+                code: 200,
+                data: permissionManager.getCataloguePermissions(),
+                message: '获取目录权限成功'
+            }
+        },
+    },
 ] as MockMethod[]

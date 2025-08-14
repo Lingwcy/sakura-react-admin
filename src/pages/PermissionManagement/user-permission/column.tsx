@@ -17,8 +17,16 @@ import clsx from "clsx"
 
 const columnHelper = createColumnHelper<Permission>()
 
+interface UserPermissionProps {
+    handleOpenEditDialog: (item: Permission) => void,
+    handleDeletePermission: (id: string) => void
 
-export default function UserPermissionColums() {
+}
+
+export default function UserPermissionColums({
+    handleOpenEditDialog,
+    handleDeletePermission
+}:UserPermissionProps) {
     return [
 
         columnHelper.accessor('name', {
@@ -157,10 +165,12 @@ export default function UserPermissionColums() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => { }}>
+                                <DropdownMenuItem onClick={() => {
+                                    handleOpenEditDialog(row.original)
+                                }}>
                                     编辑
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-600" onClick={() => { }}>
+                                <DropdownMenuItem className="text-red-600" onClick={() => handleDeletePermission(row.original.id)}>
                                     删除
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
