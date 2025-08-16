@@ -42,8 +42,6 @@ const FormSchema = z.object({
 export default function UserDialog({ open, onClose, updateUserItem, handleCreate, handleEdit }: UserDialogProps) {
     const isUpdateMode = !!updateUserItem
 
-    console.log(`open:${open}`)
-
     // 根据模式动态创建表单验证规则
     // 主要调整 更新模式下 密码的修改是可选的。
     const getFormSchema = () => {
@@ -66,6 +64,7 @@ export default function UserDialog({ open, onClose, updateUserItem, handleCreate
     })
 
     useEffect(() => {
+        
         if (updateUserItem) {
             form.reset({
                 name: updateUserItem.name || "",

@@ -1,12 +1,14 @@
-import Layout from "@/pages/Layout";
-
-import Login from "@/pages/Login";
+import { lazy } from "react";
 import { AuthRoute } from "@/components/auth-route";
 import { usePermissionRoutes } from "./hooks/use-permission-routes";
 import { ErrorBoundary } from "react-error-boundary";
 import { Navigate, RouteObject, createHashRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { AppRouteObject } from "@/types/router";
+
+// 懒加载关键组件
+const Layout = lazy(() => import("@/pages/Layout"));
+const Login = lazy(() => import("@/pages/Login"));
 
 const { VITE_APP_HOMEPAGE: HOMEPAGE } = import.meta.env;
 

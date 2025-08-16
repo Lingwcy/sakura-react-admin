@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import Icon from "@/components/ui/icon"
 import { useEffect } from "react"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -19,6 +20,7 @@ import { useUserProfile } from "@/hooks/use-user"
 import { Outlet } from "react-router"
 import { Toaster } from "@/components/ui/sonner"
 import { useBread } from "@/hooks/use-system"
+import { Button } from "@/components/ui/button"
 export default function () {
   const { getUserInfo } = useUserProfile()
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function () {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset className="flex flex-col h-full">
-          <header className="flex bg-white border border-b-2 border-t-0 border-r-0 border-l-0 border-pink-500 h-12 items-center gap-2 w-full z-10">
+          <header className="flex border justify-between border-b-2 border-t-0 border-r-0 border-l-0 border-pink-500 h-12 items-center gap-2 w-full z-10">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator
@@ -59,6 +61,11 @@ export default function () {
                   )}
                 </BreadcrumbList>
               </Breadcrumb>
+            </div>
+            <div className="flex items-center gap-2 px-4">
+                  <Button variant="ghost" className="cursor-pointer">
+                    <Icon icon="line-md:cog-filled-loop"  size={25} color="#f55188"/>
+                  </Button>
             </div>
           </header>
           <div className="flex-1 overflow-hidden">

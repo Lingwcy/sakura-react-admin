@@ -16,7 +16,7 @@ function PermisionTree2List(permissionTree:Permission[]){
     return list
 }
 
-
+// 先用
 function PermissionListFattented2Tree(list: Omit<Permission[], 'children'>) {
 	const copyList = list.map((item) => ({ ...item, children: [] }))
 	const mapNode = new Map<string, Permission>()
