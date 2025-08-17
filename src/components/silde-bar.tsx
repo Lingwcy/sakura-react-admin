@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useSystemSideBar } from "@/hooks/use-system"
 import { useUserProfile } from "@/hooks/use-user"
-
+import { ScrollArea } from "./ui/scroll-area"
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const {sidebarNavItems, sidebarTeams} = useSystemSideBar()
   const {userProfile} = useUserProfile()
@@ -22,7 +22,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={sidebarTeams()} />
       </SidebarHeader>
       <SidebarContent>
+        <ScrollArea className="h-full">
         <NavMain items={sidebarNavItems} />
+        </ScrollArea>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userProfile} />

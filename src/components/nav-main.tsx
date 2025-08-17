@@ -39,10 +39,10 @@ export function NavMain({
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton tooltip={item.meta!.label}>
-                    <div className="text-pink-900 p-1 rounded">
+                    <div className="text-foreground p-1 rounded">
                       {item.meta!.icon}
                     </div>
-                    <span className="text-pink-500 font-bold">{item.meta!.label}</span>
+                    <span className="text-foreground font-bold">{item.meta!.label}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
@@ -54,7 +54,7 @@ export function NavMain({
                         <SidebarMenuSubItem key={subItem.meta!.label}>
                           <SidebarMenuSubButton asChild>
                             <NavLink to={subItem.meta!.key} onClick={() => handleSetCurrentBread(subItem.meta.key)}>
-                              <span className="text-pink-800">{subItem.meta!.label}</span>
+                              <span className="text-foreground">{subItem.meta!.label}</span>
                             </NavLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>

@@ -1,4 +1,4 @@
-import { LineLoading } from "@/components/loading";
+import { BorderLoading as LineLoading } from "@/components/loading";
 import { useUserProfile } from "@/hooks/use-user";
 import { flattenTrees } from "@/utils/tree";
 import { isEmpty } from "ramda";
@@ -115,13 +115,12 @@ const createMenuRoute = (permission: Permission, flattenedPermissions: Permissio
 	const baseRoute = createBaseRoute(permission, buildCompleteRoute(permission, flattenedPermissions));
 
 	if (permission.component) {
-		const Element = lazy(loadComponentFromPath(permission.component) as () => Promise<{ default: React.ComponentType }>);
+		const LazyElement = lazy(loadComponentFromPath(permission.component) as () => Promise<{ default: React.ComponentType }>);
 		baseRoute.element = (
 			<Suspense fallback={<LineLoading />}>
-				<Element />
+				<LazyElement />
 			</Suspense>
 		);
-
 	}
 
 	return baseRoute;

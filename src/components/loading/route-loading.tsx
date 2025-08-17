@@ -1,66 +1,76 @@
 import { Progress } from "../ui/progress";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router";
 
 export function RouteLoadingProgress() {
 	const [progress, setProgress] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
+	const location = useLocation();
 
 	useEffect(() => {
-		let lastHref = window.location.href;
-		let timer: NodeJS.Timeout;
+		let progressTimer: NodeJS.Timeout;
+		let completeTimer: NodeJS.Timeout;
 
-		const handleRouteChange = () => {
+		const startLoading = () => {
+			setIsLoading(true);
 			setProgress(0);
 			let currentProgress = 0;
 
-			const interval = setInterval(() => {
-				currentProgress += 2;
+			// 快速增长到 30%
+			const fastInterval = setInterval(() => {
+				currentProgress += 10;
 				setProgress(currentProgress);
-			}, 5);
+				if (currentProgress >= 30) {
+					clearInterval(fastInterval);
 
-			timer = setTimeout(() => {
-				clearInterval(interval);
-				setProgress(100);
-				setTimeout(() => setProgress(0), 100);
-			}, 500);
+					// 然后慢速增长到 70%
+					const slowInterval = setInterval(() => {
+						currentProgress += 2;
+						setProgress(currentProgress);
+						if (currentProgress >= 70) {
+							clearInterval(slowInterval);
+						}
+					}, 50);
 
-			return () => {
-				clearInterval(interval);
-				clearTimeout(timer);
-			};
+					progressTimer = slowInterval;
+				}
+			}, 20);
+
+			progressTimer = fastInterval;
 		};
 
-		// 监听 href 变化
-		const observer = new MutationObserver(() => {
-			const currentHref = window.location.href;
-			if (currentHref !== lastHref) {
-				lastHref = currentHref;
-				handleRouteChange();
+		const completeLoading = () => {
+			if (progressTimer) {
+				clearInterval(progressTimer);
 			}
-		});
 
-		// 观察整个文档的变化
-		observer.observe(document, {
-			subtree: true,
-			childList: true,
-		});
+			// 快速完成到 100%
+			setProgress(100);
 
-		// 监听 popstate 事件（处理浏览器前进后退）
-		window.addEventListener("popstate", handleRouteChange);
-
-		// 初始加载时触发一次
-		handleRouteChange();
-
-		// 清理监听器
-		return () => {
-			observer.disconnect();
-			window.removeEventListener("popstate", handleRouteChange);
-			clearTimeout(timer);
+			completeTimer = setTimeout(() => {
+				setProgress(0);
+				setIsLoading(false);
+			}, 200);
 		};
-	}, []);
 
-	return progress > 0 ? (
-		<div className="fixed top-0 left-0 right-0 z-tooltip w-screen">
-			<Progress value={progress} className="h-[3px] shadow-2xl" />
+		// 开始加载
+		startLoading();
+
+		// 模拟路由加载完成
+		const loadingCompleteTimer = setTimeout(() => {
+			completeLoading();
+		}, 300 + Math.random() * 200); // 300-500ms 的随机延迟
+
+		return () => {
+			if (progressTimer) clearInterval(progressTimer);
+			if (completeTimer) clearTimeout(completeTimer);
+			if (loadingCompleteTimer) clearTimeout(loadingCompleteTimer);
+		};
+	}, [location.pathname, location.hash]); // 监听路径和 hash 变化
+
+	return isLoading && progress > 0 ? (
+		<div className="fixed bottom-0 left-0 right-0 z-[99999] w-screen opacity-80">
+			<Progress value={progress} className="h-[3px] shadow-2xl rounded-none" />
 		</div>
 	) : null;
 }

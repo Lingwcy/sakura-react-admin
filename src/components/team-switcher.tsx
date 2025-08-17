@@ -40,13 +40,13 @@ export function TeamSwitcher({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-pink-300 "
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground bg-primary "
             >
-              <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-pink-800">
-                <FlowerIcon className="size-4" />
+              <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-background">
+                <FlowerIcon className="size-4 text-foreground" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate text-pink-950 font-bold">{activeTeam.name}</span>
+                <span className="truncate text-background font-bold">{activeTeam.name}</span>
                 <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />

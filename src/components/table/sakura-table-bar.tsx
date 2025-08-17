@@ -41,7 +41,7 @@ export default function SakuraTableBar({
                 />
             }
             {
-                enableCreate && <Button variant="outline" className="bg-pink-900 text-white" onClick={onOpenCreateDialog}>
+                enableCreate && <Button variant="default" className="text-background" onClick={onOpenCreateDialog}>
                     {createButtonText}
                 </Button>
             }

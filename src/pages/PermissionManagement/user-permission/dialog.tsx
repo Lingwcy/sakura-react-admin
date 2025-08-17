@@ -173,8 +173,8 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[800px]">
                 <DialogHeader>
-                    <DialogTitle className="text-pink-800">{isUpdateMode ? "编辑权限节点" : "新增权限节点"}</DialogTitle>
-                    <DialogDescription className="text-pink-500">
+                    <DialogTitle className="text-foreground">{isUpdateMode ? "编辑权限节点" : "新增权限节点"}</DialogTitle>
+                    <DialogDescription className="text-foreground">
                         {isUpdateMode ? "编辑现有的权限节点" : "构建新权限节点的相关信息"}
                     </DialogDescription>
                 </DialogHeader>
@@ -186,7 +186,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="type"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-pink-900">节点类型</FormLabel>
+                                        <FormLabel className="text-foreground">节点类型</FormLabel>
                                         <FormControl>
                                             <ToggleGroup
                                                 variant="outline"
@@ -219,7 +219,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="status"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-pink-900">状态</FormLabel>
+                                        <FormLabel className="text-foreground">状态</FormLabel>
                                         <FormControl>
                                             <ToggleGroup
                                                 variant="outline"
@@ -251,7 +251,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                     name="parentId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-pink-900">父节点</FormLabel>
+                                            <FormLabel className="text-foreground">父节点</FormLabel>
                                             <FormControl>
                                                 <SelectParentsBox
                                                     list={rootPermissionList.data.data}
@@ -273,7 +273,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                     name="component"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-pink-900">组件</FormLabel>
+                                            <FormLabel className="text-foreground">组件</FormLabel>
                                             <FormControl>
                                                 <PageAutocomplete
                                                     value={field.value}
@@ -292,7 +292,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                             name="id"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-pink-900">ID</FormLabel>
+                                    <FormLabel className="text-foreground">ID</FormLabel>
                                     <FormControl>
                                         <div className="flex">
                                             <Input
@@ -300,7 +300,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                                 className="rounded-r-none focus-visible:ring-0"
                                                 {...field}
                                             />
-                                            <Button type="button" className="rounded-l-none w-fit p-1 bg-pink-600  hover:bg-pink-800" size="icon"
+                                            <Button type="button" className="rounded-l-none w-fit p-1 bg-primary  hover:bg-primary" size="icon"
                                                 onClick={handleGetNextId}>
                                                 <span className="italic font-bold text-xs">
                                                     获取
@@ -318,12 +318,12 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="label"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-pink-900">渲染标签</FormLabel>
+                                        <FormLabel className="text-foreground">渲染标签</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder={'用于浏览器显示'}
-                                                className="placeholder:text-sm focus-visible:ring-pink-200"
+                                                className="placeholder:text-sm focus-visible:ring-primary"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -336,12 +336,12 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-pink-900">名称</FormLabel>
+                                        <FormLabel className="text-foreground">名称</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder={'输入权限点名称'}
-                                                className="placeholder:text-sm focus-visible:ring-pink-200"
+                                                className="placeholder:text-sm focus-visible:ring-primary"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -357,12 +357,12 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="route"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-pink-900">路由切片</FormLabel>
+                                        <FormLabel className="text-primary-foreground">路由切片</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder={'输入此节点挂载的路由片段'}
-                                                className="placeholder:text-sm focus-visible:ring-pink-200"
+                                                className="placeholder:text-sm focus-visible:ring-primary"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -375,12 +375,12 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="icon"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-pink-900">图标</FormLabel>
+                                        <FormLabel className="text-foreground">图标</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder={'iconfiy 图标name'}
-                                                className="placeholder:text-sm focus-visible:ring-pink-200"
+                                                className="placeholder:text-sm focus-visible:ring-primary"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -395,12 +395,12 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                             name="order"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-pink-900">顺序</FormLabel>
+                                    <FormLabel className="text-foreground">顺序</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
                                             placeholder={'排序顺序'}
-                                            className="placeholder:text-sm focus-visible:ring-pink-200"
+                                            className="placeholder:text-sm focus-visible:ring-primary"
                                             {...field}
                                         />
                                     </FormControl>
@@ -416,7 +416,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                             取消
                         </Button>
                     </DialogClose>
-                    <Button className=" bg-pink-600  hover:bg-pink-800" type="submit" form="create-user-form">
+                    <Button className=" bg-primary  hover:bg-primary " type="submit" form="create-user-form">
                         {isUpdateMode ? "更新" : "保存"}
                     </Button>
                 </DialogFooter>

@@ -1,4 +1,6 @@
 import type { SilderNavItem, SidebarTeam } from '@/types/systemType'
+import { ThemeMode } from "@/types/enum";
+import { AvailableThemeMode } from "@/types/enum";
 import { create } from 'zustand'
 import {
     BookOpen,
@@ -19,10 +21,15 @@ type Store = {
     breadConfig: {
         currentBread: string[]
     }
+    themeConfig: {
+        themeMode: ThemeMode,
+        availableThemeMode: Record<ThemeMode, string>
+    }
 }
 
 type Action = {
     setCurrentBread: (data: string[]) => void
+    setThemeMode: (data: ThemeMode) => void
 }
 
 const initialSidebarData: SilderNavItem[] = [
@@ -144,10 +151,20 @@ const useSystemStore = create<Store & Action>()(
         breadConfig: {
             currentBread: ['首页', '关于项目']
         },
+        themeConfig: {
+            themeMode: ThemeMode.Light,
+            availableThemeMode: AvailableThemeMode
+        },
         setCurrentBread: (data) => {
             set((state) => ({
                 ...state,
                 breadConfig: { ...state, currentBread: data }
+            }))
+        },
+        setThemeMode: (data) => {
+            set((state) => ({
+                ...state,
+                themeConfig: { ...state.themeConfig, themeMode: data }
             }))
         }
     })

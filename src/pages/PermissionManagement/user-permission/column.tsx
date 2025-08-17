@@ -35,11 +35,11 @@ export default function UserPermissionColums({
                 <div className="flex items-center gap-1.5">
                     {row.getCanExpand() ? (
 
-                        <Button variant='secondary' className="bg-pink-400 w-5 h-5 hover:border-1 cursor-pointer hover:bg-pink-600" onClick={row.getToggleExpandedHandler()}>
+                        <Button variant='secondary' className="bg-foreground w-5 h-5 hover:border-1 cursor-pointer hover:bg-primary" onClick={row.getToggleExpandedHandler()}>
                             {
                                 row.getIsExpanded() ?
-                                    <Minus color="white" /> :
-                                    <Plus />
+                                    <Minus className="text-background" /> :
+                                    <Plus className="text-background"/>
                             }
                         </Button>
 
@@ -64,8 +64,8 @@ export default function UserPermissionColums({
             header: '类型',
             cell: (info) => {
                 return info.getValue() ?
-                    <Badge className="bg-pink-400">界面</Badge> :
-                    <Badge className="bg-pink-700">种类</Badge>
+                    <Badge className="bg-primary">界面</Badge> :
+                    <Badge className="bg-primary">种类</Badge>
             }
         }),
 
@@ -74,7 +74,7 @@ export default function UserPermissionColums({
             cell: (info) => {
                 const status = info.getValue();
                 return (
-                    <Badge className={clsx(status === PermissionBasicStatus.DISABLE ? "bg-pink-900" : "bg-pink-400")}>
+                    <Badge className={clsx(status === PermissionBasicStatus.DISABLE ? "bg-primary" : "bg-primary")}>
                         {status === PermissionBasicStatus.DISABLE ? "禁用" : "启用"}
                     </Badge>
                 );
