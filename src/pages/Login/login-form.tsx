@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -31,7 +30,7 @@ const FormSchema = z.object({
 
 export default function LoginForm() {
     const { sinIn } = useUserToken()
-    const { getUserInfo } = useUserProfile()
+    const { refetch } = useUserProfile()
     const navigate = useNavigate()
     const form = useForm({
         resolver: zodResolver(FormSchema),
@@ -47,8 +46,14 @@ export default function LoginForm() {
             console.error(result.error);
         } else {
             try {
+                /**
+                 * 通常情况是根据token拿到用户信息，
+                 * 但是mock数据没有token鉴权，所以直接在登录接口中返回用户信息
+                 */
                 await sinIn(result.data)
-                await getUserInfo()
+                // 登录成功后立即请求用户配置文件数据
+                await refetch()
+                
                 navigate('/')
                 //bug navigate('/')不会主动跳转，只能刷新页面 才会触发重定向
                 window.location.reload()

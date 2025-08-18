@@ -71,7 +71,7 @@ const createPermissionNode = async (node:Omit<Permission,"children">) => {
 const updatePermissionNode = async (node:Omit<Permission,"children">) => {
         try{
         const response = await requestClient.put<UpdatePermissionNodeResponse>({
-            url: `${apiList.permission.getPermissionById}`,
+            url: `${apiList.permission.getPermissionById}/${node.id}`,
             data: node
         });
         return response;

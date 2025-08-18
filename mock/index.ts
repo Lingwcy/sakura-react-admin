@@ -2,7 +2,7 @@ import type { MockMethod } from 'vite-plugin-mock'
 import { faker } from "@faker-js/faker";
 import { mockUsers } from './mockUser';
 import type { Recordable } from 'vite-plugin-mock';
-import { ROLE_LIST, permissionManager } from './mockRole';
+import { permissionManager } from './mockRole';
 interface Option {
     url: Recordable;
     body: Recordable;
@@ -20,8 +20,8 @@ export enum PermissionBasicStatus {
 	ENABLE = 1,
 }
 export interface Permission {
-    id: string;
-    parentId: string;
+    id: number;
+    parentId: number;
     name: string;
     label: string;
     type: PermissionType;
@@ -53,11 +53,22 @@ export default [
         url: '/api/user/profile',
         method: 'get',
         response: () => {
+            // 动态获取最新的权限数据
+            const adminRoleWithLatestPermissions = {
+                id: "1",
+                name: "Admin",
+                label: "admin",
+                status: PermissionBasicStatus.ENABLE,
+                order: 1,
+                desc: "Super Admin",
+                permission: permissionManager.getPermissionTree(), // 动态获取最新权限
+            };
+
             return {
                 code: 200,
                 data: {
                     id: faker.string.uuid(),
-                    userRole: ROLE_LIST[0],
+                    userRole: adminRoleWithLatestPermissions,
                     name: "lingwcy",
                     email: "lingwcy@126.com",
                     avatar: "https://avatars.githubusercontent.com/u/74972266?v=4&size=64",

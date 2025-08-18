@@ -41,7 +41,7 @@ interface SakuraTableProps<TData, TValue> {
     }
 }
 
-export function SakuraTable<TData extends { id: string, children?: TData[] }, TValue>({
+export function SakuraTable<TData extends { id: string | number, children?: TData[] }, TValue>({
     columns,
     data,
     serverPagination,
@@ -82,7 +82,7 @@ export function SakuraTable<TData extends { id: string, children?: TData[] }, TV
         data: safeData,
         columns: columns || [],
         manualPagination: false,
-        getRowId: (origin) => origin.id,
+        getRowId: (origin) => String(origin.id),
         getSubRows: (row) => row.children,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

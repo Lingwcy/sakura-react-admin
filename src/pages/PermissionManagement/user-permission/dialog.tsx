@@ -33,14 +33,12 @@ interface PermissionDialogProps {
     updateItem?: Permission
     handleCreate: (node: Omit<Permission, 'children'>) => void
     handleEdit: (npde: Permission) => void
+    type: "create" | "update" | "push"
 }
 
 const FormSchema = z.object({
     id: z.string().min(2, {
         message: "ID最短需要2个字符",
-    }),
-    parentId: z.string().min(2, {
-        message: "父亲ID最短需要2个字符",
     }),
     name: z.string().min(2, {
         message: "用户名最短需要2个字符",
@@ -53,23 +51,26 @@ const FormSchema = z.object({
         message: "标签最短需要2个字符",
     }),
     status: z.number().min(0).max(1),
-    order: z.number().int(),
+    order: z.coerce.number().int(),
     icon: z.string().min(2, {
         message: "标签最短需要2个字符",
     }),
-    component: z.string().min(2, {
-        message: "标签最短需要2个字符",
+    component: z.string().min(0, {
+        message: "标签最短需要0个字符",
+    }),
+    parentId: z.string().min(0, {
+        message: "父亲ID最短需要0个字符",
     }),
     hide: z.number().min(0).max(1),
 });
-export default function PermissionDialog({ open, onClose, updateItem, handleCreate, handleEdit }: PermissionDialogProps) {
-    const isUpdateMode = !!updateItem
+export default function PermissionDialog({ open, onClose, updateItem, handleCreate, handleEdit, type }: PermissionDialogProps) {
+
     // 菜单0  视图1
     const [nodeType, setNodeType] = useState<string>("0")
     const [nodeStatus, setNodeStatus] = useState<string>("1")
 
-    const { data: nextRootId , isLoading: isNextRootIdLoading } = useNextRootId()
-    const { data: nextChildId, isLoading: isNextChildIdLoading ,setParentId } = useNextChildId()
+    const { data: nextRootId, isLoading: isNextRootIdLoading } = useNextRootId()
+    const { data: nextChildId, isLoading: isNextChildIdLoading, setParentId } = useNextChildId()
     const rootPermissionList = useRootPermissionList()
 
     // 根据模式动态创建表单验证规则
@@ -133,32 +134,43 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
         console.log(data)
-        const baseSchema = getFormSchema();
-        const dynamicSchema = baseSchema.extend({
-        });
+        let baseSchema = getFormSchema();
+        //如果type为1 表明用户选择了视图模式，则需要验证parentId和component
+        if (Number(data.type) === 1) {
+            baseSchema = baseSchema.extend({
+                parentId: z.string().min(1, { message: "请选择父节点" }),
+                component: z.string().min(1, { message: "请选择组件" }),
+            });
 
-        const result = dynamicSchema.safeParse(data);
+        }
+        const result = baseSchema.safeParse(data);
         if (!result.success) {
+            if(Number(data.type) === 1 && !data.parentId){
+                toast.error("在视图模式下，请先选择父节点！")
+                return
+            }
             toast.error("表单提交失败，请检查字段！");
             console.log("验证错误:", result.error.issues);
         } else {
-            if (isUpdateMode) {
+            if (type == "update") {
+                handleEdit(data)
                 console.log('update permission')
             } else {
+                handleCreate(data)
                 console.log('create permission')
             }
             onClose?.(); // 成功后关闭对话框
         }
     }
 
-    
+
     const handleGetNextId = () => {
         if (Number(nodeType) === 0) {
             if (!isNextRootIdLoading && nextRootId) {
                 form.setValue("id", nextRootId.data.id)
             }
-        }else{
-            if(!form.getValues().parentId){
+        } else {
+            if (!form.getValues().parentId) {
                 toast.error("在视图模式下，请先选择父节点！")
                 return
             }
@@ -167,15 +179,15 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                 form.setValue("id", nextChildId.data.id)
             }
         }
-            
+
     }
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[800px]">
                 <DialogHeader>
-                    <DialogTitle className="text-foreground">{isUpdateMode ? "编辑权限节点" : "新增权限节点"}</DialogTitle>
+                    <DialogTitle className="text-foreground">{type!=="create" ? "编辑权限节点" : "新增权限节点"}</DialogTitle>
                     <DialogDescription className="text-foreground">
-                        {isUpdateMode ? "编辑现有的权限节点" : "构建新权限节点的相关信息"}
+                        {type!=="create" ? "编辑现有的权限节点" : "构建新权限节点的相关信息"}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -256,7 +268,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                                 <SelectParentsBox
                                                     list={rootPermissionList.data.data}
                                                     value={field.value}
-                                                    onChange={(value) => {
+                                                    onChange={(value:string) => {
                                                         field.onChange(value)
                                                         setParentId(value)
                                                     }}
@@ -357,7 +369,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                 name="route"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-primary-foreground">路由切片</FormLabel>
+                                        <FormLabel className="text-foreground">路由切片</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
@@ -402,6 +414,8 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                                             placeholder={'排序顺序'}
                                             className="placeholder:text-sm focus-visible:ring-primary"
                                             {...field}
+                                            value={String(field.value)}
+                                            onChange={(e) => field.onChange(e.target.value)}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -417,7 +431,7 @@ export default function PermissionDialog({ open, onClose, updateItem, handleCrea
                         </Button>
                     </DialogClose>
                     <Button className=" bg-primary  hover:bg-primary " type="submit" form="create-user-form">
-                        {isUpdateMode ? "更新" : "保存"}
+                        {type === "create" ? "新增" : type === "update" ? "更新" : "追加"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

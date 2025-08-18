@@ -19,7 +19,7 @@ export interface Permission {
 	order?: number;
 	icon?: string;
 	component?: string;
-	hide?: boolean;
+	hide?: number;
 	children?: Permission[];
 }
 

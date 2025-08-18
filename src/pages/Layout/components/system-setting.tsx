@@ -2,8 +2,10 @@
 import {
     Sheet,
     SheetContent,
+    SheetDescription,
     SheetFooter,
     SheetHeader,
+    SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
 import Icon from "@/components/ui/icon"
@@ -24,6 +26,10 @@ export function SystemSetting() {
                     <Icon icon="line-md:cog-filled-loop" size={25} className="bg-background" />
                 </Button>
             </SheetTrigger>
+            <SheetHeader>
+                <SheetTitle/>
+                <SheetDescription/>
+            </SheetHeader>
             <SheetContent style={sheetContentBgStyle} className="max-w-xs">
                 <SheetHeader>
                 </SheetHeader>

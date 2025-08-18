@@ -19,14 +19,16 @@ const columnHelper = createColumnHelper<Permission>()
 
 interface UserPermissionProps {
     handleOpenEditDialog: (item: Permission) => void,
-    handleDeletePermission: (id: string) => void
+    handleDeletePermission: (id: string) => void,
+    handleOpenPushDialog: (parentId: string) => void,
 
 }
 
 export default function UserPermissionColums({
     handleOpenEditDialog,
-    handleDeletePermission
-}:UserPermissionProps) {
+    handleDeletePermission,
+    handleOpenPushDialog
+}: UserPermissionProps) {
     return [
 
         columnHelper.accessor('name', {
@@ -39,7 +41,7 @@ export default function UserPermissionColums({
                             {
                                 row.getIsExpanded() ?
                                     <Minus className="text-background" /> :
-                                    <Plus className="text-background"/>
+                                    <Plus className="text-background" />
                             }
                         </Button>
 
@@ -52,7 +54,7 @@ export default function UserPermissionColums({
             header: '国际化标签',
         }),
 
-        
+
         columnHelper.accessor('icon', {
             header: '图标',
             cell: (info) => {
@@ -74,7 +76,7 @@ export default function UserPermissionColums({
             cell: (info) => {
                 const status = info.getValue();
                 return (
-                    <Badge className={clsx(status === PermissionBasicStatus.DISABLE ? "bg-primary" : "bg-primary")}>
+                    <Badge className={clsx(status === PermissionBasicStatus.DISABLE ? "bg-primary" : "bg-primary", "text-background")}>
                         {status === PermissionBasicStatus.DISABLE ? "禁用" : "启用"}
                     </Badge>
                 );
@@ -98,7 +100,7 @@ export default function UserPermissionColums({
             cell: (info) => {
                 const route = info.getValue();
                 return route ? (
-                    <span className='italic text-[12px]'>{ route }</span>
+                    <span className='italic text-[12px]'>{route}</span>
                 ) : (
                     null
                 );
@@ -165,6 +167,11 @@ export default function UserPermissionColums({
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => {
+                                    handleOpenPushDialog(row.original.id)
+                                }}>
+                                    新增权限节点
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => {
                                     handleOpenEditDialog(row.original)
                                 }}>

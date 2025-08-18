@@ -41,27 +41,33 @@ const useUserProfile = () => {
     const setUserProfile = useUserStore((sate) => (sate.setUserProfile))
     const userPermission = useUserStore((state) => (state.userProfile.userRole?.permission))
 
-    const userProfileMutaition = useMutation({
-        mutationFn: getUserProfile,
-    })
+    const query = useQuery({
+        queryKey: ['user-profile'],
+        queryFn: async () => {
+            try {
+                const result = await getUserProfile();
 
-    const getUserInfo = async () => {
-        try {
-            const result = await userProfileMutaition.mutateAsync();
-            setUserProfile(result.data);
-        } catch (e: unknown) {
-            console.log('登录错误:', e)
-            throw e;
-        }
-    }
+                setUserProfile(result.data);
+                return result.data
+            }
+            catch (e) {
+                console.error('API Error:', e);
+            }
+        },
+        retry: 3,
+        staleTime: 10 * 1000,
+        placeholderData: (previousData) => previousData,
+    })
 
     const clearUserInfo = () => setUserProfile({} as UserProfile)
 
     return {
-        getUserInfo,
+        data: query.data,
+        isLoading: query.isLoading,
         userProfile,
         clearUserInfo,
-        userPermission
+        userPermission,
+        refetch: query.refetch
     }
 }
 

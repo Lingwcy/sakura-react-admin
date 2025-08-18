@@ -9,8 +9,9 @@ import {
 } from "@/apis/permission-service";
 import { Permission } from "@/types/roleType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+
 const usePermissionList = () => {
     const queryClient = useQueryClient();
     const query = useQuery({
@@ -37,6 +38,7 @@ const usePermissionList = () => {
         mutationFn: createPermissionNode,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['permissionList'] });
+            queryClient.invalidateQueries({ queryKey: ['user-profile'] });
             toast("创建权限节点成功", {
                 description: `您在 ${(new Date()).toUTCString()} 创建了一个新权限节点`,
                 action: {
@@ -54,6 +56,8 @@ const usePermissionList = () => {
         mutationFn: updatePermissionNode,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['permissionList'] });
+
+            queryClient.invalidateQueries({ queryKey: ['user-profile'] });
             toast("更新权限节点成功", {
                 description: `您在 ${(new Date()).toUTCString()} 更新了一个权限节点`,
                 action: {
@@ -71,6 +75,7 @@ const usePermissionList = () => {
         mutationFn: deletePermissionNode,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['permissionList'] });
+            queryClient.invalidateQueries({ queryKey: ['user-profile'] });
             toast("删除权限节点成功", {
                 description: `您在 ${(new Date()).toUTCString()} 删除了一个权限节点`,
                 action: {
@@ -138,6 +143,7 @@ const useNextChildId = () => {
 
 const usePermissionTable = () => {
     const { updatePermission, deletePermission, createPermission } = usePermissionList()
+    const { setParentId, data: nextChildId, isLoading: nextChildLoading } = useNextChildId()
     // create模式状态
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
     // 编辑模式状态
@@ -145,20 +151,65 @@ const usePermissionTable = () => {
     // 编辑的TData
     const [editingItem, setEditingItem] = useState<Omit<Permission, 'children'> | undefined>(undefined)
 
+    // 当前dialog 类型
+    const [dialogType, setDialogType] = useState<"create" | "push" | "update">()
+
+    // 添加状态来跟踪是否正在等待子节点ID
+    const [waitingForChildId, setWaitingForChildId] = useState<string | null>(null)
+
+    // 监听nextChildLoading的变化
+    useEffect(() => {
+        if (!nextChildLoading && nextChildId && waitingForChildId) {
+            const newNode: Permission = {
+                id: nextChildId.data.id,
+                type: 1,
+                parentId: waitingForChildId,
+                status: 0,
+                label: "",
+                name: "",
+                route: "",
+                icon: "",
+                order: 0,
+            };
+            setEditingItem(newNode)
+            setDialogType("push")
+            setIsEditDialogOpen(true)
+            setWaitingForChildId(null) // 清除等待状态
+        }
+    }, [nextChildLoading, nextChildId, waitingForChildId])
+
     // 用户点击编辑内容
     const handleOpenEditDialog = (item: Omit<Permission, 'children'>) => {
         setEditingItem(item)
+        setDialogType("update")
         setIsEditDialogOpen(true)
     }
 
     const handleOpenCreateDialog = () => {
+        setEditingItem(null)
         setIsCreateDialogOpen(true)
+        setDialogType("create")
+        return;
+    }
+    // 在父目录下追加一个子权限
+    const handleOpenPushDialog = (parentId: string) => {
+        console.log(parentId)
+        if (!parentId) {
+            // 根节点新增
+            setDialogType("create")
+            setIsEditDialogOpen(true)
+            return;
+        }
+
+        setParentId(parentId);
+        setWaitingForChildId(parentId); // 设置等待状态
     }
 
     const handleCloseDialog = () => {
         setIsCreateDialogOpen(false)
         setIsEditDialogOpen(false)
         setEditingItem(undefined)
+        setWaitingForChildId(null) // 清除等待状态
     }
 
     const handleEditPermission = (node: Omit<Permission, 'children'>) => {
@@ -179,9 +230,12 @@ const usePermissionTable = () => {
         handleOpenEditDialog,
         handleCloseDialog,
         handleOpenCreateDialog,
+        handleOpenPushDialog,
         isCreateDialogOpen,
         isEditDialogOpen,
-        editingItem
+        editingItem,
+        dialogType,
+        nextChildLoading // 可选：暴露loading状态供UI使用
     }
 }
 

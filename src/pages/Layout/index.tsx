@@ -9,23 +9,17 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { SystemSetting } from "./components/system-setting"
-import { useEffect } from "react"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useUserProfile } from "@/hooks/use-user"
 import { Outlet } from "react-router"
 import { Toaster } from "@/components/ui/sonner"
 import { useBread } from "@/hooks/use-system"
 import { RouteLoadingProgress } from "@/components/loading"
 export default function () {
-  const { getUserInfo } = useUserProfile()
-  useEffect(() => {
-    getUserInfo();
-  }, [])
 
   const { currentBread } = useBread()
 

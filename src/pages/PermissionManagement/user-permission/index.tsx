@@ -16,12 +16,14 @@ export default function UserPermissionManagementPage() {
         handleOpenEditDialog,
         handleCloseDialog,
         handleOpenCreateDialog,
+        handleOpenPushDialog,
         isCreateDialogOpen,
         isEditDialogOpen,
-        editingItem
+        editingItem,
+        dialogType
     } = usePermissionTable()
 
-    const columns = UserPermissionColums({ handleOpenEditDialog, handleDeletePermission })
+    const columns = UserPermissionColums({ handleOpenEditDialog, handleDeletePermission, handleOpenPushDialog })
     return (
         <div className="container mx-auto">
             <SakuraTableBar
@@ -44,7 +46,11 @@ export default function UserPermissionManagementPage() {
                 updateItem={editingItem}
                 handleCreate={handleCreatePermission}
                 handleEdit={handleEditPermission}
-                onClose={handleCloseDialog}/>
+                onClose={handleCloseDialog}
+                type= {dialogType}
+                
+                />
+                
         </div>
     )
 
