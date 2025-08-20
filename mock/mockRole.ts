@@ -147,6 +147,15 @@ const PERMISSION_PERMISSION = {
 			route: "permission",
 			component: '/PermissionManagement/user-permission/index.tsx'
 		},
+		{
+			id: "3002",
+			parentId: "3000",
+			label: "角色",
+			name: "角色",
+			type: PermissionType.MENU,
+			route: "role",
+			component: '/PermissionManagement/user-role/index.tsx'
+		},
 	],
 };
 const COMPONENTS_PERMISSION = {
@@ -167,7 +176,7 @@ const COMPONENTS_PERMISSION = {
 			type: PermissionType.MENU,
 			route: "servercard",
 			component: "/Component/server-card-playground.tsx",
-		}
+		},
 	],
 };
 const TOOLS_PERMISSION = {
@@ -304,10 +313,10 @@ class PermissionManager {
 	// 批量删除权限
 	deletePermissions(ids: string[]) {
 		const deleted: Omit<Permission, 'children'>[] = [];
-		
+
 		// 按层级排序，先删除子节点
 		const sortedIds = this.sortByHierarchy(ids);
-		
+
 		for (const id of sortedIds) {
 			try {
 				const deletedItem = this.deletePermission(id);
@@ -317,7 +326,7 @@ class PermissionManager {
 				console.warn(`删除权限 ${id} 失败:`, error);
 			}
 		}
-		
+
 		return deleted;
 	}
 
@@ -330,20 +339,20 @@ class PermissionManager {
 	getNextRootPermissionId(): string {
 		const rootPermissions = this.permissions.filter(p => !p.parentId || p.parentId === '');
 		const rootIds = rootPermissions.map(p => parseInt(p.id)).filter(id => !isNaN(id));
-		
+
 		if (rootIds.length === 0) {
 			return '1000';
 		}
-		
+
 		// 找到最大的根ID，然后递增到下一个百位数
 		const maxRootId = Math.max(...rootIds);
 		let nextId = Math.ceil((maxRootId + 1) / 1000) * 1000;
-		
+
 		// 确保ID不存在
 		while (this.permissions.find(p => p.id === nextId.toString())) {
 			nextId += 1000;
 		}
-		
+
 		return nextId.toString();
 	}
 
@@ -352,36 +361,36 @@ class PermissionManager {
 		if (!parentId) {
 			throw new Error('父节点ID不能为空');
 		}
-		
+
 		// 验证父节点是否存在
 		const parentNode = this.permissions.find(p => p.id === parentId);
 		if (!parentNode) {
 			throw new Error('父节点不存在');
 		}
-		
+
 		// 获取该父节点下的所有子节点
 		const childPermissions = this.permissions.filter(p => p.parentId === parentId);
 		const childIds = childPermissions.map(p => parseInt(p.id)).filter(id => !isNaN(id));
-		
+
 		const parentIdNum = parseInt(parentId);
 		if (isNaN(parentIdNum)) {
 			throw new Error('父节点ID格式不正确');
 		}
-		
+
 		// 如果没有子节点，返回父节点ID+1
 		if (childIds.length === 0) {
 			return (parentIdNum + 1).toString();
 		}
-		
+
 		// 找到最大的子节点ID，然后递增1
 		const maxChildId = Math.max(...childIds);
 		let nextId = maxChildId + 1;
-		
+
 		// 确保ID不存在
 		while (this.permissions.find(p => p.id === nextId.toString())) {
 			nextId++;
 		}
-		
+
 		return nextId.toString();
 	}
 
@@ -427,13 +436,13 @@ function PermissionListFattented2Tree(list: Omit<Permission[], 'children'>) {
 	const roots: Permission[] = []
 	copyList.forEach(item => {
 		const parentId = item.parentId
-		if(!parentId || !mapNode.has(parentId)){
+		if (!parentId || !mapNode.has(parentId)) {
 			roots.push(item)
-		}else{
+		} else {
 			const parentNode = mapNode.get(parentId) //找到父节点
 			parentNode!.children = parentNode!.children ?? [];
 			parentNode!.children.push(item);
-			
+
 		}
 	})
 
@@ -460,10 +469,96 @@ const TEST_ROLE = {
 	order: 2,
 	desc: "test",
 	permission: [
-		{...USER_PERMISSION, children: [...(USER_PERMISSION.children || [])]},
-		{...COMPONENTS_PERMISSION, children: [...(COMPONENTS_PERMISSION.children || [])]},
-		{...TOOLS_PERMISSION, children: [...(TOOLS_PERMISSION.children || [])]}
+		{ ...USER_PERMISSION, children: [...(USER_PERMISSION.children || [])] },
+		{ ...COMPONENTS_PERMISSION, children: [...(COMPONENTS_PERMISSION.children || [])] },
+		{ ...TOOLS_PERMISSION, children: [...(TOOLS_PERMISSION.children || [])] }
 	],
 };
 export const ROLE_LIST = [ADMIN_ROLE, TEST_ROLE];
+
+// 角色数据管理类
+class RoleManager {
+    private roles: typeof ADMIN_ROLE[] = [...ROLE_LIST];
+
+    // 获取所有角色
+    getAllRoles() {
+        return [...this.roles];
+    }
+
+    // 根据ID获取角色
+    getRoleById(id: string) {
+        return this.roles.find(r => r.id === id);
+    }
+
+    // 添加角色
+    addRole(role: Omit<typeof ADMIN_ROLE, 'id'>) {
+        // 生成新ID
+        const maxId = Math.max(...this.roles.map(r => parseInt(r.id)), 0);
+        const newId = (maxId + 1).toString();
+        
+        const newRole = { ...role, id: newId };
+        this.roles.push(newRole);
+        return newRole;
+    }
+
+    // 更新角色
+    updateRole(id: string, updates: Partial<Omit<typeof ADMIN_ROLE, 'id'>>) {
+        const index = this.roles.findIndex(r => r.id === id);
+        if (index === -1) {
+            throw new Error('角色不存在');
+        }
+
+        // 过滤掉空值
+        const filteredUpdates = Object.fromEntries(
+            Object.entries(updates).filter(([_, value]) => 
+                value !== undefined && value !== '' && value !== null
+            )
+        );
+
+        this.roles[index] = { ...this.roles[index], ...filteredUpdates };
+        return this.roles[index];
+    }
+
+    // 删除角色
+    deleteRole(id: string) {
+        const index = this.roles.findIndex(r => r.id === id);
+        if (index === -1) {
+            throw new Error('角色不存在');
+        }
+
+        // 检查是否为系统默认角色
+        if (id === "1") {
+            throw new Error('不能删除管理员角色');
+        }
+
+        const deleted = this.roles[index];
+        this.roles.splice(index, 1);
+        return deleted;
+    }
+
+    // 批量删除角色
+    deleteRoles(ids: string[]) {
+        const deleted: typeof ADMIN_ROLE[] = [];
+        
+        for (const id of ids) {
+            try {
+                const deletedRole = this.deleteRole(id);
+                deleted.push(deletedRole);
+            } catch (error) {
+                console.warn(`删除角色 ${id} 失败:`, error);
+            }
+        }
+        
+        return deleted;
+    }
+
+    // 获取下一个可用的角色ID
+    getNextRoleId(): string {
+        const maxId = Math.max(...this.roles.map(r => parseInt(r.id)), 0);
+        return (maxId + 1).toString();
+    }
+}
+
+// 创建角色管理器实例
+export const roleManager = new RoleManager();
 

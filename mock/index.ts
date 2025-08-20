@@ -2,7 +2,7 @@ import type { MockMethod } from 'vite-plugin-mock'
 import { faker } from "@faker-js/faker";
 import { mockUsers } from './mockUser';
 import type { Recordable } from 'vite-plugin-mock';
-import { permissionManager } from './mockRole';
+import { permissionManager, roleManager } from './mockRole';
 interface Option {
     url: Recordable;
     body: Recordable;
@@ -506,6 +506,247 @@ export default [
                 code: 200,
                 data: permissionManager.getCataloguePermissions(),
                 message: '获取目录权限成功'
+            }
+        },
+    },
+    // 角色相关接口
+    {
+        url: '/api/roles',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const currentPage = Number(opt?.query?.page) || 1;
+                const name = opt?.query?.name || '';
+                const size = 10;
+
+                let filteredRoles = roleManager.getAllRoles();
+                
+                // 按名称筛选
+                if (name) {
+                    filteredRoles = filteredRoles.filter(role =>
+                        role.name.toLowerCase().includes(name.toLowerCase()) ||
+                        role.label.toLowerCase().includes(name.toLowerCase())
+                    );
+                }
+
+                const totalCount = filteredRoles.length;
+                const startIndex = (currentPage - 1) * size;
+                const endIndex = startIndex + size;
+                const paginatedRoles = filteredRoles.slice(startIndex, endIndex);
+
+                return {
+                    code: 200,
+                    data: {
+                        currentPage,
+                        size,
+                        totalCount,
+                        totalPages: Math.ceil(totalCount / size),
+                        roles: paginatedRoles
+                    }
+                };
+            } catch (error) {
+                console.error('Mock /api/roles error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/role',
+        method: 'post',
+        response: function (opt: Option) {
+            try {
+                const { name, label, desc, status, order, permission } = opt.body || {};
+
+                if (!name || !label) {
+                    return {
+                        code: 400,
+                        message: '角色名称和标签不能为空'
+                    };
+                }
+
+                const newRole = roleManager.addRole({
+                    name,
+                    label,
+                    desc: desc || '',
+                    status: status ?? PermissionBasicStatus.ENABLE,
+                    order: order || 1,
+                    permission: permission || []
+                });
+
+                return {
+                    code: 200,
+                    data: newRole,
+                    message: '角色创建成功'
+                };
+            } catch (error) {
+                console.error('Mock POST /api/role error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/role/:id',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '角色ID不能为空'
+                    };
+                }
+
+                const role = roleManager.getRoleById(id);
+
+                if (!role) {
+                    return {
+                        code: 404,
+                        message: '角色不存在'
+                    };
+                }
+
+                return {
+                    code: 200,
+                    data: role
+                };
+            } catch (error) {
+                console.error('Mock GET /api/role/:id error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/role/:id',
+        method: 'put',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+                const updates = opt.body || {};
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '角色ID不能为空'
+                    };
+                }
+
+                const updatedRole = roleManager.updateRole(id, updates);
+
+                return {
+                    code: 200,
+                    data: updatedRole,
+                    message: '角色更新成功'
+                };
+            } catch (error) {
+                console.error('Mock PUT /api/role/:id error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/role/:id',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '角色ID不能为空'
+                    };
+                }
+
+                const deletedRole = roleManager.deleteRole(id);
+
+                return {
+                    code: 200,
+                    data: deletedRole,
+                    message: '角色删除成功'
+                };
+            } catch (error) {
+                console.error('Mock DELETE /api/role/:id error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/roles/:ids',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const idsParam = urlParts[urlParts.length - 1];
+
+                if (!idsParam) {
+                    return {
+                        code: 400,
+                        message: '角色ID不能为空'
+                    };
+                }
+
+                const idsArray = idsParam.split(',').filter(id => id.trim());
+
+                if (idsArray.length === 0) {
+                    return {
+                        code: 400,
+                        message: '角色ID不能为空'
+                    };
+                }
+
+                const deletedRoles = roleManager.deleteRoles(idsArray);
+
+                return {
+                    code: 200,
+                    data: deletedRoles,
+                    message: '角色批量删除成功'
+                };
+            } catch (error) {
+                console.error('Mock DELETE /api/roles/:ids error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/role/next-id',
+        method: 'get',
+        response: () => {
+            try {
+                const nextId = roleManager.getNextRoleId();
+                return {
+                    code: 200,
+                    data: { id: nextId },
+                    message: '获取下一个角色ID成功'
+                };
+            } catch (error) {
+                console.error('Mock GET /api/role/next-id error:', error);
+                return {
+                    code: 500,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
             }
         },
     },

@@ -1,3 +1,14 @@
+/**
+ * 
+GET /api/roles - Get all roles with pagination and search
+POST /api/role - Create a new role
+GET /api/role/:id - Get role by ID
+PUT /api/role/:id - Update role by ID
+DELETE /api/role/:id - Delete role by ID
+DELETE /api/roles/:ids - Batch delete roles
+GET /api/role/next-id - Get next available role ID
+ */
+
 export const apiList = {
     user: {
         signIn: "api/authorizations",
@@ -16,6 +27,14 @@ export const apiList = {
         getRootPermissionList: "api/permissions/catalogue",
         getNextRootId: "api/permission/next-root-id",
         getNextChildId: "api/permission/next-child-id",
+    },
+    role: {
+        getRoleList: "api/roles",
+        createRole: "api/role",
+        getRole: "api/role",
+        updateRole: "api/role",
+        deleteRole: "api/role",
+        deleteRoles: "api/roles"
     }
 
 }
