@@ -5,9 +5,6 @@ const useSystemSideBar = () => {
     const sidebarConfig = useSystemStore((state) => state.sidebarConfig)
     const sidebarTeams = () => sidebarConfig.teams
 
-
-
-
     return {
         sidebarTeams,
         sidebarNavItems : route
@@ -31,7 +28,18 @@ const useBread =() => {
     }
 }
 
+const useSettingBar = () => {
+    const showHeaderTab = useSystemStore((state) => state.settingBarConfig.showHeaderTab)
+    const setShowHeaderTab = useSystemStore((state) => state.setShowHeaderTab)
+
+    return {
+        showHeaderTab,
+        setShowHeaderTab
+    }
+}
+
 export {
     useSystemSideBar,
-    useBread
+    useBread,
+    useSettingBar
 }

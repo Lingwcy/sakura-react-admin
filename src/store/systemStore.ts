@@ -13,23 +13,34 @@ import {
     UserCog2Icon,
     PercentDiamond,
 } from "lucide-react"
+import { AppRouteObject } from '@/types/router';
+
 type Store = {
     sidebarConfig: {
         teams: SidebarTeam[],
         items: SilderNavItem[],
-    }
+    },
+    savedTabs: Omit<AppRouteObject[], 'children'>,
+    selectedTab: string,
     breadConfig: {
         currentBread: string[]
     }
     themeConfig: {
         themeMode: ThemeMode,
         availableThemeMode: Record<ThemeMode, string>
+    },
+    settingBarConfig :{
+        showHeaderTab: boolean
     }
 }
 
 type Action = {
     setCurrentBread: (data: string[]) => void
     setThemeMode: (data: ThemeMode) => void
+    addTab: (data: AppRouteObject) => void
+    removeTab: (data: string) => void
+    setSelectedTab: (data: string) => void
+    setShowHeaderTab: (data: boolean) => void
 }
 
 const initialSidebarData: SilderNavItem[] = [
@@ -151,9 +162,14 @@ const useSystemStore = create<Store & Action>()(
         breadConfig: {
             currentBread: ['首页', '关于项目']
         },
+        savedTabs: [],
+        selectedTab: '',
         themeConfig: {
             themeMode: ThemeMode.Light,
             availableThemeMode: AvailableThemeMode
+        },
+        settingBarConfig: {
+            showHeaderTab: true
         },
         setCurrentBread: (data) => {
             set((state) => ({
@@ -165,6 +181,30 @@ const useSystemStore = create<Store & Action>()(
             set((state) => ({
                 ...state,
                 themeConfig: { ...state.themeConfig, themeMode: data }
+            }))
+        },
+        addTab: (data) => {
+            set((state) => ({
+                ...state,
+                savedTabs: [...state.savedTabs, data]
+            }))
+        },
+        removeTab: (data) => {
+            set((state) => ({
+                ...state,
+                savedTabs: state.savedTabs.filter((item) => item.meta.key !== data)
+            }))
+        },
+        setSelectedTab: (data) => {
+            set((state) => ({
+                ...state,
+                selectedTab: data
+            }))
+        },
+        setShowHeaderTab: (data) => {
+            set((state) => ({
+                ...state,
+                settingBarConfig: { ...state.settingBarConfig, showHeaderTab: data }
             }))
         }
     })

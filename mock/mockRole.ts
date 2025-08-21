@@ -177,6 +177,15 @@ const COMPONENTS_PERMISSION = {
 			route: "servercard",
 			component: "/Component/server-card-playground.tsx",
 		},
+		{
+			id: "4002",
+			parentId: "4000",
+			label: "权限选择树",
+			name: "权限选择树",
+			type: PermissionType.MENU,
+			route: "permission-select-tree",
+			component: "/Component/permissiom-select-tree.tsx",
+		}
 	],
 };
 const TOOLS_PERMISSION = {
@@ -478,85 +487,85 @@ export const ROLE_LIST = [ADMIN_ROLE, TEST_ROLE];
 
 // 角色数据管理类
 class RoleManager {
-    private roles: typeof ADMIN_ROLE[] = [...ROLE_LIST];
+	private roles: typeof ADMIN_ROLE[] = [...ROLE_LIST];
 
-    // 获取所有角色
-    getAllRoles() {
-        return [...this.roles];
-    }
+	// 获取所有角色
+	getAllRoles() {
+		return [...this.roles];
+	}
 
-    // 根据ID获取角色
-    getRoleById(id: string) {
-        return this.roles.find(r => r.id === id);
-    }
+	// 根据ID获取角色
+	getRoleById(id: string) {
+		return this.roles.find(r => r.id === id);
+	}
 
-    // 添加角色
-    addRole(role: Omit<typeof ADMIN_ROLE, 'id'>) {
-        // 生成新ID
-        const maxId = Math.max(...this.roles.map(r => parseInt(r.id)), 0);
-        const newId = (maxId + 1).toString();
-        
-        const newRole = { ...role, id: newId };
-        this.roles.push(newRole);
-        return newRole;
-    }
+	// 添加角色
+	addRole(role: Omit<typeof ADMIN_ROLE, 'id'>) {
+		// 生成新ID
+		const maxId = Math.max(...this.roles.map(r => parseInt(r.id)), 0);
+		const newId = (maxId + 1).toString();
 
-    // 更新角色
-    updateRole(id: string, updates: Partial<Omit<typeof ADMIN_ROLE, 'id'>>) {
-        const index = this.roles.findIndex(r => r.id === id);
-        if (index === -1) {
-            throw new Error('角色不存在');
-        }
+		const newRole = { ...role, id: newId };
+		this.roles.push(newRole);
+		return newRole;
+	}
 
-        // 过滤掉空值
-        const filteredUpdates = Object.fromEntries(
-            Object.entries(updates).filter(([_, value]) => 
-                value !== undefined && value !== '' && value !== null
-            )
-        );
+	// 更新角色
+	updateRole(id: string, updates: Partial<Omit<typeof ADMIN_ROLE, 'id'>>) {
+		const index = this.roles.findIndex(r => r.id === id);
+		if (index === -1) {
+			throw new Error('角色不存在');
+		}
 
-        this.roles[index] = { ...this.roles[index], ...filteredUpdates };
-        return this.roles[index];
-    }
+		// 过滤掉空值
+		const filteredUpdates = Object.fromEntries(
+			Object.entries(updates).filter(([_, value]) =>
+				value !== undefined && value !== '' && value !== null
+			)
+		);
 
-    // 删除角色
-    deleteRole(id: string) {
-        const index = this.roles.findIndex(r => r.id === id);
-        if (index === -1) {
-            throw new Error('角色不存在');
-        }
+		this.roles[index] = { ...this.roles[index], ...filteredUpdates };
+		return this.roles[index];
+	}
 
-        // 检查是否为系统默认角色
-        if (id === "1") {
-            throw new Error('不能删除管理员角色');
-        }
+	// 删除角色
+	deleteRole(id: string) {
+		const index = this.roles.findIndex(r => r.id === id);
+		if (index === -1) {
+			throw new Error('角色不存在');
+		}
 
-        const deleted = this.roles[index];
-        this.roles.splice(index, 1);
-        return deleted;
-    }
+		// 检查是否为系统默认角色
+		if (id === "1") {
+			throw new Error('不能删除管理员角色');
+		}
 
-    // 批量删除角色
-    deleteRoles(ids: string[]) {
-        const deleted: typeof ADMIN_ROLE[] = [];
-        
-        for (const id of ids) {
-            try {
-                const deletedRole = this.deleteRole(id);
-                deleted.push(deletedRole);
-            } catch (error) {
-                console.warn(`删除角色 ${id} 失败:`, error);
-            }
-        }
-        
-        return deleted;
-    }
+		const deleted = this.roles[index];
+		this.roles.splice(index, 1);
+		return deleted;
+	}
 
-    // 获取下一个可用的角色ID
-    getNextRoleId(): string {
-        const maxId = Math.max(...this.roles.map(r => parseInt(r.id)), 0);
-        return (maxId + 1).toString();
-    }
+	// 批量删除角色
+	deleteRoles(ids: string[]) {
+		const deleted: typeof ADMIN_ROLE[] = [];
+
+		for (const id of ids) {
+			try {
+				const deletedRole = this.deleteRole(id);
+				deleted.push(deletedRole);
+			} catch (error) {
+				console.warn(`删除角色 ${id} 失败:`, error);
+			}
+		}
+
+		return deleted;
+	}
+
+	// 获取下一个可用的角色ID
+	getNextRoleId(): string {
+		const maxId = Math.max(...this.roles.map(r => parseInt(r.id)), 0);
+		return (maxId + 1).toString();
+	}
 }
 
 // 创建角色管理器实例

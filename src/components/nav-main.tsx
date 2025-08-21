@@ -1,4 +1,3 @@
-
 import { ChevronRight } from "lucide-react"
 import { NavLink } from "react-router"
 import { AppRouteObject } from "@/types/router"
@@ -17,12 +16,18 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { useBread } from "@/hooks/use-system"
+import { useTabs } from "@/hooks/use-tabs"
 export function NavMain({
   items,
 }: {
   items: AppRouteObject[]
 }) {
   const { handleSetCurrentBread } = useBread()
+  const { addTab } = useTabs()
+
+  const handleAddTab = (item: AppRouteObject) => {
+    addTab(item)
+  }
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -53,7 +58,10 @@ export function NavMain({
                       ?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.meta!.label}>
                           <SidebarMenuSubButton asChild>
-                            <NavLink to={subItem.meta!.key} onClick={() => handleSetCurrentBread(subItem.meta.key)}>
+                            <NavLink to={subItem.meta!.key} onClick={() => {
+                                handleSetCurrentBread(subItem.meta!.key)
+                                handleAddTab(subItem)
+                            }}>
                               <span className="text-foreground">{subItem.meta!.label}</span>
                             </NavLink>
                           </SidebarMenuSubButton>
@@ -68,3 +76,4 @@ export function NavMain({
     </SidebarGroup>
   )
 }
+

@@ -4,7 +4,7 @@ import clsx from "clsx"
 export default function ThemeItemList() {
     const { setThemeMode, availableThemeMode } = useTheme()
     return (
-        <div className="flex flex-row flex-wrap gap-4 p-8 justify-between">
+        <div className="flex flex-row flex-wrap gap-4 p-2 justify-between">
             {Object.entries(availableThemeMode).map(([key, value]) => (
                 <ThemeItem key={key} themeMode={key} setThemeMode={setThemeMode} themeColor={value} />
             ))}
