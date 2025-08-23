@@ -51,7 +51,7 @@ export default function AdminUserManagement() {
             />
             <SakuraTable
                 columns={columns}
-                data={roleListData?.roles || []}
+                data={roleListData?.roles.sort((a,b) => a.order-b.order) || []}
                 serverPagination={pagination}
                 rowSelection={rowSelection}
                 enablePagination={true}

@@ -1,0 +1,1 @@
+import{o as e}from"./index-BJe_fyUy.js";import{B as o}from"./index-DR-yOLsH.js";function r(){return e.jsx("div",{className:"h-screen-[100px]",children:e.jsx(o,{mode:"dev"})})}const d=Object.freeze(Object.defineProperty({__proto__:null,default:r},Symbol.toStringTag,{value:"Module"}));export{d as _};

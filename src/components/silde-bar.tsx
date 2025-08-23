@@ -17,8 +17,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const {sidebarNavItems, sidebarTeams} = useSystemSideBar()
   const {userProfile} = useUserProfile()
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+    <Sidebar collapsible="icon" {...props} className="border-r-2 border-gray-300">
+      <SidebarHeader className="">
         <TeamSwitcher teams={sidebarTeams()} />
       </SidebarHeader>
       <SidebarContent>

@@ -34,6 +34,7 @@ const FormSchema = z.object({
     email: z.email({
         message: "请输入有效的邮箱地址",
     }),
+    roleId: z.string(),
     avatar: z.string(),
     password: z.string()
         .min(6, { message: "密码最短需要6个字符" })
@@ -59,7 +60,8 @@ export default function UserDialog({ open, onClose, updateUserItem, handleCreate
             name: "",
             email: "",
             avatar: "",
-            password: ""
+            password: "",
+            roleId:''
         }
     })
 
@@ -70,7 +72,8 @@ export default function UserDialog({ open, onClose, updateUserItem, handleCreate
                 name: updateUserItem.name || "",
                 email: updateUserItem.email || "",
                 avatar: updateUserItem.avatar || "",
-                password: ""
+                password: "",
+                roleId: updateUserItem.roleId || ""
             })
         } else {
             // 重置为创建模式的默认值
@@ -78,7 +81,8 @@ export default function UserDialog({ open, onClose, updateUserItem, handleCreate
                 name: "",
                 email: "",
                 avatar: "",
-                password: ""
+                password: "",
+                roleId:""
             })
         }
     }, [updateUserItem, form])

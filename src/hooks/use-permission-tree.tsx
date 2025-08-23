@@ -19,30 +19,29 @@ export function usePermissionTree(
     [checkedSet]
   );
 
-  const isIndeterminate = useCallback(
-    (node: PermissionNode) => {
-      if (!node.children) return false;
-      const childIds = flattenIds(node.children);
-      const checkedChildren = childIds.filter(isChecked);
-      return checkedChildren.length > 0 && checkedChildren.length < childIds.length;
-    },
-    [isChecked]
-  );
-
+  // 一次性选中或取消其子节点的所有 ID。
   const toggleNode = useCallback(
     (node: PermissionNode) => {
+      // 获取当前节点及其所有子节点的 ID 列表
       const ids = [node.id, ...flattenIds(node.children ?? [])];
+      //判断这些 ID 是否全部已经被选中
       const allChecked = ids.every(isChecked);
+
+      //更新选中状态：
+      //- 如果全部已选中 → 取消选中（过滤掉这些 ID）
+      //- 如果有未选中的 → 全部选中（合并 ID 列表并去重
       setCheckedSet(
         allChecked
-          ? checkedSet.filter((id) => !ids.includes(id))
+          ? checkedSet.filter((id) => {
+            return !ids.includes(id)
+          })
           : [...new Set([...checkedSet, ...ids])]
       );
     },
     [checkedSet, isChecked, setCheckedSet]
   );
 
-  return { isChecked, isIndeterminate, toggleNode };
+  return { isChecked, toggleNode };
 }
 
 const flattenIds = (nodes: PermissionNode[]): string[] =>

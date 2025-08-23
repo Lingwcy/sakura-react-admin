@@ -6,7 +6,6 @@ function PermisionTree2List(permissionTree:Permission[]){
         node.forEach((item) => {
             if(item.children){
                 traverse(item.children)
-                delete item.children
             }
             list.push(item)
         })

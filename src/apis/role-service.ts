@@ -41,7 +41,7 @@ const deleteRole = async (ids: string[]) => {
     }
 }
 
-const updateRole = async ({ id, role }: { id: string, role: Role }) => {
+const updateRole = async ({ id, role }: { id: string, role: Omit<Role,'permission'> & { permissionIds: string[] } }) => {
     try {
         const res = await requestClient.put({
             url: `${apiList.role.updateRole}/${id}`,
@@ -54,10 +54,10 @@ const updateRole = async ({ id, role }: { id: string, role: Role }) => {
     }
 }
 
-const createRole = async (role:Role) => {
+const createRole = async (role:  Omit<Role,'permission'> & { permissionIds: string[] }) => {
     try {
         const res = await requestClient.post({
-            url: `${apiList.user.createUser}`,
+            url: `${apiList.role.createRole}`,
             data: role
         })
         return res

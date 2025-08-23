@@ -18,7 +18,6 @@ import APITools from "@/pages/Tools/api-tool";
 import BorderLoading from "@/components/loading/border-loading";
 import UserManagementLayout from "@/pages/UserManagement";
 import AdminUserManagement from "@/pages/UserManagement/admin-user-management";
-import FontUserManagement from "@/pages/UserManagement/font-user-management";
 import PermissionManagementLayout from "@/pages/PermissionManagement";
 import UserPermissionManagementPage from "@/pages/PermissionManagement/user-permission";
 const router = createBrowserRouter([
@@ -57,10 +56,6 @@ const router = createBrowserRouter([
                         path: 'user',
                         Component: AdminUserManagement
                     },
-                    {
-                        path: 'font-user',
-                        Component: FontUserManagement
-                    }
                 ]
             },
             {

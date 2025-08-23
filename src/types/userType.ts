@@ -20,7 +20,7 @@ export type UserProfile = {
 
 export type UserItem = {
     id: string,
-    roleId: number,
+    roleId: string,
     avatar: string,
     name: string,
     email: string

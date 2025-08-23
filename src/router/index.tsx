@@ -2,7 +2,7 @@ import { lazy } from "react";
 import { AuthRoute } from "@/components/auth-route";
 import { usePermissionRoutes } from "./hooks/use-permission-routes";
 import { ErrorBoundary } from "react-error-boundary";
-import { Navigate, RouteObject, createHashRouter } from "react-router";
+import { Navigate, RouteObject, createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { AppRouteObject } from "@/types/router";
 
@@ -46,7 +46,7 @@ export default function Router() {
 
 	const routes = [PUBLIC_ROUTE, PROTECTED_ROUTE] as RouteObject[];
 
-	const router = createHashRouter(routes);
+	const router = createBrowserRouter(routes);
 
 	return <RouterProvider router={router} />;
 }

@@ -20,8 +20,8 @@ export enum PermissionBasicStatus {
 	ENABLE = 1,
 }
 export interface Permission {
-    id: number;
-    parentId: number;
+    id: string;
+    parentId: string;
     name: string;
     label: string;
     type: PermissionType;
@@ -558,7 +558,7 @@ export default [
         method: 'post',
         response: function (opt: Option) {
             try {
-                const { name, label, desc, status, order, permission } = opt.body || {};
+                const { name, label, desc, status, order, permissionIds } = opt.body || {};
 
                 if (!name || !label) {
                     return {
@@ -567,13 +567,20 @@ export default [
                     };
                 }
 
+                // Handle permissionIds if provided
+                let permission = [];
+                if (permissionIds) {
+                    // Convert permissionIds to permission objects
+                    permission = permissionManager.getPermissionsByIds(permissionIds);
+                }
+
                 const newRole = roleManager.addRole({
                     name,
                     label,
                     desc: desc || '',
                     status: status ?? PermissionBasicStatus.ENABLE,
                     order: order || 1,
-                    permission: permission || []
+                    permission: permission
                 });
 
                 return {
@@ -641,6 +648,21 @@ export default [
                         code: 400,
                         message: '角色ID不能为空'
                     };
+                }
+
+                // Handle permissionIds if provided
+                if (updates.permissionIds) {
+                    // Convert permissionIds to permission objects
+                    const permissionIds = updates.permissionIds;
+                    
+                    // Create a permissions array by getting permission objects based on IDs
+                    const permissions = permissionManager.getPermissionsByIds(permissionIds);
+                    
+                    // Replace permissionIds with the actual permission objects
+                    updates.permission = permissions;
+                    
+                    // Remove permissionIds from updates as it's not needed anymore
+                    delete updates.permissionIds;
                 }
 
                 const updatedRole = roleManager.updateRole(id, updates);

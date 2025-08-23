@@ -18,9 +18,6 @@ export default function ArchiveServerPage() {
             <SakuraTable
                 columns={columns}
                 data={data}
-                searchPlaceholder='搜索名称'
-                createButtonText='新增服务器'
-                searchKey='name'
             />
         </div>
     )

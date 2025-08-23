@@ -1,8 +1,8 @@
-import { BorderLoading as LineLoading } from "@/components/loading";
+
 import { useUserProfile } from "@/hooks/use-user";
 import { flattenTrees } from "@/utils/tree";
 import { isEmpty } from "ramda";
-import { Suspense, lazy, useMemo } from "react";
+import { useMemo, lazy } from "react";
 import { Navigate, Outlet } from "react-router";
 import { Permission, PermissionBasicStatus, PermissionType } from "@/types/roleType";
 import { Icon } from "@iconify/react";
@@ -85,11 +85,7 @@ const createCatalogueRoute = (permission: Permission, flattenedPermissions: Perm
 	const { parentId, children = [] } = permission;
 	// 没有上级目录的权限节点，为根目录，为子路由添加出口Outlet
 	if (!parentId) {
-		baseRoute.element = (
-			<Suspense fallback={<LineLoading />}>
-				<Outlet />
-			</Suspense>
-		);
+		baseRoute.element = <Outlet />;
 	}
 	// 将此权限目录的下的子权限做递归处理
 	baseRoute.children = transformPermissionsToRoutes(children, flattenedPermissions);
@@ -116,11 +112,7 @@ const createMenuRoute = (permission: Permission, flattenedPermissions: Permissio
 
 	if (permission.component) {
 		const LazyElement = lazy(loadComponentFromPath(permission.component) as () => Promise<{ default: React.ComponentType }>);
-		baseRoute.element = (
-			<Suspense fallback={<LineLoading />}>
-				<LazyElement />
-			</Suspense>
-		);
+		baseRoute.element = <LazyElement />;
 	}
 
 	return baseRoute;
@@ -137,7 +129,7 @@ function transformPermissionsToRoutes(permissions: Permission[], flattenedPermis
 
 // const ROUTE_MODE = import.meta.env.VITE_APP_ROUTER_MODE;
 export function usePermissionRoutes() {
-	const {userPermission} = useUserProfile()
+	const { userPermission } = useUserProfile()
 	return useMemo(() => {
 		if (!userPermission) return [];
 

@@ -11,6 +11,8 @@ import {
     DropdownMenuTrigger,
     DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
+import clsx from "clsx"
 
 
 const columnHelper = createColumnHelper<Role>()
@@ -69,17 +71,27 @@ export default function CreateAdminUserColumns({
 
         columnHelper.accessor('status', {
             header: '状态',
-            cell: (info) => info.getValue(),
+            cell: (info) => (
+                <Badge className={
+                    clsx(info.getValue() === 0 ? 'bg-destructive' : 'bg-primary')
+                }>
+                    {info.getValue() === 1 ? '开启' : '关闭'}
+                </Badge>
+            ),
         }),
 
         columnHelper.accessor('order', {
             header: '排序',
-            cell: (info) => info.getValue() || '-',
+            cell: (info) => {
+               return <Badge>{info.getValue()}</Badge>
+            },
         }),
 
         columnHelper.accessor('desc', {
             header: '描述',
-            cell: (info) => info.getValue() || '-',
+            cell: (info) => {
+               return <pre>{info.getValue()}</pre>
+            },
         }),
 
         columnHelper.display({

@@ -264,6 +264,25 @@ class PermissionManager {
 		return this.permissions.find(p => p.id === id);
 	}
 
+	// 根据ID数组获取权限数组
+	getPermissionsByIds(ids: string[]) {
+		// If no ids are provided, return an empty array
+		if (!ids || ids.length === 0) {
+			return [];
+		}
+		
+		// Convert all ids to strings to ensure proper comparison
+		const stringIds = ids.map(id => String(id));
+		
+		// Get all permissions from the flattened list
+		const allPermissions = this.getAllPermissions();
+		
+		// Filter permissions by the provided ids
+		return allPermissions.filter(permission => 
+			stringIds.includes(String(permission.id))
+		);
+	}
+
 	// 添加权限
 	addPermission(permission: Omit<Permission, 'children'>) {
 		// 检查ID是否已存在

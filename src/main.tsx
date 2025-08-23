@@ -9,6 +9,18 @@ import AppLoading from './components/loading/app-loading';
 // 懒加载路由组件
 const Router = lazy(() => import('./router'));
 
+// 生产环境 mock 设置
+async function setupMock() {
+  if (import.meta.env.PROD && import.meta.env.VITE_USE_MOCK === 'true') {
+    const { setupProdMockServer } = await import('./mockProdServer');
+    setupProdMockServer();
+    console.log("生产环境mock已启用");
+  }
+}
+
+// 初始化 mock
+setupMock();
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

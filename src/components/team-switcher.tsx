@@ -45,11 +45,11 @@ export function TeamSwitcher({
               <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-background">
                 <FlowerIcon className="size-4 text-foreground" />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-xs leading-tight">
                 <span className="truncate text-background font-bold">{activeTeam.name}</span>
                 <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
-              <ChevronsUpDown className="ml-auto" />
+              <ChevronsUpDown className="ml-auto text-secondary" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

@@ -1,0 +1,1 @@
+import{o as t}from"./index-BJe_fyUy.js";import{O as e}from"./index-DR-yOLsH.js";function o(){return t.jsx(e,{})}const _=Object.freeze(Object.defineProperty({__proto__:null,default:o},Symbol.toStringTag,{value:"Module"}));export{_};

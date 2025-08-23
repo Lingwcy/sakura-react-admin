@@ -162,14 +162,14 @@ const useRoleTable = () => {
         setEditingItem(undefined)
     }
 
-    const handleEdit = (role: Role) => {
+    const handleEdit = (role: Omit<Role,'permission'> & { permissionIds: string[] }) => {
         updateRole.mutate({ id: role.id, role: role })
     }
     const handleDelete = (id: string) => {
         deleteRole.mutate([id])
     }
 
-    const handleCreate = (role: Role) => {
+    const handleCreate = (role:  Omit<Role,'permission'> & { permissionIds: string[] }) => {
         createRole.mutate(role)
     }
 
