@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { AppRouteObject } from "@/types/router";
-
+import { ERROR_ROUTE } from './error-routes'
 // 懒加载关键组件
 const Layout = lazy(() => import("@/pages/Layout"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -21,10 +21,10 @@ const PUBLIC_ROUTE: AppRouteObject = {
 	),
 };
 
-// const NO_MATCHED_ROUTE: AppRouteObject = {
-// 	path: "*",
-// 	element: <Navigate to="/404" replace />,
-// };
+const NO_MATCHED_ROUTE: AppRouteObject = {
+	path: "*",
+	element: <Navigate to="/404" replace />,
+};
 
 export default function Router() {
 	const permissionRoutes = usePermissionRoutes();
@@ -44,7 +44,7 @@ export default function Router() {
 		],
 	};
 
-	const routes = [PUBLIC_ROUTE, PROTECTED_ROUTE] as RouteObject[];
+	const routes = [NO_MATCHED_ROUTE, PUBLIC_ROUTE, PROTECTED_ROUTE, ERROR_ROUTE] as RouteObject[];
 
 	const router = createBrowserRouter(routes);
 

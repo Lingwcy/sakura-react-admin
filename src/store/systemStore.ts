@@ -13,14 +13,14 @@ import {
     UserCog2Icon,
     PercentDiamond,
 } from "lucide-react"
-import { AppRouteObject } from '@/types/router';
+import { TabInfo } from '@/hooks/use-system';
 
 type Store = {
     sidebarConfig: {
         teams: SidebarTeam[],
         items: SilderNavItem[],
     },
-    savedTabs: Omit<AppRouteObject[], 'children'>,
+    savedTabs: TabInfo[],
     selectedTab: string,
     breadConfig: {
         currentBread: string[]
@@ -37,7 +37,7 @@ type Store = {
 type Action = {
     setCurrentBread: (data: string[]) => void
     setThemeMode: (data: ThemeMode) => void
-    addTab: (data: AppRouteObject) => void
+    addTab: (data: TabInfo) => void
     removeTab: (data: string) => void
     setSelectedTab: (data: string) => void
     setShowHeaderTab: (data: boolean) => void
@@ -192,7 +192,7 @@ const useSystemStore = create<Store & Action>()(
         removeTab: (data) => {
             set((state) => ({
                 ...state,
-                savedTabs: state.savedTabs.filter((item) => item.meta.key !== data)
+                savedTabs: state.savedTabs.filter((item) => item.key !== data)
             }))
         },
         setSelectedTab: (data) => {

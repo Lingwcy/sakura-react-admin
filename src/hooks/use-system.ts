@@ -1,23 +1,65 @@
 import { useSystemStore } from "@/store";
 import { usePermissionRoutes } from "@/router/hooks/use-permission-routes";
-const useSystemSideBar = () => {
+import { useMemo } from "react";
+import { AppRouteObject } from "@/types/router";
+import { SidebarTeam } from '@/types/systemType'
+
+
+/**
+ * 
+ * 提供动态路由提供状态
+ * 直接下游提供消费
+ */
+export interface TabInfo {
+    key: string;
+    label: string;
+    icon?: React.ReactNode;
+    order?: number;
+    hide?: boolean;
+    children?: TabInfo[]
+}
+interface UseDynamicRoutesReturn {
+    sidebarTeams: SidebarTeam[]
+    sidebarNavItems: AppRouteObject[];
+    availableTabs: TabInfo[];
+}
+
+const useDynamicRoutes = (): UseDynamicRoutesReturn => {
     const route = usePermissionRoutes() // 动态路由渲染侧边栏
     const sidebarConfig = useSystemStore((state) => state.sidebarConfig)
-    const sidebarTeams = () => sidebarConfig.teams
+    const sidebarTeams = sidebarConfig.teams
+
+    // 可用tabs集合
+    const availableTabs = useMemo<TabInfo[]>(() => {
+        function getTabs(nodes: AppRouteObject[] = []): TabInfo[] {
+            return nodes
+                .filter((n) => n.meta?.key)            
+                .map((n) => ({
+                    key: n.meta!.key,
+                    label: n.meta!.label,
+                    icon: n.meta?.icon,
+                    order: n.order,
+                    hide: n.meta.hideTab,
+                    children: getTabs(n.children),    
+                }));
+        }
+        return getTabs(route);
+    }, [route]);
 
     return {
         sidebarTeams,
-        sidebarNavItems : route
+        sidebarNavItems: route,
+        availableTabs
     }
 }
 
-const useBread =() => {
+const useBread = () => {
     const setCurrentBread = useSystemStore((state) => state.setCurrentBread)
     const currentBread = useSystemStore((state) => state.breadConfig.currentBread)
 
 
     const handleSetCurrentBread = (breads: string) => {
-        if(!breads) return
+        if (!breads) return
         breads = breads.slice(1)
         setCurrentBread(breads.split('/'))
     }
@@ -39,7 +81,7 @@ const useSettingBar = () => {
 }
 
 export {
-    useSystemSideBar,
+    useDynamicRoutes,
     useBread,
     useSettingBar
 }

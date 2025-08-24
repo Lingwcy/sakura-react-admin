@@ -64,7 +64,7 @@ export default function SystemTabs() {
                         <AnimatePresence>
                             {savedTabs.map((item) => (
                                 <motion.div
-                                    key={item.meta.key}
+                                    key={item.key}
                                     initial={{ opacity: 0, scale: 0, x: -20 }}
                                     animate={{ opacity: 1, scale: 1, x: 0 }}
                                     exit={{ opacity: 0, scale: 0, x: 20 }}
@@ -73,16 +73,16 @@ export default function SystemTabs() {
                                     className="mr-1"
                                 >
                                     <Badge
-                                        onClick={() => handleClickTab(item.meta.key)}
+                                        onClick={() => handleClickTab(item.key)}
                                         variant='secondary'
                                         className={clsx(
                                             "mr-0 select-none flex-shrink-0 min-w-8 min-h-7 rounded-xs cursor-pointer transition-all ease-in-out duration-100",
-                                            selectedTab === item.meta.key && "bg-primary text-white"
+                                            selectedTab === item.key && "bg-primary text-white"
                                         )
                                         }>
-                                        {item.meta.label}
+                                        {item.label}
                                         <div
-                                            onClick={(e) => handleCloseTab(e, item.meta.key)}
+                                            onClick={(e) => handleCloseTab(e, item.key)}
                                             className="cursor-pointer hover:bg-gray-300 transition-all ease-in-out duration-100 rounded-sm ml-1 p-0.5">
                                             <Icon icon="line-md:close" size={18} />
                                         </div>

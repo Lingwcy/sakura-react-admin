@@ -117,15 +117,6 @@ const USER_PERMISSION = {
 			route: "user",
 			component: "/UserManagement/admin-user-management/index.tsx",
 		},
-		{
-			id: "2002",
-			parentId: "2000",
-			label: "客户端用户",
-			name: "客户端用户",
-			type: PermissionType.MENU,
-			route: "fontuser",
-			component: "/UserManagement/font-user-management/index.tsx",
-		},
 	],
 };
 const PERMISSION_PERMISSION = {
@@ -185,6 +176,33 @@ const COMPONENTS_PERMISSION = {
 			type: PermissionType.MENU,
 			route: "permission-select-tree",
 			component: "/Component/permissiom-select-tree.tsx",
+		},
+		{
+			id: "4003",
+			parentId: "4000",
+			label: "404",
+			name: "404",
+			type: PermissionType.MENU,
+			route: "page-not-found",
+			component: "/Component/page-not-found-test.tsx",
+		},
+		{
+			id: "4004",
+			parentId: "4000",
+			label: "403",
+			name: "403",
+			type: PermissionType.MENU,
+			route: "page-not-auth",
+			component: "/Component/page-not-auth-test.tsx",
+		},
+		{
+			id: "4005",
+			parentId: "4000",
+			label: "500",
+			name: "500",
+			type: PermissionType.MENU,
+			route: "page-server-error",
+			component: "/Component/page-server-error-test.tsx",
 		}
 	],
 };
@@ -270,15 +288,15 @@ class PermissionManager {
 		if (!ids || ids.length === 0) {
 			return [];
 		}
-		
+
 		// Convert all ids to strings to ensure proper comparison
 		const stringIds = ids.map(id => String(id));
-		
+
 		// Get all permissions from the flattened list
 		const allPermissions = this.getAllPermissions();
-		
+
 		// Filter permissions by the provided ids
-		return allPermissions.filter(permission => 
+		return allPermissions.filter(permission =>
 			stringIds.includes(String(permission.id))
 		);
 	}
