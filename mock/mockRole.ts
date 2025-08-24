@@ -203,6 +203,15 @@ const COMPONENTS_PERMISSION = {
 			type: PermissionType.MENU,
 			route: "page-server-error",
 			component: "/Component/page-server-error-test.tsx",
+		},
+		{
+			id: "4006",
+			parentId: "4000",
+			label: "布局样式缩略",
+			name: "布局样式缩略",
+			type: PermissionType.MENU,
+			route: "app-layout-test",
+			component: "/Component/app-layout-test.tsx",
 		}
 	],
 };

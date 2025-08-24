@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+
 export default function AboutProjectPage(){
     return (
         <div className="text-primary text-3xl mt-50 w-full container flex flex-col justify-center items-center font-bold">

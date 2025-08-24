@@ -59,7 +59,7 @@ export function RouteLoadingProgress() {
 		// 模拟路由加载完成
 		const loadingCompleteTimer = setTimeout(() => {
 			completeLoading();
-		}, 300 + Math.random() * 200); // 300-500ms 的随机延迟
+		}, 100 + Math.random() * 200); // 300-500ms 的随机延迟
 
 		return () => {
 			if (progressTimer) clearInterval(progressTimer);
@@ -69,7 +69,7 @@ export function RouteLoadingProgress() {
 	}, [location.pathname, location.hash]); // 监听路径和 hash 变化
 
 	return isLoading && progress > 0 ? (
-		<div className="fixed bottom-0 left-0 right-0 z-[99999] w-screen opacity-80">
+		<div className="fixed top-0 left-0 right-0 z-[99999] w-screen opacity-80">
 			<Progress value={progress} className="h-[3px] shadow-2xl rounded-none" />
 		</div>
 	) : null;

@@ -145,7 +145,7 @@ const initialSidebarData: SilderNavItem[] = [
 
 const initialSidebarTeamData: SidebarTeam[] = [
     {
-        name: "Sakura-React-Admin",
+        name: "Sakura Admin",
         logo: GalleryVerticalEnd,
         plan: "",
     },
