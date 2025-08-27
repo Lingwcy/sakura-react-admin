@@ -72,11 +72,17 @@ const useBread = () => {
 
 const useSettingBar = () => {
     const showHeaderTab = useSystemStore((state) => state.settingBarConfig.showHeaderTab)
+    const showBreadCrumb = useSystemStore((state) => state.settingBarConfig.showBreadCrumb)
     const setShowHeaderTab = useSystemStore((state) => state.setShowHeaderTab)
+    const setShowBreadCrumb = useSystemStore((state) => state.setShowBreadCrumb)
+    const currentLayoutSelected = useSystemStore((state) => state.settingBarConfig.currentSelected)
 
     return {
         showHeaderTab,
-        setShowHeaderTab
+        showBreadCrumb,
+        currentLayoutSelected,
+        setShowHeaderTab,
+        setShowBreadCrumb
     }
 }
 

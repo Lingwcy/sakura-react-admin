@@ -14,6 +14,18 @@ import {
     PercentDiamond,
 } from "lucide-react"
 import { TabInfo } from '@/hooks/use-system';
+import { layoutSettingItems } from '@/hooks/use-layout';
+
+type LayoutSettingItem = {
+    key: number
+    label: string
+    tooTip: string
+    isEnable: boolean
+    isHovered?: boolean
+    isSelected?: boolean
+    render: () => React.JSX.Element
+}
+
 
 type Store = {
     sidebarConfig: {
@@ -29,8 +41,11 @@ type Store = {
         themeMode: ThemeMode,
         availableThemeMode: Record<ThemeMode, string>
     },
-    settingBarConfig :{
-        showHeaderTab: boolean
+    settingBarConfig: {
+        showHeaderTab: boolean,
+        showBreadCrumb: boolean,
+        layoutSettingItems: LayoutSettingItem[],
+        currentSelected: number
     }
 }
 
@@ -41,6 +56,10 @@ type Action = {
     removeTab: (data: string) => void
     setSelectedTab: (data: string) => void
     setShowHeaderTab: (data: boolean) => void
+    setShowBreadCrumb: (data: boolean) => void
+    setSettingLayoutItemHover: (key: number, value: boolean) => void
+    setSettingLayoutItemCurrentSelected: (key: number) => void
+    setSettingLayoutItemSelected: (key: number) => void
 }
 
 const initialSidebarData: SilderNavItem[] = [
@@ -169,7 +188,10 @@ const useSystemStore = create<Store & Action>()(
             availableThemeMode: AvailableThemeMode
         },
         settingBarConfig: {
-            showHeaderTab: true
+            showHeaderTab: true, //tab卡片
+            showBreadCrumb: true, //面包屑
+            layoutSettingItems: layoutSettingItems.map(item => ({ ...item, isHovered: false, isSelected: false })),
+            currentSelected: 0
         },
         setCurrentBread: (data) => {
             set((state) => ({
@@ -205,6 +227,44 @@ const useSystemStore = create<Store & Action>()(
             set((state) => ({
                 ...state,
                 settingBarConfig: { ...state.settingBarConfig, showHeaderTab: data }
+            }))
+        },
+        setShowBreadCrumb: (data) => {
+            set((state) => ({
+                ...state,
+                settingBarConfig: { ...state.settingBarConfig, showBreadCrumb: data }
+            }))
+        },
+        setSettingLayoutItemHover(key, value) {
+            set((state) => ({
+                ...state,
+                settingBarConfig: {
+                    ...state.settingBarConfig,
+                    layoutSettingItems: state.settingBarConfig.layoutSettingItems.map(item => (item.key === key ? { ...item, isHovered: value } : item))
+                }
+            }))
+        },
+        setSettingLayoutItemCurrentSelected(key) {
+            set((state) => ({
+                ...state,
+                settingBarConfig: {
+                    ...state.settingBarConfig,
+                    currentSelected: key
+                }
+            }))
+        },
+        setSettingLayoutItemSelected(key: number) {
+            set(state => ({
+                ...state,
+                settingBarConfig: {
+                    ...state.settingBarConfig,
+                    // 1. 先全部置 false
+                    layoutSettingItems: state.settingBarConfig.layoutSettingItems.map(i =>
+                        i.key === key ? { ...i, isSelected: true } : { ...i, isSelected: false }
+                    ),
+                    // 2. 同时更新 currentSelected
+                    currentSelected: key,
+                },
             }))
         }
     })

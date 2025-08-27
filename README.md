@@ -1,11 +1,10 @@
 # Sakura React Admin
 
 下一代通用后台管理系统.
-
-![User Management](./src//assets/readme/permission.png)
+![ex1](./src//assets/readme/ex1.png)
+![ex2](./src//assets/readme/ex2.png)
 ![Server Archive](./src//assets/readme/permission-edit.png)  
-![Permission Management](./src//assets/readme/server.png)
-![Permission Node Editor](./src//assets/readme/user.png)
+
 
 
 ## 🚀 Getting Started

@@ -77,7 +77,7 @@ export default function SystemTabs() {
                                         variant='secondary'
                                         className={clsx(
                                             "mr-0 select-none flex-shrink-0 min-w-8 min-h-7 rounded-xs cursor-pointer transition-all ease-in-out duration-100",
-                                            selectedTab === item.key && "bg-primary text-white"
+                                            selectedTab === item.key && "bg-primary text-secondary"
                                         )
                                         }>
                                         {item.label}

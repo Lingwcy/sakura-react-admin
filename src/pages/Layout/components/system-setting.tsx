@@ -33,7 +33,13 @@ const sheetContentBgStyle: CSSProperties = {
 
 
 export function SystemSetting() {
-    const { showHeaderTab, setShowHeaderTab } = useSettingBar()
+    const {
+        showHeaderTab,
+        showBreadCrumb,
+        setShowBreadCrumb,
+        setShowHeaderTab,
+
+    } = useSettingBar()
     return (
         <Sheet modal={true} >
             <SheetTrigger asChild>
@@ -117,7 +123,7 @@ export function SystemSetting() {
                                             <Label className="font-bold text-[15px]">布局</Label>
                                         </div>
                                         <div className="grid grid-cols-3 mb-5">
-                                            <LayoutItem/>
+                                            <LayoutItem />
                                         </div>
 
                                         <div>
@@ -130,6 +136,14 @@ export function SystemSetting() {
                                                     className="cursor-pointer"
                                                     checked={showHeaderTab}
                                                     onCheckedChange={setShowHeaderTab}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between p-3">
+                                                <Label className="font-light text-[15px]">面包屑</Label>
+                                                <Switch
+                                                    className="cursor-pointer"
+                                                    checked={showBreadCrumb}
+                                                    onCheckedChange={setShowBreadCrumb}
                                                 />
                                             </div>
                                         </div>
