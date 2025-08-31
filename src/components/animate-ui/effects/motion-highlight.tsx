@@ -296,14 +296,17 @@ function MotionHighlight<T extends string>({
         ? controlledItems
           ? render(children)
           : render(
-              React.Children.map(children, (child, index) => (
-                <MotionHighlightItem
-                  key={index}
-                  className={props?.itemsClassName}
-                >
-                  {child}
-                </MotionHighlightItem>
-              )),
+              React.Children.map(children, (child, index) => {
+                if (!React.isValidElement(child)) return child;
+                return (
+                  <MotionHighlightItem
+                    key={index}
+                    className={(props as UncontrolledParentModeMotionHighlightProps<T> | UncontrolledChildrenModeMotionHighlightProps<T>)?.itemsClassName}
+                  >
+                    {child}
+                  </MotionHighlightItem>
+                );
+              }),
             )
         : children}
     </MotionHighlightContext.Provider>

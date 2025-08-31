@@ -13,7 +13,7 @@ export function AuthRoute({ children }: AuthRoutProps) {
 
     useEffect(() => {
         // 只有当前不在登录页面且没有token时才跳转到登录页
-        if (!userToken.token && location.pathname !== '/login') {
+        if (!userToken.token || userToken.token == "" && location.pathname !== '/login') {
             navigate('/login', { replace: true })
         }
     }, [userToken.token, navigate, location.pathname])

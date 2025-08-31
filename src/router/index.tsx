@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { AuthRoute } from "@/components/auth-route";
 import { usePermissionRoutes } from "./hooks/use-permission-routes";
-import { ErrorBoundary } from "react-error-boundary";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { AppRouteObject } from "@/types/router";
@@ -15,9 +14,7 @@ const { VITE_APP_HOMEPAGE: HOMEPAGE } = import.meta.env;
 const PUBLIC_ROUTE: AppRouteObject = {
 	path: "/login",
 	element: (
-		<ErrorBoundary fallback={<>出错啦！！！</>}>
-			<Login />
-		</ErrorBoundary>
+		<Login />
 	),
 };
 
@@ -38,7 +35,7 @@ export default function Router() {
 		children: [
 			{
 				index: true,
-				element: <Navigate to={HOMEPAGE || '/usermanagement/user'} replace />
+				element: <Navigate to={HOMEPAGE} replace />
 			},
 			...permissionRoutes
 		],

@@ -212,6 +212,15 @@ const COMPONENTS_PERMISSION = {
 			type: PermissionType.MENU,
 			route: "app-layout-test",
 			component: "/Component/app-layout-test.tsx",
+		},
+		{
+			id: "4007",
+			parentId: "4000",
+			label: "ECharts",
+			name: "ECharts",
+			type: PermissionType.MENU,
+			route: "charts",
+			component: "/Component/charts.tsx",
 		}
 	],
 };

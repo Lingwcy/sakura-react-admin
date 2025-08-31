@@ -5,7 +5,6 @@ import Layout from "@pages/Layout";
 import Login from "@/pages/Login";
 import { AuthRoute } from "@/components/auth-route";
 import Home from "@/pages/Home";
-import Article from "@/pages/Article";
 import Publish from "@/pages/Publish";
 import CssPlaygroundLayout from "@/pages/CssPlayground";
 import { TwoWingsMiddle } from "@/components/css-playground";
@@ -28,10 +27,6 @@ const router = createBrowserRouter([
             {
                 path: 'home',
                 Component: Home
-            },
-            {
-                path: 'article',
-                Component: Article
             },
             {
                 path: 'publish',

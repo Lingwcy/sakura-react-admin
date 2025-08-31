@@ -38,7 +38,7 @@ export default function () {
       <SidebarProvider>
         {currentLayoutSelected !== 3 && <AppSidebar />}
         <SidebarInset className="flex flex-col h-full">
-          <Header headerLeftSlot = {currentLayoutSelected !== 3 ?"":<VerticalHeader currentLayout={currentLayoutSelected}/>}/>
+          <Header headerLeftSlot = {currentLayoutSelected !== 3 ?"":<VerticalHeader/>}/>
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full w-full">
               <div className="flex flex-1 flex-col p-4">

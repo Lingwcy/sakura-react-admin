@@ -9,7 +9,7 @@ DELETE /api/roles/:ids - Batch delete roles
 GET /api/role/next-id - Get next available role ID
  */
 
-export const apiList = {
+export const apiList= {
     user: {
         signIn: "api/authorizations",
         userProfile: "api/user/profile",
@@ -35,6 +35,9 @@ export const apiList = {
         updateRole: "api/role",
         deleteRole: "api/role",
         deleteRoles: "api/roles"
+    },
+    weather: {
+        getTodayWeather: 'https://api.open-meteo.com/v1/forecast?latitude=30.67&longitude=104.07&hourly=temperature_2m,relativehumidity_2m,windspeed_10m&timezone=Asia/Shanghai'
     }
 
 }
