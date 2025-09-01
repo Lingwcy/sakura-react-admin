@@ -13,6 +13,12 @@ body {
   
 }
 
+@font-face {
+  font-family: 'YouSheBiaoTiHei';
+  src: url('/src/assets/fonts/YouSheBiaoTiHei.ttf') format('truetype');
+  font-display: swap;
+}
+
 html,
 #root {
   height: 100%;

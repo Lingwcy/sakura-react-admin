@@ -34,8 +34,23 @@ export function VerticalNavBar({ className }: VerticalNavBarProps) {
             )}>
                 {
                     availableTabs.map(item => {
+                        // 如果没有children，直接作为路由节点
+                        if (!item.children || item.children.length === 0) {
+                            return (
+                                <Button 
+                                    key={item.key}
+                                    variant="ghost" 
+                                    onClick={() => handleAddTab(item)}
+                                    className="cursor-pointer"
+                                >
+                                    {item.icon}
+                                    {item.label}
+                                </Button>
+                            )
+                        }
+                        
                         return (
-                            <DropdownMenu>
+                            <DropdownMenu key={item.key}>
                                 <DropdownMenuTrigger asChild>
                                     <div className="">
                                         <Button variant="ghost">

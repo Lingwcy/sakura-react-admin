@@ -38,15 +38,28 @@ export enum PermissionBasicStatus {
 	DISABLE = 0,
 	ENABLE = 1,
 }
+
+const DATA_SCREEN_PERMISSION = {
+	id: "8000",
+	parentId: "",
+	label: "数据大屏",
+	name: "数据大屏",
+	icon: "line-md:monitor-screenshot",
+	type: PermissionType.MENU,
+	route: "screen",
+	order: 1,
+	component: "/DataScreen/index.tsx",
+}
+
 const HERO_PERMISSION = {
 	id: "7000",
 	parentId: "",
-	label: "首页",
-	name: "首页",
-	icon: "line-md:sun-rising-loop",
+	label: "项目信息",
+	name: "项目信息",
+	icon: "line-md:reddit-circle-loop",
 	type: PermissionType.CATALOGUE,
 	route: "hero",
-	order: 1,
+	order: 100,
 	children: [
 		{
 			id: "7001",
@@ -269,6 +282,7 @@ const CSSLAYOUT_PERMISSION = {
 
 // 将PERMISSION_LIST的树结构展平，模拟在数据库中的情况
 export const PERMISSION_LIST = [
+	DATA_SCREEN_PERMISSION,
 	SERVER_PERMISSION,
 	USER_PERMISSION,
 	PERMISSION_PERMISSION,
