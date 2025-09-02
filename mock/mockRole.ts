@@ -72,6 +72,39 @@ const HERO_PERMISSION = {
 		},
 	],
 }
+
+const MENU_PERMISSION = {
+	id: "9000",
+	parentId: "",
+	label: "多级菜单",
+	name: "多级菜单",
+	icon: "line-md:menu-fold-right",
+	type: PermissionType.CATALOGUE,
+	route: "hero",
+	order: 100,
+	children: [
+		{
+			id: "9001",
+			parentId: "9000",
+			label: "二级菜单",
+			name: "二级菜单",
+			type: PermissionType.CATALOGUE,
+			route: "about-project",
+			component: "/Hero/about-project/index.tsx",
+			children: [
+				{
+					id: "9011",
+					parentId: "9001",
+					label: "三级菜单",
+					name: "三级菜单",
+					type: PermissionType.CATALOGUE,
+					route: "about-project",
+					component: "/Hero/about-project/index.tsx",
+				},
+			],
+		},
+	],
+}
 const SERVER_PERMISSION = {
 	id: "1000",
 	parentId: "",
@@ -280,6 +313,8 @@ const CSSLAYOUT_PERMISSION = {
 	],
 };
 
+
+
 // 将PERMISSION_LIST的树结构展平，模拟在数据库中的情况
 export const PERMISSION_LIST = [
 	DATA_SCREEN_PERMISSION,
@@ -290,6 +325,7 @@ export const PERMISSION_LIST = [
 	TOOLS_PERMISSION,
 	CSSLAYOUT_PERMISSION,
 	HERO_PERMISSION,
+	MENU_PERMISSION
 ];
 
 // 扁平化权限数据，模拟数据库存储

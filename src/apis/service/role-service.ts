@@ -1,6 +1,6 @@
 import { requestClient } from "@/utils";
 import { Role } from "@/types/roleType";
-import { apiList } from "./api-list";
+import { apiList } from "../api-list";
 type RoleListResponse = {
     data: {
         currentPage: number,

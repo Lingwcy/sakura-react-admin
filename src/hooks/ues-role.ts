@@ -4,7 +4,7 @@ import {
     createRole as createRoleApi,
     deleteRole as deleteRoleApi,
     updateRole as updateRoleApi
-} from "@/apis/role-service";
+} from "@/apis/service/role-service";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner"
 import { Role } from "@/types/roleType";

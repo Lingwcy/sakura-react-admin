@@ -1,10 +1,11 @@
 import { useUserStore } from "@/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { signIn, getUserProfile, getUserList, deleteUsers, updateUser as updateUserApi, createUser as createUserApi } from "@/apis/userService";
+import { signIn, getUserProfile, getUserList, deleteUsers, updateUser as updateUserApi, createUser as createUserApi } from "@/apis/service/userService";
 import type { UserProfile, UserSignIn } from "@/types/userType";
 import { useState } from "react";
 import { toast } from "sonner"
 import { UserItem } from "@/types/userType";
+
 const useUserToken = () => {
     const userToken = useUserStore((state) => state.userToken)
     const setUserToken = useUserStore((state) => state.setUserToken)
@@ -70,8 +71,6 @@ const useUserProfile = () => {
         refetch: query.refetch
     }
 }
-
-
 
 const useUserList = () => {
     const [currentPage, setCurrentPage] = useState(1);

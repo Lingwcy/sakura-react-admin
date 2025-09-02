@@ -1,6 +1,6 @@
 import { requestClient } from "@/utils";
 import type { UserItem, UserProfile, UserSignIn, UserToken } from "@/types/userType";
-import { apiList } from "./api-list";
+import { apiList } from "../api-list";
 
 type SigInResponse = {
     data: UserToken,

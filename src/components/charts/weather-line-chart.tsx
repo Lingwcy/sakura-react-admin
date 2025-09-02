@@ -1,4 +1,4 @@
-import { getTodayWeather } from "@/apis/weather-service";
+import { getTodayWeather } from "@/apis/service/weather-service";
 import { Suspense } from "react";
 import ReactECharts from "echarts-for-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

@@ -1,4 +1,4 @@
-import { apiList } from "./api-list";
+import { apiList } from "../api-list";
 import { requestClient } from "@/utils";
 import { Permission } from "@/types/roleType";
 type PermissionListResponse = {

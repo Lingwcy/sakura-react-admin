@@ -144,3 +144,4 @@ export const watchFontLoad = (fontFamily: string, callback: (loaded: boolean) =>
     }, 5000);
   }
 };
+

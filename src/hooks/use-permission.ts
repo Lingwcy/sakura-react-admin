@@ -6,7 +6,7 @@ import {
     getRootPermissionList,
     getNextRootId,
     getNextChildId
-} from "@/apis/permission-service";
+} from "@/apis/service/permission-service";
 import { Permission } from "@/types/roleType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";

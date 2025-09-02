@@ -5,7 +5,7 @@ import {
     Empty,
     Horizontal
 } from "@/components/layout";
-
+import HorizontalNavBar from "@/components/layout/navbar/horizontal-nav-bar";
 
 export default function AppLayoutTest() {
     const render = () => {
@@ -20,9 +20,14 @@ export default function AppLayoutTest() {
     }
 
     return (
-        <div className="flex gap-5 ">
-            {render()}
-        </div>
+        <>
+
+            <div className="flex gap-5 ">
+                {render()}
+            </div>
+            <HorizontalNavBar/>
+
+        </>
 
     )
 }

@@ -1,4 +1,4 @@
-import { apiList } from "./api-list";
+import { apiList } from "../api-list";
 import { requestClient } from "@/utils";
 
 // Open-Meteo 逐小时天气接口的完整响应
