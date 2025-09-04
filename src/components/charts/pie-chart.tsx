@@ -5,7 +5,7 @@ import ChartCard from "./chart-card";
 import { useTheme } from "@/theme/hook/use-theme";
 import { ThemeWrapper } from "@/utils/color";
 
-type BarCharType = "simple" | "multi" | "stack"
+type BarCharType = "simple" | "ring" | "area"
 
 interface BarChartProps {
     type?: BarCharType
@@ -13,7 +13,7 @@ interface BarChartProps {
     isTheme?: boolean
     data: EChartsOption
 }
-export default function BarChart({
+export default function PieChart({
     type = 'simple',
     cardTitle,
     data,
@@ -33,7 +33,7 @@ export default function BarChart({
                     },
                     series: Array.isArray(base.series) ? base.series.slice(0, 1) : base.series
                 };
-            case 'stack':
+            case 'ring':
                 return {
                     ...base,
                     tooltip: {
@@ -42,10 +42,21 @@ export default function BarChart({
                         axisPointer: { type: 'shadow' }
                     },
                     series: Array.isArray(base.series)
-                        ? (base.series as any[]).map((s) => ({ ...s, stack: 'total' }))
+                        ? (base.series as any[]).map((s) => ({ ...s, radius: ['30%', '50%'] }))
                         : base.series
                 };
-            case 'multi':
+            case 'area':
+                return {
+                    ...base,
+                    tooltip: {
+                        ...base.tooltip,
+                        trigger: 'item',
+                        axisPointer: { type: 'shadow' }
+                    },
+                    series: Array.isArray(base.series)
+                        ? (base.series as any[]).map((s) => ({ ...s, roseType: 'area' }))
+                        : base.series
+                };
             default:
                 return {
                     ...base,
@@ -68,7 +79,7 @@ export default function BarChart({
     useLayoutEffect(() => {
         if (isTheme) {
             const applyTheme = async () => {
-                const themed = await ThemeWrapper(makeOption(data, type), 'bar');
+                const themed = await ThemeWrapper(makeOption(data, type), 'pie');
                 setOption(themed);
             };
             applyTheme();

@@ -2,7 +2,6 @@ import {
     ApiCataPie,
     NavTreeChartCard,
     WeatherLineChart,
-    BarChart
 } from "@/components/charts"
 export default function ChartsPage() {
     return (
@@ -13,7 +12,6 @@ export default function ChartsPage() {
                 <ApiCataPie />
                 <NavTreeChartCard />
             </div>
-            <BarChart />
         </div>
     )
 }

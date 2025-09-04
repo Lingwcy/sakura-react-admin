@@ -9,7 +9,7 @@ import Icon from "@/components/ui/icon"
 import { Button } from "@/components/ui/button"
 import HeaderBreadCrumb from "./breadcrumb"
 import { useSettingBar } from "@/hooks/use-system"
-import { VerticalNavBar } from "./vertical/navbar"
+import { VerticalNavBar } from "./vertical/silde-bar"
 
 interface HeaderProps {
     headerLeftSlot?: React.ReactNode | null;

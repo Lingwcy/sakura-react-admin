@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/silde-bar"
+import { AppSidebar } from "@/pages/Layout/horizontal/silde-bar"
 import {
   Breadcrumb,
   BreadcrumbItem,

@@ -1,1 +1,0 @@
-import{q as e,V as t}from"./index-Dt0_14Pi.js";function o(){return e.jsx("div",{className:"w-[100px] h-[60px] ",children:e.jsx(t,{})})}const s=Object.freeze(Object.defineProperty({__proto__:null,default:o},Symbol.toStringTag,{value:"Module"}));export{s as _};

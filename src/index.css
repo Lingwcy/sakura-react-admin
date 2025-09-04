@@ -46,7 +46,7 @@ html,
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
-  --color-ring: var(--ring);;
+  --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -85,6 +85,18 @@ html,
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Chart palette (Light) */
+  --chart1: #9bd3d3;  /* blue-500 */
+  --chart2: #616c69;  /* emerald-500 */
+  --chart3: #f59e0b;  /* amber-500 */
+  --chart4: #ef4444;  /* red-500 */
+  --chart5: #8b5cf6;  /* violet-500 */
+  --chart6: #06b6d4;  /* cyan-500 */
+  --chart7: #f97316;  /* orange-500 */
+  --chart8: #14b8a6;  /* teal-500 */
+  --chart9: #22c55e;  /* green-500 */
+  --chart10: #a855f7; /* purple-500 */
 }
 
 .dark {
@@ -121,6 +133,18 @@ html,
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Chart palette (Dark) */
+  --chart1: #60a5fa;  /* blue-400 */
+  --chart2: #34d399;  /* emerald-400 */
+  --chart3: #fbbf24;  /* amber-400 */
+  --chart4: #f87171;  /* red-400 */
+  --chart5: #a78bfa;  /* violet-400 */
+  --chart6: #67e8f9;  /* cyan-300 */
+  --chart7: #fb923c;  /* orange-400 */
+  --chart8: #2dd4bf;  /* teal-300 */
+  --chart9: #4ade80;  /* green-400 */
+  --chart10: #c084fc; /* purple-400 */
 }
 .sakura {
   /* 保持原有的自定义变量 */
@@ -156,6 +180,18 @@ html,
   --sidebar-accent-foreground: oklch(0.36 0.09 350);
   --sidebar-border: oklch(0.90 0.03 350);
   --sidebar-ring: oklch(0.77 0.19 350);
+
+  /* Chart palette (Sakura) */
+  --chart1: #f472b6;  /* pink-400 */
+  --chart2: #fb7185;  /* rose-400 */
+  --chart3: #fda4af;  /* rose-300 */
+  --chart4: #f9a8d4;  /* pink-300 */
+  --chart5: #f43f5e;  /* rose-500 */
+  --chart6: #e11d48;  /* rose-600 */
+  --chart7: #f59e0b;  /* amber-500 */
+  --chart8: #fde047;  /* yellow-300 */
+  --chart9: #fca5a5;  /* red-300 */
+  --chart10: #d946ef; /* fuchsia-500 */
 }
 
 /* 新增 Blue 变量 */
@@ -193,6 +229,18 @@ html,
   --sidebar-accent-foreground: oklch(0.25 0.08 220);
   --sidebar-border: oklch(0.88 0.04 220);
   --sidebar-ring: oklch(0.65 0.18 220);
+
+  /* Chart palette (Blue) */
+  --chart1: #0ea5e9; /* sky-500 */
+  --chart2: #0284c7; /* sky-600 */
+  --chart3: #38bdf8; /* sky-400 */
+  --chart4: #22d3ee; /* cyan-400 */
+  --chart5: #06b6d4; /* cyan-500 */
+  --chart6: #0891b2; /* cyan-600 */
+  --chart7: #14b8a6; /* teal-500 */
+  --chart8: #0d9488; /* teal-600 */
+  --chart9: #2dd4bf; /* teal-300 */
+  --chart10: #5eead4; /* teal-200 */
 }
 
 @layer base {

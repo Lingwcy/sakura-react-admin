@@ -5,8 +5,6 @@ import {
     Empty,
     Horizontal
 } from "@/components/layout";
-import HorizontalNavBar from "@/components/layout/navbar/horizontal-nav-bar";
-
 export default function AppLayoutTest() {
     const render = () => {
         const nodeArr: React.ReactNode[] = [<Vertical />, <TwoVertical />, <Hybird />, <Empty />, <Horizontal />]
@@ -25,7 +23,6 @@ export default function AppLayoutTest() {
             <div className="flex gap-5 ">
                 {render()}
             </div>
-            <HorizontalNavBar/>
 
         </>
 

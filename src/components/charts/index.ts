@@ -4,10 +4,12 @@ import ApiCataPie from "./api-cata-pie";
 import NavTreeChartCard from "./nav-tree-chart";
 
 import BarChart from "./bar-chart";
+import PieChart from "./pie-chart";
 export {
     ChinaMapChart,
     WeatherLineChart,
     ApiCataPie,
     NavTreeChartCard,
-    BarChart
+    BarChart,
+    PieChart
 }

@@ -1,4 +1,12 @@
 /**
+ * 这个工具文件目前主要提供给 Echart 主题化
+ * 读取特定的主题变量 并 注入到 ThemeWrapper ，ThemeWrapper 会返回一个带有主题颜色的 EChartsOption
+ */
+
+import { EChartsOption, SeriesOption } from "echarts";
+
+
+/**
    根据 CSS 变量生成颜色
  */
 export function getColor(name: string, fallback?: string) {
@@ -29,4 +37,268 @@ export function getColorAsync(name: string, fallback?: string): Promise<string> 
         });
     });
 }
+/**
+ * 
+ * 一次性获取多个样式
+ */
 
+export function getColorListAsync(names: string[]): Promise<string[]> {
+    return Promise.all(names.map(item => getColorAsync(item)))
+}
+
+/**
+ * 枚举所有可用的主题颜色
+ */
+
+export enum ThemeColor {
+    primary = '--primary',
+    secondary = '--secondary',
+    background = '--background',
+    foreground = '--foreground',
+    card = '--card',
+    cardForeground = '--card-foreground',
+    popover = '--popover',
+    popoverForeground = '--popover-foreground',
+    primaryForeground = '--primary-foreground',
+    secondaryForeground = '--secondary-foreground',
+    muted = '--muted',
+    mutedForeground = '--muted-foreground',
+    accent = '--accent',
+    accentForeground = '--accent-foreground',
+    destructive = '--destructive',
+    border = '--border',
+    input = '--input',
+    ring = '--ring',
+    sidebar = '--sidebar',
+    sidebarForeground = '--sidebar-foreground',
+    sidebarPrimary = '--sidebar-primary',
+    sidebarPrimaryForeground = '--sidebar-primary-foreground',
+    sidebarAccent = '--sidebar-accent',
+    sidebarAccentForeground = '--sidebar-accent-foreground',
+    sidebarBorder = '--sidebar-border',
+    sidebarRing = '--sidebar-ring',
+    // 自定义颜色变量
+    colorBg = '--color-bg',
+    colorText = '--color-text',
+    colorPrimary = '--color-primary',
+    colorPrimaryForeground = '--color-primary-foreground'
+}
+
+/**
+ * 读取 CSS 变量 --chart1..--chart10 作为调色板
+ */
+export function readChartPalette(): string[] {
+    if (typeof window === "undefined") return [];
+    const root = document.documentElement;
+    const stylesRoot = getComputedStyle(root);
+    const stylesBody = document.body ? getComputedStyle(document.body) : null;
+    const colors: string[] = [];
+    for (let i = 1; i <= 10; i++) {
+        let v = stylesRoot.getPropertyValue(`--chart${i}`).trim();
+        if (!v && stylesBody) v = stylesBody.getPropertyValue(`--chart${i}`).trim();
+        if (v) colors.push(v);
+    }
+    return colors;
+}
+
+/**
+ * 异步读取调色板
+ */
+export function readChartPaletteAsync(): Promise<string[]> {
+    return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                resolve(readChartPalette());
+            });
+        });
+    });
+}
+
+/**
+ * 根据系列数量获取对应数量的调色板颜色
+ * @param seriesCount 系列数量
+ */
+export async function getChartPalette(seriesCount: number): Promise<string[]> {
+    const palette = await readChartPaletteAsync();
+
+    if (seriesCount <= 0 || palette.length === 0) return [];
+    if (seriesCount <= palette.length) {
+        return palette.slice(0, seriesCount);
+    }
+
+    // 如果需要的颜色数量超过调色板长度，循环使用
+    const result: string[] = [];
+    for (let i = 0; i < seriesCount; i++) {
+        result.push(palette[i % palette.length]);
+    }
+    return result;
+}
+
+// 仅对柱状图系列生效
+function isBarSeries(s: SeriesOption): s is { type: 'bar'; itemStyle?: any } {
+    return s && s.type === 'bar';
+}
+// 仅对饼图系列生效
+function isPieSeries(s: SeriesOption): s is { type: 'pie'; itemStyle?: any; data?: any[] } {
+    return s && s.type === 'pie';
+}
+
+
+export async function BarThemeWrapper(
+    data: EChartsOption,
+) {
+    const [primary] = await getColorListAsync([ThemeColor.primary]);
+
+    const paletteCount = Array.isArray(data.series) ? data.series.length : 1;
+    const palette = await getChartPalette(paletteCount);
+
+    const res: EChartsOption = {
+        ...data,
+        color: palette,
+        xAxis: {
+            ...data.xAxis,
+            axisLine: {
+                ...(data as any).xAxis?.axisLine,
+                lineStyle: {
+                    ...(data as any).xAxis?.axisLine?.lineStyle,
+                    color: primary
+                }
+            },
+            axisTick: {
+                ...(data as any).xAxis?.axisTick,
+                lineStyle: {
+                    ...(data as any).xAxis?.axisTick?.lineStyle,
+                    color: primary
+                }
+            },
+            axisLabel: {
+                ...(data as any).xAxis?.axisLabel,
+                color: primary
+            }
+        },
+        yAxis: {
+            ...data.yAxis,
+            axisLine: {
+                ...(data as any).yAxis?.axisLine,
+                lineStyle: {
+                    ...(data as any).yAxis?.axisLine?.lineStyle,
+                    color: primary
+                }
+            },
+            axisTick: {
+                ...(data as any).yAxis?.axisTick,
+                lineStyle: {
+                    ...(data as any).yAxis?.axisTick?.lineStyle,
+                    color: primary
+                }
+            },
+            axisLabel: {
+                ...(data as any).yAxis?.axisLabel,
+                color: primary
+            }
+        },
+        emphasis: {
+            focus: 'series',
+            itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: primary
+            }
+        },
+        series: Array.isArray(data.series)
+            ? (data.series).map(s => {
+                if (isBarSeries(s)) {
+                    return {
+                        ...s,
+                        itemStyle: {
+                            ...(s.itemStyle ?? {}),
+                            borderRadius: 2
+                        }
+                    };
+                }
+                return s;
+            })
+            : (isBarSeries(data.series)
+                ? {
+                    ...data.series,
+                    itemStyle: {
+                        ...(data.series.itemStyle ?? {}),
+                        borderRadius: 4
+                    }
+                }
+                : data.series)
+    };
+
+    return res;
+}
+
+
+export async function PieThemeWrapper(
+    data: EChartsOption,
+) {
+    const [primary] = await getColorListAsync([ThemeColor.primary]);
+
+    let paletteCount = 1;
+    if (Array.isArray(data.series)) {
+        const pieSeries = data.series.find(s => isPieSeries(s)) as any;
+        paletteCount = pieSeries?.data?.length || 1;
+    } else if (isPieSeries(data.series)) {
+        paletteCount = (data.series as any).data?.length || 1;
+    }
+
+    const palette = await getChartPalette(paletteCount);
+
+    const res: EChartsOption = {
+        ...data,
+        color: palette,
+        xAxis: undefined,
+        yAxis: undefined,
+        emphasis: {
+            focus: 'series',
+            itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: primary
+            }
+        },
+        series: Array.isArray(data.series)
+            ? (data.series).map(s => {
+                if (isPieSeries(s) && Array.isArray(s.data)) {
+                    return {
+                        ...s,
+                        data: s.data.map((item: any, index: number) => ({
+                            ...item,
+                            itemStyle: {
+                                ...item.itemStyle,
+                                color: palette[index % palette.length]
+                            }
+                        }))
+                    };
+                }
+                return s;
+            })
+            : (isPieSeries(data.series) && Array.isArray((data.series as any).data)
+                ? {
+                    ...data.series,
+                    data: (data.series as any).data.map((item: any, index: number) => ({
+                        ...item,
+                        itemStyle: {
+                            ...item.itemStyle,
+                            color: palette[index % palette.length]
+                        }
+                    }))
+                }
+                : data.series)
+    };
+
+    return res;
+}
+
+export type ChartKind = 'bar' | 'pie';
+
+export async function ThemeWrapper(
+    data: EChartsOption,
+    kind: ChartKind
+) {
+    return kind === 'pie' ? PieThemeWrapper(data) : BarThemeWrapper(data);
+}

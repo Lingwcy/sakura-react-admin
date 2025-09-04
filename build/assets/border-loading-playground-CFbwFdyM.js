@@ -1,1 +1,0 @@
-import{q as e}from"./index-Dt0_14Pi.js";import{B as o}from"./index-D16PKcxo.js";function r(){return e.jsx("div",{className:"h-screen-[100px]",children:e.jsx(o,{mode:"dev"})})}const d=Object.freeze(Object.defineProperty({__proto__:null,default:r},Symbol.toStringTag,{value:"Module"}));export{d as _};

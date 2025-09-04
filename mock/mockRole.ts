@@ -17,11 +17,12 @@ function PermisionTree2List(permissionTree: Permission[]) {
 
 	function traverse(node: Permission[]) {
 		node.forEach((item) => {
-			if (item.children) {
-				traverse(item.children)
-				delete item.children
+			// 非破坏式：不 delete children，拷贝后再压入
+			const { children, ...rest } = item
+			list.push(rest as Omit<Permission, 'children'>)
+			if (children && children.length) {
+				traverse(children)
 			}
-			list.push(item)
 		})
 	}
 
@@ -80,26 +81,69 @@ const MENU_PERMISSION = {
 	name: "多级菜单",
 	icon: "line-md:menu-fold-right",
 	type: PermissionType.CATALOGUE,
-	route: "hero",
+	route: "multi",
 	order: 100,
 	children: [
 		{
 			id: "9001",
 			parentId: "9000",
-			label: "二级菜单",
-			name: "二级菜单",
+			icon: "line-md:chevron-small-triple-left",
+			label: "菜单1",
+			name: "菜单1",
 			type: PermissionType.CATALOGUE,
-			route: "about-project",
-			component: "/Hero/about-project/index.tsx",
+			route: "first",
 			children: [
 				{
 					id: "9011",
 					parentId: "9001",
-					label: "三级菜单",
-					name: "三级菜单",
+					label: "菜单1.1",
+					icon: "line-md:chevron-small-triple-left",
+					name: "菜单1.1",
+					type: PermissionType.MENU,
+					route: "first-one",
+					component: "/MultiLevelMenu/FirstMenu/first-one.tsx",
+				},
+				{
+					id: "9012",
+					parentId: "9001",
+					label: "菜单1.2",
+					icon: "line-md:chevron-small-triple-left",
+					name: "菜单1.2",
 					type: PermissionType.CATALOGUE,
-					route: "about-project",
-					component: "/Hero/about-project/index.tsx",
+					route: "first-two",
+					children: [
+						{
+							id: "9112",
+							parentId: "9012",
+							label: "菜单1.2.1",
+							icon: "line-md:chevron-small-triple-left",
+							name: "菜单1.2.1",
+							type: PermissionType.MENU,
+							route: "first-two-one",
+							component: "/MultiLevelMenu/FirstMenu/FirstTwoMenu/first-two-one.tsx",
+						},
+					]
+				},
+			],
+		},
+		{
+			id: "9002",
+			parentId: "9000",
+			icon: "line-md:chevron-small-triple-left",
+			label: "菜单2",
+			name: "菜单2",
+			type: PermissionType.CATALOGUE,
+			route: "secound",
+			children: [
+				{
+					id: "9021",
+					parentId: "9002",
+					label: "菜单2.1",
+					icon: "line-md:chevron-small-triple-left",
+					name: "菜单2.1",
+					type: PermissionType.MENU,
+					route: "first-one",
+					component: "/MultiLevelMenu/SecoundMenu/secound-one.tsx",
 				},
 			],
 		},
@@ -312,7 +356,60 @@ const CSSLAYOUT_PERMISSION = {
 		},
 	],
 };
-
+const PLAY_PERMISSION = {
+	id: "10000",
+	parentId: "",
+	label: "演示",
+	name: "演示",
+	icon: "line-md:pause-to-play-transition",
+	type: PermissionType.CATALOGUE,
+	route: "display",
+	order: 12,
+	children: [
+		{
+			id: "10001",
+			parentId: "10000",
+			label: "ECharts",
+			name: "ECharts",
+			type: PermissionType.CATALOGUE,
+			route: "echarts",
+			children: [
+				{
+					id: "10011",
+					parentId: "10001",
+					label: "柱状图",
+					name: "柱状图",
+					icon: "line-md:hash-small",
+					type: PermissionType.MENU,
+					route: "barcharts",
+					component: "/Display/Echarts/bar-charts.tsx",
+					order: 1,
+				},
+								{
+					id: "10012",
+					parentId: "10001",
+					label: "饼图",
+					name: "饼图",
+					icon: "line-md:hash-small",
+					type: PermissionType.MENU,
+					route: "piecharts",
+					component: "/Display/Echarts/pie-charts.tsx",
+					order: 1,
+				}
+			]
+		},
+		{
+			id: "10002",
+			parentId: "10000",
+			label: "主题色",
+			name: "主题色",
+			icon:"line-md:mushroom-filled",
+			type: PermissionType.MENU,
+			component: "/Display/ThemeColors/index.tsx",
+			route: "theme-color",
+		},
+	],
+}
 
 
 // 将PERMISSION_LIST的树结构展平，模拟在数据库中的情况
@@ -325,7 +422,8 @@ export const PERMISSION_LIST = [
 	TOOLS_PERMISSION,
 	CSSLAYOUT_PERMISSION,
 	HERO_PERMISSION,
-	MENU_PERMISSION
+	MENU_PERMISSION,
+	PLAY_PERMISSION
 ];
 
 // 扁平化权限数据，模拟数据库存储
@@ -542,7 +640,7 @@ class PermissionManager {
 // 创建权限管理器实例
 export const permissionManager = new PermissionManager();
 
-function PermissionListFattented2Tree(list: Omit<Permission[], 'children'>) {
+function PermissionListFattented2Tree(list: Omit<Permission, 'children'>[]) {
 	const copyList = list.map((item) => ({ ...item, children: [] }))
 	const mapNode = new Map<string, Permission>()
 	copyList.forEach(node => mapNode.set(node.id, node))
@@ -553,15 +651,13 @@ function PermissionListFattented2Tree(list: Omit<Permission[], 'children'>) {
 		if (!parentId || !mapNode.has(parentId)) {
 			roots.push(item)
 		} else {
-			const parentNode = mapNode.get(parentId) //找到父节点
-			parentNode!.children = parentNode!.children ?? [];
-			parentNode!.children.push(item);
-
+			const parentNode = mapNode.get(parentId)!
+			parentNode.children = parentNode.children ?? [];
+			parentNode.children.push(item);
 		}
 	})
 
 	return roots
-
 }
 export const PERMISSION_LIST_FATTENDTED = PermisionTree2List(PERMISSION_LIST)
 export const PERMISSION_TREE = PermissionListFattented2Tree(PERMISSION_LIST_FATTENDTED)
