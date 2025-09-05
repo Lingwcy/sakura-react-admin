@@ -38,6 +38,9 @@ export const apiList= {
     },
     weather: {
         getTodayWeather: 'https://api.open-meteo.com/v1/forecast?latitude=30.67&longitude=104.07&hourly=temperature_2m,relativehumidity_2m,windspeed_10m&timezone=Asia/Shanghai'
+    },
+    openRouter: {
+        listAvailableModels: 'https://openrouter.ai/api/v1/models'
     }
 
 }

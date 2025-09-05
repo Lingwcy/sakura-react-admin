@@ -142,6 +142,10 @@ function isBarSeries(s: SeriesOption): s is { type: 'bar'; itemStyle?: any } {
 function isPieSeries(s: SeriesOption): s is { type: 'pie'; itemStyle?: any; data?: any[] } {
     return s && s.type === 'pie';
 }
+// 新增：仅对折线图系列生效
+function isLineSeries(s: SeriesOption): s is { type: 'line'; label?: any; areaStyle?: any; smooth?: any } {
+    return s && s.type === 'line';
+}
 
 
 export async function BarThemeWrapper(
@@ -294,11 +298,125 @@ export async function PieThemeWrapper(
     return res;
 }
 
-export type ChartKind = 'bar' | 'pie';
+export async function LineThemeWrapper(data:EChartsOption, flags?: [boolean, boolean, boolean]){
+    const [primary] = await getColorListAsync([ThemeColor.primary]);
+
+    const paletteCount = Array.isArray(data.series) ? data.series.length : 1;
+    const palette = await getChartPalette(paletteCount);
+
+    const [showLabel, fillArea, smooth] = flags ?? [];
+
+    const applyLineFlags = (s: SeriesOption) => {
+        if (!isLineSeries(s)) return s;
+        return {
+            ...s,
+            // 仅在开关为 true 时启用，不主动关闭已有配置
+            smooth: smooth ? true : s.smooth,
+            label: showLabel ? { 
+                ...(s.label ?? {}), 
+                show: true,
+                color: primary
+            } : s.label,
+            areaStyle: fillArea ? { ...(s.areaStyle ?? {}), opacity: s.areaStyle?.opacity ?? 0.15 } : s.areaStyle,
+        } as SeriesOption;
+    };
+
+    const themedSeries = Array.isArray(data.series)
+        ? data.series.map(applyLineFlags)
+        : (data.series ? applyLineFlags(data.series) : data.series);
+
+    const res: EChartsOption = {
+        ...data,
+        color: palette,
+        legend: {
+            ...data.legend,
+            textStyle: {
+                ...(data.legend as any)?.textStyle,
+                color: primary
+            }
+        },
+        tooltip: {
+            ...data.tooltip,
+            textStyle: {
+                ...(data.tooltip as any)?.textStyle,
+                color: primary
+            }
+        },
+        xAxis: {
+            ...data.xAxis,
+            axisLine: {
+                ...(data as any).xAxis?.axisLine,
+                lineStyle: {
+                    ...(data as any).xAxis?.axisLine?.lineStyle,
+                    color: primary
+                }
+            },
+            axisTick: {
+                ...(data as any).xAxis?.axisTick,
+                lineStyle: {
+                    ...(data as any).xAxis?.axisTick?.lineStyle,
+                    color: primary
+                }
+            },
+            axisLabel: {
+                ...(data as any).xAxis?.axisLabel,
+                color: primary
+            }
+        },
+        yAxis: {
+            ...data.yAxis,
+            axisLine: {
+                ...(data as any).yAxis?.axisLine,
+                lineStyle: {
+                    ...(data as any).yAxis?.axisLine?.lineStyle,
+                    color: primary
+                }
+            },
+            axisTick: {
+                ...(data as any).yAxis?.axisTick,
+                lineStyle: {
+                    ...(data as any).yAxis?.axisTick?.lineStyle,
+                    color: primary
+                }
+            },
+            axisLabel: {
+                ...(data as any).yAxis?.axisLabel,
+                color: primary
+            }
+        },
+        emphasis: {
+            focus: 'series',
+            itemStyle: {
+                shadowBlur: 8,
+                shadowOffsetX: 0,
+                shadowColor: primary
+            }
+        },
+        series: themedSeries
+    };
+
+    return res;
+}
+
+export type ChartKind = 'bar' | 'pie' | 'line';
 
 export async function ThemeWrapper(
     data: EChartsOption,
-    kind: ChartKind
+    kind: ChartKind,
+    props: any
 ) {
-    return kind === 'pie' ? PieThemeWrapper(data) : BarThemeWrapper(data);
+    switch (kind){
+        case 'pie': {
+            return PieThemeWrapper(data)
+        }
+        case 'bar': {
+            return BarThemeWrapper(data)
+        }
+        case 'line' : {
+            return LineThemeWrapper(data, props as [boolean, boolean, boolean])
+        }
+        default: {
+            return data;
+        }
+    }
 }

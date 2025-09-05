@@ -356,6 +356,45 @@ const CSSLAYOUT_PERMISSION = {
 		},
 	],
 };
+const AI_PERMISSION = {
+	id: "11000",
+	parentId: "",
+	label: "AI",
+	name: "AI",
+	icon: "line-md:gauge-loop",
+	type: PermissionType.CATALOGUE,
+	route: "display",
+	order: 13,
+	children: [
+		{
+			id: "11001",
+			parentId: "11000",
+			label: "对话",
+			name: "对话",
+			type: PermissionType.MENU,
+			route: "chat",
+			component: "/AI/index.tsx",
+		},
+		{
+			id: "11002",
+			parentId: "11000",
+			label: "模型提供商",
+			name: "模型提供商",
+			type: PermissionType.MENU,
+			route: "provider",
+			component: "/AI/ai-model-provider.tsx",
+		},
+		{
+			id: "11003",
+			parentId: "11000",
+			label: "设置",
+			name: "设置",
+			type: PermissionType.MENU,
+			route: "setting",
+			component: "/AI/setting.tsx",
+		},
+	]
+}
 const PLAY_PERMISSION = {
 	id: "10000",
 	parentId: "",
@@ -385,7 +424,7 @@ const PLAY_PERMISSION = {
 					component: "/Display/Echarts/bar-charts.tsx",
 					order: 1,
 				},
-								{
+				{
 					id: "10012",
 					parentId: "10001",
 					label: "饼图",
@@ -395,6 +434,17 @@ const PLAY_PERMISSION = {
 					route: "piecharts",
 					component: "/Display/Echarts/pie-charts.tsx",
 					order: 1,
+				},
+				{
+					id: "10013",
+					parentId: "10001",
+					label: "折线图",
+					name: "折线图",
+					icon: "line-md:hash-small",
+					type: PermissionType.MENU,
+					route: "linecharts",
+					component: "/Display/Echarts/line-charts.tsx",
+					order: 1,
 				}
 			]
 		},
@@ -403,7 +453,7 @@ const PLAY_PERMISSION = {
 			parentId: "10000",
 			label: "主题色",
 			name: "主题色",
-			icon:"line-md:mushroom-filled",
+			icon: "line-md:mushroom-filled",
 			type: PermissionType.MENU,
 			component: "/Display/ThemeColors/index.tsx",
 			route: "theme-color",
@@ -423,7 +473,8 @@ export const PERMISSION_LIST = [
 	CSSLAYOUT_PERMISSION,
 	HERO_PERMISSION,
 	MENU_PERMISSION,
-	PLAY_PERMISSION
+	PLAY_PERMISSION,
+	AI_PERMISSION
 ];
 
 // 扁平化权限数据，模拟数据库存储
