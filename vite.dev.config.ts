@@ -38,7 +38,6 @@ export default defineConfig({
     logLevel: 'info',
     customLogger: logger,
     server: {
-        port: 5173,
         strictPort: false,
     },
     optimizeDeps:{

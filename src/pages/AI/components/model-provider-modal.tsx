@@ -4,7 +4,6 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
-import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import {
@@ -16,19 +15,27 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+
 interface ModelProviderModalProps {
     open: boolean,
     updateItem?: ModelProvider
     onClose: () => void
     handleCreate?: (item: ModelProvider) => void
-    handleEdit?: (item: ModelProvider) => void
+    handleEdit?: (id: string, item: Partial<ModelProvider>) => void
+    handleDelete: (id: string) => void
+    nextId?: string
+    isSubmitting?: boolean
 }
+
 export default function ModelProviderModal({
     open,
     updateItem,
     onClose,
     handleCreate,
-    handleEdit
+    handleEdit,
+    handleDelete,
+    nextId,
+    isSubmitting = false
 }: ModelProviderModalProps) {
     const isUpdateMode = !!updateItem
 
@@ -40,7 +47,8 @@ export default function ModelProviderModal({
             message: '最少需要两个字符'
         }),
         url: z.url({ message: '必须是合法的url格式' }),
-        env: z.string().optional()
+        key: z.string({ message: '你必须提供该模型供应商的合法key' }),
+        variable: z.string().optional()
     })
 
     const form = useForm({
@@ -49,26 +57,32 @@ export default function ModelProviderModal({
             id: "",
             name: "",
             url: "",
-            env: ""
+            variable: "",
+            key: ""
         }
     })
 
-    const onSubmit = (data: z.infer<typeof FormSchema>) => {
-
-        const baseSchema = FormSchema;
-
-        const result = baseSchema.safeParse(data);
-        if (!result.success) {
-            toast.error("表单提交失败，请检查字段！");
-            console.log("验证错误:", result.error.issues);
-        } else {
-            if (isUpdateMode) {
-                // handleEdit(updateData)
-                
-            } else {
-                // handleCreate(data)
+    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+        try {
+            if (isUpdateMode && updateItem && handleEdit) {
+                await handleEdit(updateItem.id!, {
+                    name: data.name,
+                    url: data.url,
+                    key: data.key,
+                    variable: data.variable
+                })
+            } else if (handleCreate) {
+                await handleCreate({
+                    id: data.id,
+                    name: data.name,
+                    key: data.key,
+                    url: data.url,
+                    variable: data.variable
+                } as ModelProvider)
             }
-            onClose?.(); // 成功后关闭对话框
+            onClose?.()
+        } catch (error) {
+            console.error('提交失败:', error)
         }
     }
 
@@ -78,20 +92,19 @@ export default function ModelProviderModal({
                 id: updateItem.id || "",
                 name: updateItem.name || "",
                 url: updateItem.url || "",
-                env: updateItem.variable || ""
+                key: updateItem.key || "",
+                variable: updateItem.variable || ""
             })
         } else {
             form.reset({
-                id: "",
+                id: nextId || "",
                 name: "",
                 url: "",
-                env: ""
+                key: "",
+                variable: ""
             })
         }
-    }, [updateItem, form])
-
-
-
+    }, [updateItem, form, nextId])
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -111,13 +124,34 @@ export default function ModelProviderModal({
                                 <FormItem>
                                     <FormLabel>供应商ID</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="E.g.,my-provider" className="placeholder:text-sm focus-visible:ring-pink-200" {...field} />
+                                        <Input
+                                            placeholder="E.g.,my-provider"
+                                            className="placeholder:text-sm focus-visible:ring-pink-200"
+                                            disabled={isUpdateMode}
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}>
                         </FormField>
-
+                        <FormField
+                            control={form.control}
+                            name="key"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>KEY</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder=""
+                                            className="placeholder:text-sm focus-visible:ring-pink-200"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}>
+                        </FormField>
                         <FormField
                             control={form.control}
                             name="name"
@@ -145,9 +179,10 @@ export default function ModelProviderModal({
                                 </FormItem>
                             )}>
                         </FormField>
-                                                <FormField
+
+                        <FormField
                             control={form.control}
-                            name="env"
+                            name="variable"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>环境变量(可选)</FormLabel>
@@ -162,12 +197,18 @@ export default function ModelProviderModal({
                 </Form>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant="outline" onClick={onClose}>
+                        <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
                             取消
                         </Button>
                     </DialogClose>
-                    <Button type="submit" form="create-user-form">
-                        {isUpdateMode ? "更新" : "保存"}
+                    <Button variant="destructive" className="cursor-pointer" onClick={() => {
+                        handleDelete(updateItem.id)
+                        onClose()
+                    }}>
+                        删除
+                    </Button>
+                    <Button type="submit" form="create-user-form" disabled={isSubmitting}>
+                        {isSubmitting ? "处理中..." : (isUpdateMode ? "更新" : "保存")}
                     </Button>
                 </DialogFooter>
             </DialogContent>

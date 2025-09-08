@@ -311,6 +311,15 @@ const COMPONENTS_PERMISSION = {
 			type: PermissionType.MENU,
 			route: "charts",
 			component: "/Component/charts.tsx",
+		},
+		{
+			id: "4008",
+			parentId: "4000",
+			label: "轮播图",
+			name: "轮播图",
+			type: PermissionType.MENU,
+			route: "carousel",
+			component: "/Component/carousel.tsx",
 		}
 	],
 };

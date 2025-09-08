@@ -1,6 +1,7 @@
 import { useOpenRouterModel } from "@/hooks/use-model-provider"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+
 import {
     Pagination,
     PaginationContent,
@@ -11,8 +12,11 @@ import {
 } from "@/components/ui/pagination";
 import ModelProviderCard from "@/pages/AI/components/model-provider-card";
 import { BorderLoading } from "@/components/loading";
-
+import { useModelProvider } from "@/hooks/use-model-provider";
+import { useModelProviderItem } from "@/hooks/use-model-provider";
 export default function AIModelProviderPage() {
+    const { addCloudModelToLocal } = useModelProvider();
+    const { isModelAdded}= useModelProviderItem()
     const {
         paginatedModels,
         availableModelsIsLoading,
@@ -52,7 +56,7 @@ export default function AIModelProviderPage() {
                         {
                             paginatedModels.map(item => {
                                 return (
-                                    <ModelProviderCard key={item.id} data={item} />
+                                    <ModelProviderCard key={item.id} data={item} onAddToLocal={addCloudModelToLocal}  isAdded={isModelAdded(item.id)}/>
                                 )
                             })
                         }

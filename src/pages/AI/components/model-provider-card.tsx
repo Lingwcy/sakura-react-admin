@@ -14,10 +14,20 @@ import { Separator } from "../../../components/ui/separator";
 import Text2ImageMapper from "./text2image-mapper";
 interface ModelProviderCardProps {
     data: ModelProviderItem
+    status?: 'cloud' | 'local'
+    onEdit?: (m: ModelProviderItem) => void
+    onDelete?: (m: ModelProviderItem) => void
+    onAddToLocal?: (m: ModelProviderItem) => void
+    isAdded?: boolean // 新增
 }
 
 export default function ModelProviderCard({
-    data
+    data,
+    status = 'cloud',
+    onEdit,
+    onDelete,
+    onAddToLocal,
+    isAdded = false
 }: ModelProviderCardProps) {
     return (
         <Card className="w-l">
@@ -25,10 +35,43 @@ export default function ModelProviderCard({
                 <CardTitle className="truncate">
                     <div className="text-l flex justify-between items-center space-x-2 ">
                         <span className="truncate">{data?.name || '未知模型'}</span>
-                        <Button className="h-8 text-xs rounded-md cursor-pointer">
-                            添加常用
-                            <Icon icon="line-md:navigation-right-up" size={18} />
-                        </Button>
+                        {
+                            status == 'cloud' ?
+                                <Button
+                                    className="h-8 text-xs rounded-md cursor-pointer"
+                                    disabled={isAdded}
+                                    onClick={() => !isAdded && onAddToLocal?.(data)}
+                                    variant={isAdded ? "secondary" : "default"}
+                                >
+                                    {isAdded ? (
+                                        <span className="flex items-center gap-1">
+                                            <Icon icon="line-md:confirm" size={16} />
+                                            已添加
+                                        </span>
+                                    ) : (
+                                        <>
+                                            添加常用
+                                            <Icon icon="line-md:navigation-right-up" size={18} />
+                                        </>
+                                    )}
+                                </Button> :
+                                <div className="space-x-1.5 flex">
+                                    <Button
+                                        variant="ghost"
+                                        className="h-8 w-8 text-xs rounded-md cursor-pointer"
+                                        onClick={() => onEdit?.(data)}
+                                    >
+                                        <Icon icon="line-md:edit" color="#2f8dd9" size={18} />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="h-8 w-8 text-xs rounded-md cursor-pointer"
+                                        onClick={() => onDelete?.(data)}
+                                    >
+                                        <Icon icon="line-md:remove" color="red" size={18} />
+                                    </Button>
+                                </div>
+                        }
                     </div>
                 </CardTitle>
                 <CardDescription>
@@ -67,20 +110,30 @@ export default function ModelProviderCard({
                 </div>
                 <Separator orientation="vertical" />
 
-                {data?.pricing && (
-                    <div>
-                        <h4 className="font-bold mb-1 text-xs">计费 ($/1M tokens)</h4>
-                        <div className="text-xs text-gray-600 space-y-1">
-                            <p className="text-foreground text-[11px]">输入: ${((parseFloat(data.pricing.prompt) || 0) * 1000000).toFixed(2)}</p>
-                            <p className="text-foreground text-[11px]">输出: ${((parseFloat(data.pricing.completion) || 0) * 1000000).toFixed(2)}</p>
-                        </div>
-                    </div>
-                )}
+
+                <div>
+                    <h4 className="font-bold mb-1 text-xs">计费 ($/1M tokens)</h4>
+                    {
+                        data.pricing ?
+                            <div className="text-xs text-gray-600 space-y-1">
+                                <p className="text-foreground text-[11px]">输入: ${((parseFloat(data.pricing.prompt) || 0) * 1000000).toFixed(2)}</p>
+                                <p className="text-foreground text-[11px]">输出: ${((parseFloat(data.pricing.completion) || 0) * 1000000).toFixed(2)}</p>
+                            </div> :
+                            <div className="text-xs text-gray-600 space-y-1">
+                                <p className="text-foreground text-[11px]">输入: 未知</p>
+                                <p className="text-foreground text-[11px]">输出: 未知</p>
+                            </div>
+                    }
+                </div>
+
             </CardContent>
-            <CardFooter className="text-xs text-gray-400 m-0 space-x-2.5 cursor-pointer">
-                <div className="truncate">ID: {data?.id || '未知'}</div>
-                <Icon icon="ion:copy" size={14} />
-            </CardFooter>
+            {
+                status == 'cloud' &&
+                <CardFooter className="text-xs text-gray-400 m-0 space-x-2.5 cursor-pointer">
+                    <div className="truncate">ID: {data?.id || '未知'}</div>
+                    <Icon icon="ion:copy" size={14} />
+                </CardFooter>
+            }
         </Card>
     )
 }

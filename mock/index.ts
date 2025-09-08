@@ -3,6 +3,8 @@ import { faker } from "@faker-js/faker";
 import { mockUsers } from './mockUser';
 import type { Recordable } from 'vite-plugin-mock';
 import { permissionManager, roleManager } from './mockRole';
+import { modelProviderManager } from './mockAI';
+
 interface Option {
     url: Recordable;
     body: Recordable;
@@ -771,5 +773,485 @@ export default [
                 };
             }
         },
+    },
+    // AI 模型提供商相关接口
+    {
+        url: '/api/model-providers',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const currentPage = Number(opt?.query?.page) || 1;
+                const name = opt?.query?.name || '';
+                const size = 10;
+
+                let filteredProviders = modelProviderManager.getAllProviders();
+                
+                // 按名称筛选
+                if (name) {
+                    filteredProviders = filteredProviders.filter(provider =>
+                        provider.name.toLowerCase().includes(name.toLowerCase()) ||
+                        provider.id.toLowerCase().includes(name.toLowerCase())
+                    );
+                }
+
+                const totalCount = filteredProviders.length;
+                const startIndex = (currentPage - 1) * size;
+                const endIndex = startIndex + size;
+                const paginatedProviders = filteredProviders.slice(startIndex, endIndex);
+
+                return {
+                    code: 200,
+                    data: {
+                        currentPage,
+                        size,
+                        totalCount,
+                        totalPages: Math.ceil(totalCount / size),
+                        providers: paginatedProviders
+                    }
+                };
+            } catch (error) {
+                console.error('Mock /api/model-providers error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider',
+        method: 'post',
+        response: function (opt: Option) {
+            try {
+                const { id, name, url, key, variable, models } = opt.body || {};
+
+                if (!id || !name || !url) {
+                    return {
+                        code: 400,
+                        message: 'ID、名称和URL不能为空'
+                    };
+                }
+
+                const newProvider = modelProviderManager.addProvider({
+                    id,
+                    name,
+                    url,
+                    key: key || undefined,
+                    variable: variable || undefined,
+                    models: models || []
+                });
+
+                return {
+                    code: 200,
+                    data: newProvider,
+                    message: '模型提供商创建成功'
+                };
+            } catch (error) {
+                console.error('Mock POST /api/model-provider error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:id',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                const provider = modelProviderManager.getProviderById(id);
+
+                if (!provider) {
+                    return {
+                        code: 404,
+                        message: '模型提供商不存在'
+                    };
+                }
+
+                return {
+                    code: 200,
+                    data: provider
+                };
+            } catch (error) {
+                console.error('Mock GET /api/model-provider/:id error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:id',
+        method: 'put',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+                const updates = opt.body || {};
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                const updatedProvider = modelProviderManager.updateProvider(id, updates);
+
+                return {
+                    code: 200,
+                    data: updatedProvider,
+                    message: '模型提供商更新成功'
+                };
+            } catch (error) {
+                console.error('Mock PUT /api/model-provider/:id error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:id',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const id = urlParts[urlParts.length - 1];
+
+                if (!id) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                const deletedProvider = modelProviderManager.deleteProvider(id);
+
+                return {
+                    code: 200,
+                    data: deletedProvider,
+                    message: '模型提供商删除成功'
+                };
+            } catch (error) {
+                console.error('Mock DELETE /api/model-provider/:id error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-providers/:ids',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const idsParam = urlParts[urlParts.length - 1];
+
+                if (!idsParam) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                const idsArray = idsParam.split(',').filter(id => id.trim());
+
+                if (idsArray.length === 0) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                const deletedProviders = modelProviderManager.deleteProviders(idsArray);
+
+                return {
+                    code: 200,
+                    data: deletedProviders,
+                    message: '模型提供商批量删除成功'
+                };
+            } catch (error) {
+                console.error('Mock DELETE /api/model-providers/:ids error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/next-id',
+        method: 'get',
+        response: () => {
+            try {
+                const nextId = modelProviderManager.getNextProviderId();
+                return {
+                    code: 200,
+                    data: { id: nextId },
+                    message: '获取下一个提供商ID成功'
+                };
+            } catch (error) {
+                console.error('Mock GET /api/model-provider/next-id error:', error);
+                return {
+                    code: 500,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        },
+    },
+    {
+        url: '/api/model-providers/added-models',
+        method: 'get',
+        response: () => {
+            try {
+                const items = modelProviderManager.getAllAddedModels();
+                return {
+                    code: 200,
+                    data: {
+                        items,
+                        // 便于快速判断某模型是否已存在
+                        modelIds: items.map(i => i.modelId)
+                    },
+                    message: '获取已添加模型成功'
+                };
+            } catch (error) {
+                console.error('Mock GET /api/model-providers/added-models error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
+    },
+    // 模型相关接口
+    {
+        url: '/api/model-provider/:providerId/models',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const providerId = urlParts[urlParts.length - 2]; // models前面的ID
+
+                if (!providerId) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                const models = modelProviderManager.getModelsByProviderId(providerId);
+
+                return {
+                    code: 200,
+                    data: models,
+                    message: '获取模型列表成功'
+                };
+            } catch (error) {
+                console.error('Mock GET /api/model-provider/:providerId/models error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:providerId/model',
+        method: 'post',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const providerId = urlParts[urlParts.length - 2]; // model前面的ID
+                const modelData = opt.body || {};
+
+                if (!providerId) {
+                    return {
+                        code: 400,
+                        message: '提供商ID不能为空'
+                    };
+                }
+
+                if (!modelData.id || !modelData.name) {
+                    return {
+                        code: 400,
+                        message: '模型ID和名称不能为空'
+                    };
+                }
+
+                const newModel = modelProviderManager.addModel(providerId, modelData);
+
+                return {
+                    code: 200,
+                    data: newModel,
+                    message: '模型创建成功'
+                };
+            } catch (error) {
+                console.error('Mock POST /api/model-provider/:providerId/model error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:providerId/model/:modelId',
+        method: 'get',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const modelId = urlParts[urlParts.length - 1];
+                const providerId = urlParts[urlParts.length - 3];
+
+                if (!providerId || !modelId) {
+                    return {
+                        code: 400,
+                        message: '提供商ID和模型ID不能为空'
+                    };
+                }
+
+                const model = modelProviderManager.getModelById(providerId, modelId);
+
+                if (!model) {
+                    return {
+                        code: 404,
+                        message: '模型不存在'
+                    };
+                }
+
+                return {
+                    code: 200,
+                    data: model
+                };
+            } catch (error) {
+                console.error('Mock GET /api/model-provider/:providerId/model/:modelId error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:providerId/model/:modelId',
+        method: 'put',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const modelId = urlParts[urlParts.length - 1];
+                const providerId = urlParts[urlParts.length - 3];
+                const updates = opt.body || {};
+
+                if (!providerId || !modelId) {
+                    return {
+                        code: 400,
+                        message: '提供商ID和模型ID不能为空'
+                    };
+                }
+
+                const updatedModel = modelProviderManager.updateModel(providerId, modelId, updates);
+
+                return {
+                    code: 200,
+                    data: updatedModel,
+                    message: '模型更新成功'
+                };
+            } catch (error) {
+                console.error('Mock PUT /api/model-provider/:providerId/model/:modelId error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:providerId/model/:modelId',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const modelId = urlParts[urlParts.length - 1];
+                const providerId = urlParts[urlParts.length - 3];
+
+                if (!providerId || !modelId) {
+                    return {
+                        code: 400,
+                        message: '提供商ID和模型ID不能为空'
+                    };
+                }
+
+                const deletedModel = modelProviderManager.deleteModel(providerId, modelId);
+
+                return {
+                    code: 200,
+                    data: deletedModel,
+                    message: '模型删除成功'
+                };
+            } catch (error) {
+                console.error('Mock DELETE /api/model-provider/:providerId/model/:modelId error:', error);
+                return {
+                    code: 400,
+                    message: error instanceof Error ? error.message : 'Internal server error'
+                };
+            }
+        }
+    },
+    {
+        url: '/api/model-provider/:providerId/models/:modelIds',
+        method: 'delete',
+        response: function (opt: Option) {
+            try {
+                const urlParts = opt.url.split('/');
+                const modelIdsParam = urlParts[urlParts.length - 1];
+                const providerId = urlParts[urlParts.length - 3];
+
+                if (!providerId || !modelIdsParam) {
+                    return {
+                        code: 400,
+                        message: '提供商ID和模型ID不能为空'
+                    };
+                }
+
+                const modelIdsArray = modelIdsParam.split(',').filter(id => id.trim());
+
+                if (modelIdsArray.length === 0) {
+                    return {
+                        code: 400,
+                        message: '模型ID不能为空'
+                    };
+                }
+
+                const deletedModels = modelProviderManager.deleteModels(providerId, modelIdsArray);
+
+                return {
+                    code: 200,
+                    data: deletedModels,
+                    message: '模型批量删除成功'
+                };
+            } catch (error) {
+                console.error('Mock DELETE /api/model-provider/:providerId/models/:modelIds error:', error);
+                return {
+                    code: 500,
+                    message: 'Internal server error'
+                };
+            }
+        }
     },
 ] as MockMethod[]

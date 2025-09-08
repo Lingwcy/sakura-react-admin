@@ -3,11 +3,13 @@ import {
     Card,
     CardContent,
 } from "@/components/ui/card";
-import { ModelProviderItem } from "@/types/ai";
+import { ModelProvider } from "@/types/ai";
 import ModelProviderBrandCard from "./components/model-provider-brand-card";
 import clsx from "clsx";
-import { useModelProviderModal } from "@/hooks/use-model-provider";
+import { useModelProviderModal, useModelProvider } from "@/hooks/use-model-provider";
 import ModelProviderModal from "./components/model-provider-modal";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export default function AISettingPage() {
     const {
         editItem,
@@ -15,120 +17,82 @@ export default function AISettingPage() {
         handleCloseModal,
         handleOpenModal,
     } = useModelProviderModal()
+    
+    const {
+        providers,
+        isLoading,
+        isCreating,
+        isUpdating,
+        nextId,
+        handleCreate,
+        handleUpdate,
+        handleDelete,
+        error
+    } = useModelProvider()
+
+    const handleAddProvider = () => {
+        handleOpenModal()
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-64 text-red-500">
+                加载失败: {error.message}
+            </div>
+        )
+    }
+
     return (
         <>
             <div className="flex flex-row flex-wrap justify-center">
                 <ModelProviderBrandContent>
-                    {TEST_PROVIDER_LIST.map((provider) => (
-                        <ModelProviderBrandCard openModelConfigModal={handleOpenModal} key={provider.id} item={provider} />
-
-                    ))}
-                    <Card className="border-dashed border-2 cursor-pointer hover:bg-secondary transition-all duration-200">
-                        <CardContent className=" flex justify-center items-center space-y-2.5 flex-col">
-                            <Icon icon="line-md:plus" size={32} />
-                            <p className="font-bold text-md">添加自定义提供商</p>
-                        </CardContent>
-                    </Card>
+                    {isLoading ? (
+                        // 加载骨架屏
+                        Array.from({ length: 6 }).map((_, index) => (
+                            <Card key={index} className="border">
+                                <CardContent className="flex justify-center items-center space-y-2.5 flex-col p-6">
+                                    <Skeleton className="h-8 w-8 rounded" />
+                                    <Skeleton className="h-4 w-24" />
+                                </CardContent>
+                            </Card>
+                        ))
+                    ) : (
+                        <>
+                            {providers.map((provider) => (
+                                <ModelProviderBrandCard 
+                                    openModelConfigModal={handleOpenModal} 
+                                    key={provider.id} 
+                                    item={provider} 
+                                />
+                            ))}
+                            <Card 
+                                className="border-dashed border-2 cursor-pointer hover:bg-secondary transition-all duration-200"
+                                onClick={handleAddProvider}
+                            >
+                                <CardContent className="flex justify-center items-center space-y-2.5 flex-col">
+                                    <Icon icon="line-md:plus" size={32} />
+                                    <p className="font-bold text-md">添加自定义提供商</p>
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
                 </ModelProviderBrandContent>
             </div>            
-           <ModelProviderModal open={open} onClose={handleCloseModal} updateItem={editItem}/>
-
+           
+            <ModelProviderModal 
+                open={open} 
+                onClose={handleCloseModal} 
+                updateItem={editItem}
+                handleCreate={handleCreate}
+                handleEdit={handleUpdate}
+                handleDelete={handleDelete}
+                nextId={nextId}
+                isSubmitting={isCreating || isUpdating}
+            />
         </>
     )
 }
 
-interface ModelProvider {
-    id: string,
-    name: string,
-    url: string,
-    key?: string,
-    variable?: string,
-    models: ModelProviderItem[],
-
-}
-
-const TEST_PROVIDER_LIST: ModelProvider[] = [
-    {
-        id: 'open-router',
-        name: 'OpenRouter',
-        key: 'ev+dsakdjghsbnakma=',
-        url: 'https://openrouter.ai/api/v1',
-        models: [
-            {
-                "id": "deepcogito/cogito-v2-preview-llama-109b-moe",
-                "canonical_slug": "deepcogito/cogito-v2-preview-llama-109b-moe",
-                "hugging_face_id": "deepcogito/cogito-v2-preview-llama-109B-MoE",
-                "name": "Cogito V2 Preview Llama 109B",
-                "created": 1756831568,
-                "description": "An instruction-tuned, hybrid-reasoning Mixture-of-Experts model built on Llama-4-Scout-17B-16E. Cogito v2 can answer directly or engage an extended “thinking” phase, with alignment guided by Iterated Distillation & Amplification (IDA). It targets coding, STEM, instruction following, and general helpfulness, with stronger multilingual, tool-calling, and reasoning performance than size-equivalent baselines. The model supports long-context use (up to 10M tokens) and standard Transformers workflows. Users can control the reasoning behaviour with the `reasoning` `enabled` boolean. [Learn more in our docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#enable-reasoning-with-default-config)",
-                "context_length": 32767,
-                "architecture": {
-                    "input_modalities": [
-                        "image",
-                        "text"
-                    ],
-                    "output_modalities": [
-                        "text"
-                    ],
-                    "tokenizer": "Llama4",
-                    "instruct_type": null
-                },
-                "pricing": {
-                    "prompt": "0.00000018",
-                    "completion": "0.00000059",
-                    "request": "0",
-                    "image": "0",
-                    "web_search": "0",
-                    "internal_reasoning": "0",
-                    "input_cache_read": "0",
-                    "input_cache_write": "0"
-                },
-                "top_provider": {
-                    "context_length": 32767,
-                    "max_completion_tokens": null,
-                    "is_moderated": false
-                },
-                "per_request_limits": null,
-                "supported_parameters": [
-                    "frequency_penalty",
-                    "include_reasoning",
-                    "logit_bias",
-                    "max_tokens",
-                    "min_p",
-                    "presence_penalty",
-                    "reasoning",
-                    "repetition_penalty",
-                    "stop",
-                    "temperature",
-                    "tool_choice",
-                    "tools",
-                    "top_k",
-                    "top_p"
-                ]
-            }
-        ]
-    },
-    {
-        id: 'openai',
-        name: 'OpenAI',
-        key: 'sk-xxxxxxxxxxxxx',
-        url: 'https://api.openai.com/v1',
-        models: []
-    },
-    {
-        id: 'anthropic',
-        name: 'Anthropic',
-        key: 'sk-ant-xxxxxxxxxxxxx',
-        url: 'https://api.anthropic.com',
-        models: []
-    },
-    {
-        id: 'google',
-        name: 'Google AI',
-        url: 'https://generativelanguage.googleapis.com/v1',
-        models: []
-    }
-]
 
 
 interface ModelProviderBrandContentProps {

@@ -8,6 +8,7 @@ import { ModelProvider } from "@/types/ai";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import LocalModelProivderContentSheet from "./local-model-provider-content-sheet";
 interface ModelProviderBrandCardProps {
     item: ModelProvider
     openModelConfigModal: (item?: ModelProvider) => void
@@ -16,26 +17,31 @@ interface ModelProviderBrandCardProps {
 export default function ModelProviderBrandCard({ item, openModelConfigModal }: ModelProviderBrandCardProps) {
     return (
         <>
-            <Card className="w-l">
+            <Card className="w-full">
                 <CardHeader>
-                    <CardTitle className="flex justify-between">
-                        <span className="text-2xl">{item.name}</span>
-                        <div className="space-x-1">
-                            <Button className="cursor-pointer w-18 h-7">
-                                <span className="text-xs">模型</span>
-                                <Icon icon="carbon:model-alt" size={18} />
-                            </Button>
-                            <Button className="cursor-pointer w-18 h-7" onClick={() => openModelConfigModal(item)}>
-                                <span className="text-xs">配置</span>
-                                <Icon icon="line-md:menu-unfold-right" size={18} />
-                            </Button>
+                    <CardTitle className="p-0">
+                        {/* 改为响应式 grid，避免 lg 下按钮溢出 */}
+                        <div className="w-full grid gap-2 sm:grid-cols-[1fr_auto] items-start sm:items-center">
+                            <div className="min-w-0">
+                                <span className="text-2xl px-2 py-1 block truncate">{item.name}</span>
+                            </div>
+                            <div className="flex md:flex-col items-center gap-2 justify-end">
+                                <LocalModelProivderContentSheet data={item} />
+                                <Button
+                                    className="h-7 px-2 cursor-pointer"
+                                    onClick={() => openModelConfigModal(item)}
+                                >
+                                    <span className="text-xs">配置</span>
+                                    <Icon icon="line-md:menu-unfold-right" size={18} />
+                                </Button>
+                            </div>
                         </div>
                     </CardTitle>
                     <CardDescription className="flex space-x-2.5">
                         <Badge variant="secondary">
-                            <span className="font-medium select-none">可用模型: 16 个</span>
+                            <span className="font-medium select-none">可用模型：{item.models.length} 个</span>
                         </Badge>
-                        {item.key ?
+                        {!item.key ?
                             <Badge variant="destructive">
                                 <span className="font-medium select-none"> 需要配置 </span>
                             </Badge>

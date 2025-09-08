@@ -9,7 +9,7 @@ DELETE /api/roles/:ids - Batch delete roles
 GET /api/role/next-id - Get next available role ID
  */
 
-export const apiList= {
+export const apiList = {
     user: {
         signIn: "api/authorizations",
         userProfile: "api/user/profile",
@@ -41,6 +41,22 @@ export const apiList= {
     },
     openRouter: {
         listAvailableModels: 'https://openrouter.ai/api/v1/models'
+    },
+    modelProvider: {
+        getLocalModelProvider: 'api/model-providers',
+        createLocalModelProvider: 'api/model-provider',
+        updateLocalModelProvider: 'api/model-provider',
+        deleteLocalModelProvider: 'api/model-provider',
+        getNextProviderId: 'api/model-provider/next-id',
+        // 模型相关接口
+        getModels: 'api/model-provider',
+        createModel: 'api/model-provider',
+        getModel: 'api/model-provider',
+        updateModel: 'api/model-provider',
+        deleteModel: 'api/model-provider',
+        deleteModels: 'api/model-provider',
+        // 已添加本地模型聚合
+        getAddedModels: 'api/model-providers/added-models',
     }
 
 }
