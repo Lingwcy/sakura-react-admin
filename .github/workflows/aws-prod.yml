@@ -1,15 +1,15 @@
-name: Deploy Admin to Amazon S3 Prod
+name: Deploy Admin UI to Amazon EC2 Prod
 
 on:
   push:
     branches: ["master"]
+  workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1
-  S3_BUCKET: ""
-  S3_PATH: ""
-  CF_DISTRIBUTION_ID: ""
+  EC2_HOST: 3.231.184.22
+  DOMAIN: manager.aicomics.art
   BUILD_DIR: build
+  DEPLOY_ROOT: /var/www/aicomics-manager-ui
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 permissions:
@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Build and deploy
     runs-on: ubuntu-latest
     environment: production
 
@@ -30,7 +30,7 @@ jobs:
         continue-on-error: true
         uses: negentropy-flow/github-actions/feishu-notifier@main
         with:
-          pipeline_name: oolong-comics-admin
+          pipeline_name: aicomics-manager-ui
           url: ${{ secrets.FEISHU_BOT_WEBHOOK_URL }}
           status: STARTED
           template: blue
@@ -57,35 +57,58 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Validate deployment configuration
+      - name: Validate build output
         run: |
-          : "${S3_BUCKET:?Fill S3_BUCKET in the workflow env}"
-          : "${S3_PATH:?Fill S3_PATH in the workflow env}"
-          : "${CF_DISTRIBUTION_ID:?Fill CF_DISTRIBUTION_ID in the workflow env}"
-          case "$S3_PATH" in
-            /*) echo "S3_PATH must be a relative S3 prefix"; exit 1 ;;
-          esac
-        shell: bash
+          test -f "${BUILD_DIR}/index.html"
+          test -d "${BUILD_DIR}/assets"
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
-          aws-region: ${{ env.AWS_REGION }}
+      - name: Package build output
+        run: tar -C "$BUILD_DIR" -czf "$RUNNER_TEMP/aicomics-manager-ui.tar.gz" .
 
-      - name: Upload to S3
-        run: aws s3 sync "$BUILD_DIR" "s3://$S3_BUCKET/$S3_PATH" --delete
+      - name: Configure SSH
+        env:
+          EC2_SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        run: |
+          : "${EC2_HOST:?EC2_HOST is empty or not configured}"
+          : "${EC2_SSH_PRIVATE_KEY:?EC2_SSH_PRIVATE_KEY secret is empty or not configured for the production environment}"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$EC2_SSH_PRIVATE_KEY" > ~/.ssh/ec2_deploy_key
+          chmod 600 ~/.ssh/ec2_deploy_key
+          ssh-keyscan -H "$EC2_HOST" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
-      - name: CloudFront Invalidation
-        run: aws cloudfront create-invalidation --distribution-id "$CF_DISTRIBUTION_ID" --paths "/*"
+      - name: Upload and activate release
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          : "${EC2_USER:?EC2_USER secret is empty or not configured for the production environment}"
+          REMOTE_ARCHIVE="/tmp/aicomics-manager-ui-${GITHUB_SHA}.tar.gz"
+
+          scp \
+            -i ~/.ssh/ec2_deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$RUNNER_TEMP/aicomics-manager-ui.tar.gz" \
+            "$EC2_USER@$EC2_HOST:$REMOTE_ARCHIVE"
+
+          ssh \
+            -i ~/.ssh/ec2_deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            bash -s -- \
+            "$REMOTE_ARCHIVE" \
+            "$GITHUB_SHA" \
+            "$DEPLOY_ROOT" \
+            "$DOMAIN" \
+            < .github/scripts/deploy-nginx.sh
 
       - name: Notify Feishu - Succeeded
         if: success()
         continue-on-error: true
         uses: negentropy-flow/github-actions/feishu-notifier@main
         with:
-          pipeline_name: oolong-comics-admin
+          pipeline_name: aicomics-manager-ui
           url: ${{ secrets.FEISHU_BOT_WEBHOOK_URL }}
           status: SUCCEEDED
           template: green
@@ -95,7 +118,7 @@ jobs:
         continue-on-error: true
         uses: negentropy-flow/github-actions/feishu-notifier@main
         with:
-          pipeline_name: oolong-comics-admin
+          pipeline_name: aicomics-manager-ui
           url: ${{ secrets.FEISHU_BOT_WEBHOOK_URL }}
           status: FAILED
           template: red
