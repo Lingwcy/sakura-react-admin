@@ -88,12 +88,12 @@ export default function CreditManagement() {
 		if (!selectedRecipient || !amountIsValid) return;
 		try {
 			const receipt = await grantMutation.mutateAsync({
-				targetUserBizId: selectedRecipient.bizId,
+				targetUserId: selectedRecipient.userId,
 				creditAmount: amount,
 				remark: remark.trim(),
 				requestId,
 			});
-			setSelectedRecipient((current) => current?.bizId === receipt.targetUserBizId
+			setSelectedRecipient((current) => current?.userId === receipt.targetUserId
 				? { ...current, creditBalance: receipt.balanceAfter }
 				: current);
 			setConfirmOpen(false);
@@ -120,7 +120,7 @@ export default function CreditManagement() {
 									<div className="font-medium">{selectedRecipient.username?.trim() || "未设置昵称"}</div>
 									<div className="break-all text-sm text-muted-foreground">{selectedRecipient.email}</div>
 									<div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-										<Badge variant="outline">ID {selectedRecipient.bizId}</Badge>
+										<Badge variant="outline">ID {selectedRecipient.userId}</Badge>
 										<span>当前余额 {selectedRecipient.creditBalance.toLocaleString()} 积分</span>
 									</div>
 								</div>
@@ -135,7 +135,7 @@ export default function CreditManagement() {
 										id="credit-recipient-search"
 										value={recipientSearch}
 										onChange={(event) => setRecipientSearch(event.target.value)}
-										placeholder="搜索邮箱、昵称或业务 ID（至少 2 个字符）"
+										placeholder="搜索邮箱、昵称或用户 ID（至少 2 个字符）"
 										className="pl-9"
 									/>
 								</div>
@@ -146,8 +146,8 @@ export default function CreditManagement() {
 										{recipientQuery.isLoading || recipientQuery.isError || recipients.length === 0 ? (
 											<div className="px-3"><QueryFeedback loading={recipientQuery.isLoading} error={recipientQuery.error} empty={!recipientQuery.isLoading && !recipientQuery.isError} /></div>
 										) : recipients.map((user) => (
-											<button key={user.bizId} type="button" onClick={() => chooseRecipient(user)} className="flex w-full items-center justify-between gap-3 border-b p-3 text-left last:border-b-0 hover:bg-muted/40">
-												<span className="min-w-0"><span className="block truncate font-medium">{user.username?.trim() || "未设置昵称"}</span><span className="block truncate text-xs text-muted-foreground">{user.email} · {user.bizId}</span></span>
+											<button key={user.userId} type="button" onClick={() => chooseRecipient(user)} className="flex w-full items-center justify-between gap-3 border-b p-3 text-left last:border-b-0 hover:bg-muted/40">
+												<span className="min-w-0"><span className="block truncate font-medium">{user.username?.trim() || "未设置昵称"}</span><span className="block truncate text-xs text-muted-foreground">{user.email} · {user.userId}</span></span>
 												<span className="shrink-0 text-xs text-muted-foreground">{user.creditBalance.toLocaleString()} 积分</span>
 											</button>
 										))}
@@ -202,7 +202,7 @@ export default function CreditManagement() {
 										<tr><td colSpan={6} className="px-4"><QueryFeedback loading={historyQuery.isLoading} error={historyQuery.error} empty={!historyQuery.isLoading && !historyQuery.isError} /></td></tr>
 									) : historyQuery.data.list.map((grant) => (
 										<tr key={grant.transactionId} className="hover:bg-muted/30">
-											<td className="px-4 py-3"><div className="font-medium">{grant.targetUsername?.trim() || "未设置昵称"}</div><div className="text-xs text-muted-foreground">{grant.targetEmail}</div><div className="font-mono text-[11px] text-muted-foreground">{grant.targetUserBizId}</div></td>
+											<td className="px-4 py-3"><div className="font-medium">{grant.targetUsername?.trim() || "未设置昵称"}</div><div className="text-xs text-muted-foreground">{grant.targetEmail}</div><div className="font-mono text-[11px] text-muted-foreground">{grant.targetUserId}</div></td>
 											<td className="px-4 py-3 font-medium text-emerald-700 dark:text-emerald-400">+{grant.creditAmount.toLocaleString()}</td>
 											<td className="px-4 py-3">{grant.balanceAfter.toLocaleString()}</td>
 											<td className="max-w-xs whitespace-pre-wrap px-4 py-3">{grant.remark || "—"}</td>

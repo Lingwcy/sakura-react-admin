@@ -45,8 +45,8 @@ export const managerApi = {
 	dashboard: () => unwrap(http.get<ApiResponse<DashboardStats>>("/manager/dashboard")),
 	users: (params: PageQuery) =>
 		unwrap(http.get<ApiResponse<PageResult<UserSummary>>>("/manager/users", { params: pageParams(params) })),
-	user: (bizId: string) =>
-		unwrap(http.get<ApiResponse<UserSummary>>(`/manager/users/${encodeURIComponent(bizId)}`)),
+	user: (userId: string) =>
+		unwrap(http.get<ApiResponse<UserSummary>>(`/manager/users/${encodeURIComponent(userId)}`)),
 	comics: (params: PageQuery) =>
 		unwrap(http.get<ApiResponse<PageResult<ComicProjectSummary>>>("/manager/comics", { params: pageParams(params) })),
 	comic: (bizId: string) =>
@@ -58,7 +58,7 @@ export const managerApi = {
 	admins: () => unwrap(http.get<ApiResponse<ManagerAdminSummary[]>>("/manager/admins")),
 	addAdmin: (email: string) =>
 		unwrap(http.post<ApiResponse<ManagerAdminSummary[]>>("/manager/admins", { email })),
-	removeAdmin: (userId: number) =>
-		unwrap(http.delete<ApiResponse<boolean>>(`/manager/admins/${userId}`)),
+	removeAdmin: (userId: string) =>
+		unwrap(http.delete<ApiResponse<boolean>>(`/manager/admins/${encodeURIComponent(userId)}`)),
 	health: () => unwrap(http.get<ApiResponse<{ service: string; status: string }>>("/health")),
 };

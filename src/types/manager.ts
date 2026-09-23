@@ -1,8 +1,7 @@
 export type ManagerRole = "SUPER_ADMIN" | "ADMIN";
 
 export interface ManagerPrincipal {
-	userId: number;
-	bizId: string;
+	userId: string;
 	email: string;
 	username?: string | null;
 	role: ManagerRole;
@@ -24,8 +23,7 @@ export interface DashboardStats {
 }
 
 export interface UserSummary {
-	id: number;
-	bizId: string;
+	userId: string;
 	email: string;
 	username?: string | null;
 	avatarUrl: string | null;
@@ -67,7 +65,7 @@ export interface ComicProjectDetail {
 }
 
 export interface ManagerAdminSummary {
-	userId: number;
+	userId: string;
 	email: string;
 	username?: string | null;
 	role: ManagerRole;
@@ -75,14 +73,14 @@ export interface ManagerAdminSummary {
 }
 
 export interface CreditGrantRequest {
-	targetUserBizId: string;
+	targetUserId: string;
 	creditAmount: number;
 	remark?: string;
 	requestId: string;
 }
 
 export interface CreditGrantReceipt {
-	targetUserBizId: string;
+	targetUserId: string;
 	targetEmail: string;
 	creditAmount: number;
 	balanceAfter: number;
@@ -90,13 +88,13 @@ export interface CreditGrantReceipt {
 
 export interface CreditGrantSummary {
 	transactionId: number;
-	targetUserBizId: string;
+	targetUserId: string;
 	targetEmail: string;
 	targetUsername?: string | null;
 	creditAmount: number;
 	balanceAfter: number;
 	remark?: string | null;
-	operatorUserId?: number | null;
+	operatorUserId?: string | null;
 	operatorEmail?: string | null;
 	createdAt: string;
 }

@@ -7,7 +7,7 @@ export const managerQueryKeys = {
 	me: ["manager", "me"] as const,
 	dashboard: ["manager", "dashboard"] as const,
 	users: (params: PageQuery) => ["manager", "users", params] as const,
-	user: (bizId: string) => ["manager", "user", bizId] as const,
+	user: (userId: string) => ["manager", "user", userId] as const,
 	comics: (params: PageQuery) => ["manager", "comics", params] as const,
 	comic: (bizId: string) => ["manager", "comic", bizId] as const,
 	creditGrants: (params: Pick<PageQuery, "page" | "pageSize" | "keyword">) => ["manager", "credit-grants", params] as const,
@@ -71,11 +71,11 @@ export function useManagerUsers(params: PageQuery, enabled = true) {
 	});
 }
 
-export function useManagerUser(bizId: string | null) {
+export function useManagerUser(userId: string | null) {
 	return useQuery({
-		queryKey: managerQueryKeys.user(bizId ?? ""),
-		queryFn: () => managerApi.user(bizId!),
-		enabled: Boolean(bizId),
+		queryKey: managerQueryKeys.user(userId ?? ""),
+		queryFn: () => managerApi.user(userId!),
+		enabled: Boolean(userId),
 	});
 }
 

@@ -6,7 +6,7 @@ export const apiList = {
 		logout: "/manager/auth/logout",
 		dashboard: "/manager/dashboard",
 		users: "/manager/users",
-		userDetail: "/manager/users/{bizId}",
+		userDetail: "/manager/users/{userId}",
 		comics: "/manager/comics",
 		comicDetail: "/manager/comics/{bizId}",
 		admins: "/manager/admins",

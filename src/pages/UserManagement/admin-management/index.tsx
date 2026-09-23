@@ -40,7 +40,7 @@ export default function ManagerAdminManagement() {
 		}
 	}
 
-	async function handleRemove(userId: number, username: string) {
+	async function handleRemove(userId: string, username: string) {
 		if (!window.confirm(`确定移除管理员「${username}」吗？`)) return;
 		try {
 			await removeAdmin.mutateAsync(userId);
