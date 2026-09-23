@@ -1,0 +1,12 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@ai-sdk/gateway@4.0.89'
+  - '@ai-sdk/react@4.0.114'
+  - '@iconify/json@2.2.532'
+  - ai@7.0.111
+  - framer-motion@13.4.1
+  - motion-dom@13.4.1
+  - motion@13.4.1
+  - sass@1.105.0

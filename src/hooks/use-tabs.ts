@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router"
 import { useSystemStore } from "@/store"
-import { useDynamicRoutes,TabInfo } from "./use-system"
+import { useStaticRoutes } from "./use-system"
+import type { TabInfo } from "./use-system"
 import { findTreeTabByKey } from "@/utils/tree"
 const useTabs = () => {
     // tabs必须维护一套items来控制整个导航系统
-    const { availableTabs } = useDynamicRoutes()
+    const { availableTabs } = useStaticRoutes()
     const navigate = useNavigate()
     const selectedTab = useSystemStore((state) => state.selectedTab)
     const savedTabs = useSystemStore((state) => state.savedTabs)

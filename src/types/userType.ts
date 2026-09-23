@@ -1,28 +1,5 @@
-import { Role } from "./roleType"
-export type UserToken = {
-    token: string,
-    refresh_token: string
+/** Compatibility shape used by the API inspector and auth header. */
+export interface UserToken {
+	token: string;
+	refresh_token: string;
 }
-
-export type UserSignIn = {
-    username: string,
-    password: string
-
-}
-
-export type UserProfile = {
-    id: string,
-    avatar: string,
-    name: string,
-    email: string,
-    userRole: Role
-}
-
-export type UserItem = {
-    id: string,
-    roleId: string,
-    avatar: string,
-    name: string,
-    email: string
-}
-

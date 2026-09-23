@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
+import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
+const rootDir = import.meta.dirname
 export default defineConfig({
     plugins: [
         react(),
@@ -10,19 +11,18 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "./src"),
-            "@assets": path.resolve(__dirname, "./src/assets"),
-            "@apis": path.resolve(__dirname, './src/apis'),
-            "@pages": path.resolve(__dirname, './src/pages'),
-            "@router": path.resolve(__dirname, './src/router'),
-            "@store": path.resolve(__dirname, './src/store'),
-            "@utils": path.resolve(__dirname, './src/utils'),
-            "@types": path.resolve(__dirname, './src/types'),
-            "@hooks": path.resolve(__dirname, './src/hooks')
+            "@": path.resolve(rootDir, "./src"),
+            "@assets": path.resolve(rootDir, "./src/assets"),
+            "@apis": path.resolve(rootDir, './src/apis'),
+            "@pages": path.resolve(rootDir, './src/pages'),
+            "@router": path.resolve(rootDir, './src/router'),
+            "@store": path.resolve(rootDir, './src/store'),
+            "@utils": path.resolve(rootDir, './src/utils'),
+            "@types": path.resolve(rootDir, './src/types'),
+            "@hooks": path.resolve(rootDir, './src/hooks')
         }
 
     },
 
 })
-
 

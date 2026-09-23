@@ -7,11 +7,8 @@ import {
     Bot,
     GalleryVerticalEnd,
     Settings2,
-    SquareTerminal,
-    Cross,
     Key,
     UserCog2Icon,
-    PercentDiamond,
 } from "lucide-react"
 import { TabInfo } from '@/hooks/use-system';
 import { layoutSettingItems } from '@/hooks/use-layout';
@@ -64,26 +61,6 @@ type Action = {
 
 const initialSidebarData: SilderNavItem[] = [
     {
-        title: "服务器",
-        url: "#",
-        icon: SquareTerminal,
-        isActive: true,
-        items: [
-            {
-                title: "已收录",
-                url: "/server/archive",
-            },
-            {
-                title: "待审核",
-                url: "#",
-            },
-            {
-                title: "黑名单",
-                url: "#",
-            },
-        ],
-    },
-    {
         title: "用户管理",
         url: "#",
         icon: UserCog2Icon,
@@ -95,17 +72,6 @@ const initialSidebarData: SilderNavItem[] = [
             {
                 title: "客户端用户",
                 url: "usermanagement/font-user",
-            },
-        ],
-    },
-    {
-        title: "权限管理",
-        url: "#",
-        icon: PercentDiamond,
-        items: [
-            {
-                title: "后台用户权限",
-                url: "auth/permission",
             },
         ],
     },
@@ -145,26 +111,11 @@ const initialSidebarData: SilderNavItem[] = [
         items: [
         ],
     },
-    {
-        title: 'css靶场',
-        url: '#',
-        icon: Cross,
-        items: [
-            {
-                title: '双飞翼布局',
-                url: '/cssplayground/twowings'
-            },
-            {
-                title: '二级加载动画',
-                url: '/cssplayground/loading-2'
-            }
-        ]
-    }
 ]
 
 const initialSidebarTeamData: SidebarTeam[] = [
     {
-        name: "Sakura Admin",
+        name: "AI Comics",
         logo: GalleryVerticalEnd,
         plan: "",
     },

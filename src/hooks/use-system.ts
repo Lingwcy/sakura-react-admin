@@ -1,15 +1,12 @@
-import { useSystemStore } from "@/store";
-import { usePermissionRoutes } from "@/router/hooks/use-permission-routes";
+import useSystemStore from "@/store/systemStore";
 import { useMemo } from "react";
-import { AppRouteObject } from "@/types/router";
-import { SidebarTeam } from '@/types/systemType'
+import type { AppRouteObject } from "@/types/router";
+import type { SidebarTeam } from '@/types/systemType'
+import { STATIC_APP_ROUTES } from "@/router/static-route";
+import useUserStore from "@/store/userStore";
 
 
-/**
- * 
- * 提供动态路由提供状态
- * 直接下游提供消费
- */
+/** 提供静态路由定义和导航所需状态。 */
 export interface TabInfo {
     key: string;
     label: string;
@@ -18,14 +15,24 @@ export interface TabInfo {
     hide?: boolean;
     children?: TabInfo[]
 }
-interface UseDynamicRoutesReturn {
+interface UseStaticRoutesReturn {
     sidebarTeams: SidebarTeam[]
     sidebarNavItems: AppRouteObject[];
     availableTabs: TabInfo[];
 }
 
-const useDynamicRoutes = (): UseDynamicRoutesReturn => {
-    const route = usePermissionRoutes() // 动态路由渲染侧边栏
+const useStaticRoutes = (): UseStaticRoutesReturn => {
+	const isSuperAdmin = useUserStore((state) => state.admin?.role === "SUPER_ADMIN");
+    const route = useMemo(
+        () => {
+			const children = STATIC_APP_ROUTES.find((item) => item.path === "/")?.children ?? [];
+			const hideAdminAccess = (nodes: AppRouteObject[]): AppRouteObject[] => nodes
+				.filter((node) => isSuperAdmin || node.meta?.key !== "/usermanagement/admins")
+				.map((node) => node.children ? { ...node, children: hideAdminAccess(node.children) } : node);
+			return hideAdminAccess(children);
+		},
+		[isSuperAdmin],
+    )
     const sidebarConfig = useSystemStore((state) => state.sidebarConfig)
     const sidebarTeams = sidebarConfig.teams
 
@@ -87,7 +94,7 @@ const useSettingBar = () => {
 }
 
 export {
-    useDynamicRoutes,
+        useStaticRoutes,
     useBread,
     useSettingBar
 }

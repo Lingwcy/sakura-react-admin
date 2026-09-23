@@ -1,52 +1,20 @@
-import { defineConfig, createLogger } from 'vite'
-import react from '@vitejs/plugin-react'
-import { viteMockServe } from 'vite-plugin-mock'
-import tailwindcss from '@tailwindcss/vite'
-const logger = createLogger()
-const loggerWarn = logger.warn
-const loggerInfo = logger.info
-const loggerError = logger.error
-logger.warn = (msg, options) => {
-    msg = formatLog(msg, "[警告]")
-    loggerWarn(msg, options)
-}
+import { createLogger, defineConfig } from "vite";
 
-logger.info = (msg, options) => {
-    msg = formatLog(msg, "[信息]")
-    loggerInfo(msg, options)
-}
+const logger = createLogger();
+const loggerWarn = logger.warn;
+const loggerInfo = logger.info;
+const loggerError = logger.error;
 
-logger.error = (msg, options) => {
-    msg = formatLog(msg, "[错误]")
-    loggerError(msg, options)
-}
+logger.warn = (message, options) => loggerWarn(`[警告] ${message}`, options);
+logger.info = (message, options) => loggerInfo(`[信息] ${message}`, options);
+logger.error = (message, options) => loggerError(`[错误] ${message}`, options);
 
 export default defineConfig({
-    plugins: [
-        react(),
-        tailwindcss(),
-        viteMockServe({
-            mockPath: 'mock',
-            enable: true,
-            watchFiles: true,
-            logger: true,
-        }),
-    ],
-    base: './',
-    root: "./",
-    mode: "development",
-    logLevel: 'info',
-    customLogger: logger,
-    server: {
-        strictPort: false,
-    },
-    optimizeDeps:{
-        include:['axios']
-    }
-})
-
-
-function formatLog(msg: string, prefix: string = "[Meow]") {
-    return `${prefix} ${msg}`;
-}
-
+	base: "./",
+	root: "./",
+	mode: "development",
+	logLevel: "info",
+	customLogger: logger,
+	server: { strictPort: false, watch: { ignored: ["**/build/**"] } },
+	optimizeDeps: { include: ["axios", "@tanstack/react-table", "motion/react"] },
+});
