@@ -1,0 +1,101 @@
+name: Deploy Admin to Amazon S3 Prod
+
+on:
+  push:
+    branches: ["master"]
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: ""
+  S3_PATH: ""
+  CF_DISTRIBUTION_ID: ""
+  BUILD_DIR: build
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-admin-prod
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Notify Feishu - Started
+        continue-on-error: true
+        uses: negentropy-flow/github-actions/feishu-notifier@main
+        with:
+          pipeline_name: oolong-comics-admin
+          url: ${{ secrets.FEISHU_BOT_WEBHOOK_URL }}
+          status: STARTED
+          template: blue
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.0"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Validate deployment configuration
+        run: |
+          : "${S3_BUCKET:?Fill S3_BUCKET in the workflow env}"
+          : "${S3_PATH:?Fill S3_PATH in the workflow env}"
+          : "${CF_DISTRIBUTION_ID:?Fill CF_DISTRIBUTION_ID in the workflow env}"
+          case "$S3_PATH" in
+            /*) echo "S3_PATH must be a relative S3 prefix"; exit 1 ;;
+          esac
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload to S3
+        run: aws s3 sync "$BUILD_DIR" "s3://$S3_BUCKET/$S3_PATH" --delete
+
+      - name: CloudFront Invalidation
+        run: aws cloudfront create-invalidation --distribution-id "$CF_DISTRIBUTION_ID" --paths "/*"
+
+      - name: Notify Feishu - Succeeded
+        if: success()
+        continue-on-error: true
+        uses: negentropy-flow/github-actions/feishu-notifier@main
+        with:
+          pipeline_name: oolong-comics-admin
+          url: ${{ secrets.FEISHU_BOT_WEBHOOK_URL }}
+          status: SUCCEEDED
+          template: green
+
+      - name: Notify Feishu - Failed
+        if: failure()
+        continue-on-error: true
+        uses: negentropy-flow/github-actions/feishu-notifier@main
+        with:
+          pipeline_name: oolong-comics-admin
+          url: ${{ secrets.FEISHU_BOT_WEBHOOK_URL }}
+          status: FAILED
+          template: red
