@@ -12,6 +12,7 @@ const Home = lazy(() => import("@/pages/Home"));
 const AdminUsers = lazy(() => import("@/pages/UserManagement/admin-user-management"));
 const ManagerAdmins = lazy(() => import("@/pages/UserManagement/admin-management"));
 const CreditGrants = lazy(() => import("@/pages/CreditManagement"));
+const Invitations = lazy(() => import("@/pages/InvitationManagement"));
 const ComicProjects = lazy(() => import("@/pages/Comics"));
 const BarCharts = lazy(() => import("@/pages/Display/Echarts/bar-charts"));
 const PieCharts = lazy(() => import("@/pages/Display/Echarts/pie-charts"));
@@ -83,6 +84,7 @@ export const STATIC_APP_ROUTES: AppRouteObject[] = [
 			pageRoute("home", "/home", "首页", Home, "line-md:home"),
 			routeGroup("usermanagement", "/usermanagement", "用户管理", "line-md:account", 2, "user", [
 				pageRoute("user", "/usermanagement/user", "漫画用户", AdminUsers),
+				pageRoute("invitations", "/usermanagement/invitations", "邀请关系", Invitations, "line-md:account-add"),
 				pageRoute("admins", "/usermanagement/admins", "后台管理员", ManagerAdmins),
 			]),
 			routeGroup("content", "/content", "内容管理", "line-md:document-list", 3, "comics", [

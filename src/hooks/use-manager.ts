@@ -11,6 +11,7 @@ export const managerQueryKeys = {
 	comics: (params: PageQuery) => ["manager", "comics", params] as const,
 	comic: (bizId: string) => ["manager", "comic", bizId] as const,
 	creditGrants: (params: Pick<PageQuery, "page" | "pageSize" | "keyword">) => ["manager", "credit-grants", params] as const,
+	invitations: (params: Pick<PageQuery, "page" | "pageSize" | "keyword">) => ["manager", "invitations", params] as const,
 	admins: ["manager", "admins"] as const,
 };
 
@@ -99,6 +100,14 @@ export function useManagerCreditGrants(params: Pick<PageQuery, "page" | "pageSiz
 	return useQuery({
 		queryKey: managerQueryKeys.creditGrants(params),
 		queryFn: () => managerApi.creditGrants(params),
+		placeholderData: (previousData) => previousData,
+	});
+}
+
+export function useManagerInvitations(params: Pick<PageQuery, "page" | "pageSize" | "keyword">) {
+	return useQuery({
+		queryKey: managerQueryKeys.invitations(params),
+		queryFn: () => managerApi.invitations(params),
 		placeholderData: (previousData) => previousData,
 	});
 }

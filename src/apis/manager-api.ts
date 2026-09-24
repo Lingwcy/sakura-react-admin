@@ -7,6 +7,7 @@ import type {
 	CreditGrantReceipt,
 	CreditGrantSummary,
 	DashboardStats,
+	InvitationOverview,
 	ManagerAdminSummary,
 	ManagerLoginResponse,
 	ManagerPrincipal,
@@ -53,6 +54,8 @@ export const managerApi = {
 		unwrap(http.get<ApiResponse<ComicProjectDetail>>(`/manager/comics/${encodeURIComponent(bizId)}`)),
 	creditGrants: (params: Pick<PageQuery, "page" | "pageSize" | "keyword">) =>
 		unwrap(http.get<ApiResponse<PageResult<CreditGrantSummary>>>("/manager/credit-grants", { params })),
+	invitations: (params: Pick<PageQuery, "page" | "pageSize" | "keyword">) =>
+		unwrap(http.get<ApiResponse<InvitationOverview>>("/manager/invitations", { params })),
 	grantCredits: (request: CreditGrantRequest) =>
 		unwrap(http.post<ApiResponse<CreditGrantReceipt>>("/manager/credit-grants", request)),
 	admins: () => unwrap(http.get<ApiResponse<ManagerAdminSummary[]>>("/manager/admins")),

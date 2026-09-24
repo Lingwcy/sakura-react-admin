@@ -99,6 +99,32 @@ export interface CreditGrantSummary {
 	createdAt: string;
 }
 
+export interface InvitationRelationship {
+	inviterUserId: string;
+	inviterUsername?: string | null;
+	inviterEmail?: string | null;
+	inviteeUserId: string;
+	inviteeUsername?: string | null;
+	inviteeEmail?: string | null;
+	code: string;
+	inviterCredit: number;
+	inviteeCredit: number;
+	createdAt: string;
+}
+
+export interface InvitationStats {
+	invitationCount: number;
+	inviterCount: number;
+	inviteeCount: number;
+	inviterCreditTotal: number;
+	inviteeCreditTotal: number;
+}
+
+export interface InvitationOverview {
+	stats: InvitationStats;
+	relationships: PageResult<InvitationRelationship>;
+}
+
 export interface PageResult<T> {
 	list: T[];
 	total: number;
