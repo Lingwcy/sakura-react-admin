@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { RouteLoadingProgress } from "@/components/loading"
 import { BorderLoading } from "@/components/loading"
 import { Suspense } from "react"
-import { motion, AnimatePresence, Transition } from 'framer-motion';
+import { motion, AnimatePresence, Transition } from 'motion/react';
 import { useLocation } from 'react-router';
 import { useOutlet } from 'react-router';
 import Header from "./header"

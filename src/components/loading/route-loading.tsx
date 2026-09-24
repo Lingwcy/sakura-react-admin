@@ -8,8 +8,8 @@ export function RouteLoadingProgress() {
 	const location = useLocation();
 
 	useEffect(() => {
-		let progressTimer: NodeJS.Timeout;
-		let completeTimer: NodeJS.Timeout;
+		let progressTimer: ReturnType<typeof setInterval> | undefined;
+		let completeTimer: ReturnType<typeof setTimeout> | undefined;
 
 		const startLoading = () => {
 			setIsLoading(true);

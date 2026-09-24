@@ -1,15 +1,14 @@
 
 import LoginForm from './login-form'
 import PlaceholderImg from '@assets/images/background.png'
-import { Icon } from "@iconify/react";
 const Login = () => {
     return (
         <div className=' grid lg:grid-cols-2 min-h-svh '>
             <div className='flex flex-col p-6 gap-4 md:p-10'>
                 <div className='felx'>
                     <div className='flex items-center gap-2 justify-center md:justify-start'>
-                        <Icon icon="solar:code-square-bold" color='pink' fontSize={36} />
-                        <span>Sakura Minecraft Server Community | 后台管理系统</span>
+                        <img src="/brand/oolong-comics-logo-banner.svg" alt="Oolong Comics" className="h-9 w-auto max-w-[190px] object-contain object-left" />
+                        <span className="border-l pl-2 text-sm font-medium text-muted-foreground">管理后台</span>
                     </div>
                 </div>
                 <div className="flex flex-1 items-center justify-center ">

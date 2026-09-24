@@ -11,9 +11,10 @@ import {
     DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
 import Icon from "@/components/ui/icon"
-import { useDynamicRoutes } from "@/hooks/use-system"
+import { useStaticRoutes } from "@/hooks/use-system"
 import { useTabs } from "@/hooks/use-tabs"
-import { TabInfo, useBread } from "@/hooks/use-system"
+import { useBread } from "@/hooks/use-system"
+import type { TabInfo } from "@/hooks/use-system"
 import { ScrollArea,ScrollBar } from "@/components/ui/scroll-area"
 import clsx from "clsx"
 interface VerticalNavBarProps {
@@ -22,7 +23,7 @@ interface VerticalNavBarProps {
 export function VerticalNavBar({ className }: VerticalNavBarProps) {
     const { addTab, navigateToTab } = useTabs()
     const { handleSetCurrentBread } = useBread()
-    const { availableTabs } = useDynamicRoutes()
+    const { availableTabs } = useStaticRoutes()
     const handleAddTab = (item: TabInfo) => {
         handleSetCurrentBread(item!.key)
         addTab(item)

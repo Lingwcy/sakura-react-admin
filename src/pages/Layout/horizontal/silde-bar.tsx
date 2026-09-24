@@ -9,13 +9,13 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { useDynamicRoutes } from "@/hooks/use-system"
-import { useUserProfile } from "@/hooks/use-user"
+import { useStaticRoutes } from "@/hooks/use-system"
+import useUserStore from "@/store/userStore"
 import { ScrollArea } from "../../../components/ui/scroll-area"
 import HorizontalNavBar from "./horizontal-nav-bar"
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { sidebarTeams,availableTabs} = useDynamicRoutes()
-  const {userProfile} = useUserProfile()
+  const { sidebarTeams,availableTabs} = useStaticRoutes()
+  const admin = useUserStore((state) => state.admin)
   return (
     <Sidebar collapsible="icon" {...props} className="border-r-2 border-gray-300">
       <SidebarHeader className="">
@@ -27,7 +27,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </ScrollArea>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={userProfile} />
+        <NavUser user={admin} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

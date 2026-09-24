@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { useDynamicRoutes } from "@/hooks/use-system";
+import { useStaticRoutes } from "@/hooks/use-system";
 import { TabInfo } from "@/hooks/use-system";
 /**
  * 把 TabInfo[] → ECharts tree 数据
@@ -55,7 +55,7 @@ function tabs2Tree(tabs: TabInfo[]) {
     }];
 }
 export default function NavTreeChartCard() {
-    const { availableTabs } = useDynamicRoutes()
+    const { availableTabs } = useStaticRoutes()
     const treeData = tabs2Tree(availableTabs);
     console.log(treeData)
     const [option] = useState({

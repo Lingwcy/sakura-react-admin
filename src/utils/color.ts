@@ -403,7 +403,7 @@ export type ChartKind = 'bar' | 'pie' | 'line';
 export async function ThemeWrapper(
     data: EChartsOption,
     kind: ChartKind,
-    props: any
+    props?: any
 ) {
     switch (kind){
         case 'pie': {
@@ -413,7 +413,7 @@ export async function ThemeWrapper(
             return BarThemeWrapper(data)
         }
         case 'line' : {
-            return LineThemeWrapper(data, props as [boolean, boolean, boolean])
+            return LineThemeWrapper(data, (props ?? [false, false, false]) as [boolean, boolean, boolean])
         }
         default: {
             return data;

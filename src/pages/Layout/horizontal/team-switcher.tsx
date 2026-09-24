@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Plus, FlowerIcon } from "lucide-react"
+import { Plus } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -42,8 +42,8 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent pointer-events-none select-none data-[state=open]:text-sidebar-accent-foreground bg-primary "
             >
-              <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-background">
-                <FlowerIcon className="size-4 text-foreground" />
+              <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg bg-background">
+                <img src="/brand/oolong-comics-logo.svg" alt="Oolong Comics" className="size-full object-contain" />
               </div>
               <div className="grid flex-1 text-left text-md italic leading-tight">
                 <span className="truncate text-background font-bold">{activeTeam.name}</span>

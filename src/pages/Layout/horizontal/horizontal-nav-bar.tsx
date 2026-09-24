@@ -16,7 +16,7 @@ import { ChevronRight } from "lucide-react";
 import { TabInfo, useBread } from "@/hooks/use-system";
 import { useTabs } from "@/hooks/use-tabs";
 import { NavLink } from "react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 
 interface HorizontalNavBarProps {

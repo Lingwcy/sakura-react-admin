@@ -3,7 +3,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 const useDebounce = (initialValue: string, delay = 500) => {
     const [value, setValue] = useState(initialValue);
     const [debouncedValue, setDebouncedValue] = useState(initialValue);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const debounceSetValue = useCallback(
         (next: string) => {
